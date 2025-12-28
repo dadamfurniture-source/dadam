@@ -4,6 +4,7 @@ AI 설계 에이전트 - Claude 기반 가구 설계 어시스턴트
 import os
 import json
 import uuid
+import re
 
 from tools.dimension_calc import DimensionCalculator
 from tools.fridge_lookup import FridgeLookup
@@ -40,7 +41,7 @@ class DesignAgent:
         self.optimizer = ModuleOptimizer()
 
         # 세션 저장소
-        self.sessions: Dict[str, Dict] = {}
+        self.sessions = {}
 
         # 시스템 프롬프트
         self.system_prompt = """당신은 '다담 AI'입니다. 한국의 맞춤 가구 설계 전문 AI 어시스턴트입니다.
@@ -188,7 +189,7 @@ class DesignAgent:
             }
         ]
 
-    def _execute_tool(self, tool_name: str, tool_input: Dict) -> Dict:
+    def _execute_tool(self, tool_name, tool_input):
         """도구 실행"""
         if tool_name == "calculate_modules":
             result = self.calculator.distribute_modules(tool_input["total_space"])
@@ -269,12 +270,7 @@ class DesignAgent:
 
         return {"error": f"알 수 없는 도구: {tool_name}"}
 
-    def chat(
-        self,
-        message: str,
-        session_id: str = None,
-        context: Dict = None
-    ) -> Dict[str, Any]:
+    def chat(self, message, session_id=None, context=None):
         """
         사용자 메시지 처리
 
@@ -404,7 +400,7 @@ class DesignAgent:
                 "error": str(e)
             }
 
-    def _format_context(self, context: Dict) -> str:
+    def _format_context(self, context):
         """컨텍스트를 문자열로 포맷"""
         parts = []
 
@@ -427,7 +423,7 @@ class DesignAgent:
 
         return "\n".join(parts) if parts else ""
 
-    def _extract_suggestions(self, message: str) -> List[Dict]:
+    def _extract_suggestions(self, message):
         """응답에서 제안사항 추출"""
         suggestions = []
 
@@ -446,12 +442,7 @@ class DesignAgent:
 
         return suggestions
 
-    def _simulate_response(
-        self,
-        message: str,
-        session_id: str,
-        context: Dict = None
-    ) -> Dict[str, Any]:
+    def _simulate_response(self, message, session_id, context=None):
         """API 키 없이 시뮬레이션 응답 생성"""
         message_lower = message.lower()
         actions = []
@@ -508,7 +499,6 @@ class DesignAgent:
 
         elif "계산" in message or "분배" in message:
             # 숫자 추출 시도
-            import re
             numbers = re.findall(r'\d+', message)
             if numbers:
                 space = float(numbers[0])
@@ -548,11 +538,11 @@ class DesignAgent:
             "suggestions": []
         }
 
-    def get_session(self, session_id: str) -> Optional[Dict]:
+    def get_session(self, session_id):
         """세션 조회"""
         return self.sessions.get(session_id)
 
-    def clear_session(self, session_id: str) -> bool:
+    def clear_session(self, session_id):
         """세션 초기화"""
         if session_id in self.sessions:
             del self.sessions[session_id]
