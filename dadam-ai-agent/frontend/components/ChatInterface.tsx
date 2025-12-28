@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import ReactMarkdown from 'react-markdown';
 
 interface Message {
@@ -21,17 +21,15 @@ export default function ChatInterface({ context, onContextUpdate }: ChatInterfac
     {
       id: '1',
       role: 'assistant',
-      content: `안녕하세요! **다담 AI**입니다. 🏠
+      content: `안녕하세요! **다담 AI**입니다.
 
-맞춤 가구 설계를 도와드릴게요. 무엇을 설계하시겠어요?
+맞춤 가구 설계를 도와드릴게요.
+마이크 버튼을 누르고 말씀해주세요!
 
-- **싱크대** - 상부장/하부장 자동 배치
-- **냉장고장** - LG/삼성 모델 기반 설계
-- **붙박이장** - 옷봉/선반/서랍 구성
-- **기타 가구** - 신발장, 화장대, 수납장 등
-
-치수를 알려주시면 바로 계산해드릴게요!
-예: "3000mm 냉장고장 LG로 설계해줘"`,
+예시:
+- "3000mm 냉장고장 설계해줘"
+- "LG 냉장고 추천해줘"
+- "2500mm 분배 계산해줘"`,
       timestamp: new Date(),
     },
   ]);
@@ -40,21 +38,129 @@ export default function ChatInterface({ context, onContextUpdate }: ChatInterfac
   const [isLoading, setIsLoading] = useState(false);
   const [sessionId, setSessionId] = useState<string | null>(null);
 
+  // 음성 관련 상태
+  const [isListening, setIsListening] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [voiceEnabled, setVoiceEnabled] = useState(true);
+  const [transcript, setTranscript] = useState('');
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const recognitionRef = useRef<any>(null);
+  const synthRef = useRef<SpeechSynthesis | null>(null);
+
+  // 음성 인식 초기화
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+
+      if (SpeechRecognition) {
+        const recognition = new SpeechRecognition();
+        recognition.lang = 'ko-KR';
+        recognition.continuous = false;
+        recognition.interimResults = true;
+
+        recognition.onstart = () => {
+          setIsListening(true);
+          setTranscript('');
+        };
+
+        recognition.onresult = (event: any) => {
+          const current = event.resultIndex;
+          const result = event.results[current];
+          const text = result[0].transcript;
+
+          setTranscript(text);
+
+          if (result.isFinal) {
+            setInput(text);
+            // 자동 전송
+            setTimeout(() => {
+              sendMessage(text);
+            }, 500);
+          }
+        };
+
+        recognition.onerror = (event: any) => {
+          console.error('Speech recognition error:', event.error);
+          setIsListening(false);
+        };
+
+        recognition.onend = () => {
+          setIsListening(false);
+        };
+
+        recognitionRef.current = recognition;
+      }
+
+      synthRef.current = window.speechSynthesis;
+    }
+  }, []);
 
   // 자동 스크롤
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  // 빠른 질문 버튼
-  const quickQuestions = [
-    '3000mm 냉장고장 설계해줘',
-    'LG 냉장고 추천해줘',
-    '2500mm 분배 계산해줘',
-    '싱크대 상부장 배치',
-  ];
+  // 첫 인사 음성 출력
+  useEffect(() => {
+    if (voiceEnabled && messages.length === 1) {
+      setTimeout(() => {
+        speak('안녕하세요! 다담 AI입니다. 맞춤 가구 설계를 도와드릴게요. 마이크 버튼을 누르고 말씀해주세요!');
+      }, 1000);
+    }
+  }, []);
+
+  // 음성 출력 함수
+  const speak = useCallback((text: string) => {
+    if (!synthRef.current || !voiceEnabled) return;
+
+    // 마크다운 및 특수문자 제거
+    const cleanText = text
+      .replace(/\*\*/g, '')
+      .replace(/\*/g, '')
+      .replace(/#{1,6}\s/g, '')
+      .replace(/[-•]/g, '')
+      .replace(/\n+/g, '. ')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    // 이전 음성 중지
+    synthRef.current.cancel();
+
+    const utterance = new SpeechSynthesisUtterance(cleanText);
+    utterance.lang = 'ko-KR';
+    utterance.rate = 1.1;
+    utterance.pitch = 1.0;
+
+    utterance.onstart = () => setIsSpeaking(true);
+    utterance.onend = () => setIsSpeaking(false);
+    utterance.onerror = () => setIsSpeaking(false);
+
+    synthRef.current.speak(utterance);
+  }, [voiceEnabled]);
+
+  // 음성 중지
+  const stopSpeaking = () => {
+    if (synthRef.current) {
+      synthRef.current.cancel();
+      setIsSpeaking(false);
+    }
+  };
+
+  // 음성 인식 시작/중지
+  const toggleListening = () => {
+    if (!recognitionRef.current) {
+      alert('이 브라우저는 음성 인식을 지원하지 않습니다.');
+      return;
+    }
+
+    if (isListening) {
+      recognitionRef.current.stop();
+    } else {
+      stopSpeaking(); // 음성 출력 중지
+      recognitionRef.current.start();
+    }
+  };
 
   const sendMessage = async (content: string) => {
     if (!content.trim()) return;
@@ -68,6 +174,7 @@ export default function ChatInterface({ context, onContextUpdate }: ChatInterfac
 
     setMessages((prev) => [...prev, userMessage]);
     setInput('');
+    setTranscript('');
     setIsLoading(true);
 
     try {
@@ -97,37 +204,43 @@ export default function ChatInterface({ context, onContextUpdate }: ChatInterfac
 
       setMessages((prev) => [...prev, assistantMessage]);
 
+      // 음성으로 응답 출력
+      if (voiceEnabled) {
+        speak(data.message);
+      }
+
       // 액션 처리
       if (data.actions) {
         processActions(data.actions);
       }
     } catch (error) {
       console.error('Chat error:', error);
+      const errorMsg = '죄송합니다. 오류가 발생했습니다. 다시 시도해주세요.';
       setMessages((prev) => [
         ...prev,
         {
           id: (Date.now() + 1).toString(),
           role: 'assistant',
-          content: '죄송합니다. 오류가 발생했습니다. 다시 시도해주세요.',
+          content: errorMsg,
           timestamp: new Date(),
         },
       ]);
+      if (voiceEnabled) {
+        speak(errorMsg);
+      }
     } finally {
       setIsLoading(false);
-      inputRef.current?.focus();
     }
   };
 
   const processActions = (actions: any[]) => {
     actions.forEach((action) => {
       if (action.type === 'recommendation' && action.data) {
-        // 추천 결과를 컨텍스트에 저장
         onContextUpdate({
           ...context,
           recommendations: action.data,
         });
       } else if (action.type === 'calculation' && action.data) {
-        // 계산 결과를 컨텍스트에 저장
         onContextUpdate({
           ...context,
           calculation: action.data,
@@ -145,52 +258,63 @@ export default function ChatInterface({ context, onContextUpdate }: ChatInterfac
 
   return (
     <div className="bg-white rounded-xl shadow-lg overflow-hidden flex flex-col h-[calc(100vh-200px)] min-h-[500px]">
-      {/* 채팅 헤더 */}
-      <div className="bg-primary text-white px-4 py-3 flex items-center gap-3">
-        <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center text-xl">
-          🤖
+      {/* 헤더 */}
+      <div className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-4 py-3 flex items-center gap-3">
+        <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center text-2xl animate-pulse">
+          {isSpeaking ? '🔊' : isListening ? '🎤' : '🤖'}
         </div>
-        <div>
-          <h2 className="font-semibold">다담 AI</h2>
-          <p className="text-xs text-white/80">가구 설계 어시스턴트</p>
+        <div className="flex-1">
+          <h2 className="font-semibold text-lg">다담 음성 AI</h2>
+          <p className="text-xs text-white/80">
+            {isListening ? '듣고 있어요...' : isSpeaking ? '말하는 중...' : '마이크를 눌러 말씀하세요'}
+          </p>
         </div>
-        {sessionId && (
-          <span className="ml-auto text-xs bg-white/20 px-2 py-1 rounded">
-            세션 활성
-          </span>
-        )}
+        <button
+          onClick={() => setVoiceEnabled(!voiceEnabled)}
+          className={`p-2 rounded-full ${voiceEnabled ? 'bg-white/20' : 'bg-red-500/50'}`}
+          title={voiceEnabled ? '음성 켜짐' : '음성 꺼짐'}
+        >
+          {voiceEnabled ? '🔊' : '🔇'}
+        </button>
       </div>
 
       {/* 메시지 영역 */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 chat-container bg-gray-50">
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gradient-to-b from-gray-50 to-white">
         {messages.map((msg) => (
           <div
             key={msg.id}
-            className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} message-enter`}
+            className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
           >
             <div
-              className={`max-w-[80%] rounded-2xl px-4 py-3 ${
+              className={`max-w-[85%] rounded-2xl px-4 py-3 ${
                 msg.role === 'user'
-                  ? 'bg-primary text-white rounded-br-md'
-                  : 'bg-white shadow-md rounded-bl-md'
+                  ? 'bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-br-md'
+                  : 'bg-white shadow-lg border rounded-bl-md'
               }`}
             >
               {msg.role === 'assistant' ? (
-                <div className="markdown-content prose prose-sm max-w-none">
+                <div className="prose prose-sm max-w-none">
                   <ReactMarkdown>{msg.content}</ReactMarkdown>
                 </div>
               ) : (
-                <p>{msg.content}</p>
+                <p className="text-lg">{msg.content}</p>
               )}
-              <div
-                className={`text-xs mt-2 ${
-                  msg.role === 'user' ? 'text-white/70' : 'text-gray-400'
-                }`}
-              >
+              <div className={`text-xs mt-2 flex items-center gap-2 ${
+                msg.role === 'user' ? 'text-white/70' : 'text-gray-400'
+              }`}>
                 {msg.timestamp.toLocaleTimeString('ko-KR', {
                   hour: '2-digit',
                   minute: '2-digit',
                 })}
+                {msg.role === 'assistant' && voiceEnabled && (
+                  <button
+                    onClick={() => speak(msg.content)}
+                    className="hover:text-purple-500"
+                    title="다시 듣기"
+                  >
+                    🔊
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -199,12 +323,21 @@ export default function ChatInterface({ context, onContextUpdate }: ChatInterfac
         {/* 로딩 표시 */}
         {isLoading && (
           <div className="flex justify-start">
-            <div className="bg-white shadow-md rounded-2xl rounded-bl-md px-4 py-3">
-              <div className="typing-indicator flex gap-1">
-                <span className="w-2 h-2 bg-gray-400 rounded-full"></span>
-                <span className="w-2 h-2 bg-gray-400 rounded-full"></span>
-                <span className="w-2 h-2 bg-gray-400 rounded-full"></span>
+            <div className="bg-white shadow-lg border rounded-2xl rounded-bl-md px-6 py-4">
+              <div className="flex gap-2">
+                <span className="w-3 h-3 bg-purple-400 rounded-full animate-bounce" style={{animationDelay: '0ms'}}></span>
+                <span className="w-3 h-3 bg-purple-400 rounded-full animate-bounce" style={{animationDelay: '150ms'}}></span>
+                <span className="w-3 h-3 bg-purple-400 rounded-full animate-bounce" style={{animationDelay: '300ms'}}></span>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* 실시간 음성 인식 표시 */}
+        {isListening && transcript && (
+          <div className="flex justify-end">
+            <div className="bg-purple-100 text-purple-700 rounded-2xl px-4 py-3 italic">
+              "{transcript}"
             </div>
           </div>
         )}
@@ -212,40 +345,58 @@ export default function ChatInterface({ context, onContextUpdate }: ChatInterfac
         <div ref={messagesEndRef} />
       </div>
 
-      {/* 빠른 질문 */}
-      <div className="px-4 py-2 border-t bg-gray-50 flex gap-2 overflow-x-auto">
-        {quickQuestions.map((q, i) => (
+      {/* 음성 컨트롤 영역 */}
+      <div className="p-6 border-t bg-gradient-to-r from-purple-50 to-indigo-50">
+        {/* 마이크 버튼 (중앙 큰 버튼) */}
+        <div className="flex justify-center mb-4">
           <button
-            key={i}
-            onClick={() => sendMessage(q)}
-            className="flex-shrink-0 px-3 py-1.5 text-sm bg-white border border-gray-200 rounded-full hover:border-primary hover:text-primary transition-colors"
+            onClick={toggleListening}
+            disabled={isLoading}
+            className={`w-20 h-20 rounded-full flex items-center justify-center text-4xl transition-all transform hover:scale-105 ${
+              isListening
+                ? 'bg-red-500 text-white animate-pulse shadow-lg shadow-red-500/50'
+                : 'bg-gradient-to-r from-purple-500 to-indigo-500 text-white shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50'
+            } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
-            {q}
+            {isListening ? '⏹️' : '🎤'}
           </button>
-        ))}
-      </div>
+        </div>
 
-      {/* 입력 영역 */}
-      <div className="p-4 border-t bg-white">
-        <div className="flex gap-3">
+        <p className="text-center text-sm text-gray-500 mb-4">
+          {isListening ? '말씀하세요... (버튼을 눌러 중지)' : '마이크 버튼을 눌러 음성으로 대화하세요'}
+        </p>
+
+        {/* 텍스트 입력 (보조) */}
+        <div className="flex gap-2">
           <input
-            ref={inputRef}
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="메시지를 입력하세요..."
-            className="flex-1 px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
-            disabled={isLoading}
+            placeholder="또는 텍스트로 입력..."
+            className="flex-1 px-4 py-2 border border-gray-200 rounded-full text-sm focus:outline-none focus:border-purple-400"
+            disabled={isLoading || isListening}
           />
           <button
             onClick={() => sendMessage(input)}
-            disabled={isLoading || !input.trim()}
-            className="px-6 py-3 bg-primary text-white rounded-xl font-medium hover:bg-primary/90 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+            disabled={isLoading || !input.trim() || isListening}
+            className="px-4 py-2 bg-purple-500 text-white rounded-full text-sm hover:bg-purple-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
           >
             전송
           </button>
         </div>
+
+        {/* 음성 출력 중일 때 중지 버튼 */}
+        {isSpeaking && (
+          <div className="flex justify-center mt-3">
+            <button
+              onClick={stopSpeaking}
+              className="px-4 py-2 bg-red-100 text-red-600 rounded-full text-sm hover:bg-red-200"
+            >
+              🔇 음성 중지
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
