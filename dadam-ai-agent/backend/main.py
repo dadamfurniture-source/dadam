@@ -1,59 +1,215 @@
 """
-Vibe Cabinet Agent - AI 기반 가구 설계 백엔드 서버
+Vibe Cabinet Agent - AI 기반 가구 설계 백엔드 서버 (Flask)
 """
-from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from contextlib import asynccontextmanager
-import uvicorn
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+import os
+from dotenv import load_dotenv
 
-from routers import chat, design, calculate
-from models.schemas import HealthCheck
+# 환경 변수 로드
+load_dotenv()
 
+# Flask 앱 생성
+app = Flask(__name__)
+CORS(app)
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    """앱 시작/종료 시 실행"""
-    print("🚀 Vibe Cabinet AI Agent 서버 시작...")
-    yield
-    print("👋 서버 종료")
+# 에이전트 초기화 (지연 로딩)
+_agent = None
 
-
-app = FastAPI(
-    title="Vibe Cabinet AI Agent",
-    description="AI 기반 가구 설계 및 자동 자재 산출 API",
-    version="1.0.0",
-    lifespan=lifespan
-)
-
-# CORS 설정
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # 프로덕션에서는 특정 도메인만 허용
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-# 라우터 등록
-app.include_router(chat.router, prefix="/api/chat", tags=["Chat"])
-app.include_router(design.router, prefix="/api/design", tags=["Design"])
-app.include_router(calculate.router, prefix="/api/calculate", tags=["Calculate"])
+def get_agent():
+    global _agent
+    if _agent is None:
+        from agents.design_agent import DesignAgent
+        _agent = DesignAgent()
+    return _agent
 
 
-@app.get("/", response_model=HealthCheck)
-async def health_check():
-    """서버 상태 확인"""
-    return HealthCheck(
-        status="healthy",
-        message="Vibe Cabinet AI Agent 서버가 정상 작동 중입니다."
-    )
+# ============================================================
+# Health Check
+# ============================================================
+
+@app.route("/")
+def health_check():
+    return jsonify({
+        "status": "healthy",
+        "message": "Vibe Cabinet AI Agent 서버가 정상 작동 중입니다."
+    })
 
 
-@app.get("/api/health", response_model=HealthCheck)
-async def api_health():
-    """API 상태 확인"""
-    return HealthCheck(status="healthy", message="API 정상")
+@app.route("/api/health")
+def api_health():
+    return jsonify({"status": "healthy", "message": "API 정상"})
 
+
+# ============================================================
+# Chat API
+# ============================================================
+
+@app.route("/api/chat", methods=["POST"])
+def chat():
+    """AI 채팅 엔드포인트"""
+    try:
+        data = request.get_json()
+
+        if not data or "message" not in data:
+            return jsonify({"error": "message 필드가 필요합니다"}), 400
+
+        agent = get_agent()
+        result = agent.chat(
+            message=data["message"],
+            session_id=data.get("session_id"),
+            context=data.get("context")
+        )
+
+        return jsonify({
+            "message": result["message"],
+            "session_id": result["session_id"],
+            "suggestions": result.get("suggestions", []),
+            "actions": result.get("actions", [])
+        })
+
+    except Exception as e:
+        print(f"Chat error: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/chat/session/<session_id>", methods=["GET"])
+def get_session(session_id):
+    """세션 조회"""
+    agent = get_agent()
+    session = agent.get_session(session_id)
+
+    if not session:
+        return jsonify({"error": "세션을 찾을 수 없습니다"}), 404
+
+    return jsonify({
+        "session_id": session_id,
+        "message_count": len(session.get("messages", [])),
+        "context": session.get("context", {})
+    })
+
+
+@app.route("/api/chat/session/<session_id>", methods=["DELETE"])
+def clear_session(session_id):
+    """세션 초기화"""
+    agent = get_agent()
+    success = agent.clear_session(session_id)
+
+    if not success:
+        return jsonify({"error": "세션을 찾을 수 없습니다"}), 404
+
+    return jsonify({"message": "세션이 초기화되었습니다", "session_id": session_id})
+
+
+# ============================================================
+# Calculate API
+# ============================================================
+
+@app.route("/api/calculate/modules", methods=["POST"])
+def calculate_modules():
+    """모듈 분배 계산"""
+    try:
+        data = request.get_json()
+        total_space = data.get("total_space")
+
+        if not total_space:
+            return jsonify({"error": "total_space 필드가 필요합니다"}), 400
+
+        from tools.dimension_calc import DimensionCalculator
+        calculator = DimensionCalculator()
+        result = calculator.distribute_modules(float(total_space))
+
+        return jsonify(result)
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/calculate/effective-space", methods=["POST"])
+def calculate_effective_space():
+    """유효 공간 계산"""
+    try:
+        data = request.get_json()
+        total_width = data.get("total_width")
+
+        if not total_width:
+            return jsonify({"error": "total_width 필드가 필요합니다"}), 400
+
+        from tools.dimension_calc import DimensionCalculator
+        calculator = DimensionCalculator()
+        effective = calculator.calc_effective_space(
+            total_width=float(total_width),
+            finish_left=float(data.get("finish_left", 60)),
+            finish_right=float(data.get("finish_right", 60))
+        )
+
+        return jsonify({
+            "total_width": total_width,
+            "effective_width": effective,
+            "finish_left": data.get("finish_left", 60),
+            "finish_right": data.get("finish_right", 60)
+        })
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+# ============================================================
+# Design API
+# ============================================================
+
+@app.route("/api/design/fridge/search", methods=["GET"])
+def search_fridge():
+    """냉장고 검색"""
+    try:
+        from tools.fridge_lookup import FridgeLookup
+        lookup = FridgeLookup()
+
+        results = lookup.search_models(
+            query=request.args.get("query"),
+            brand=request.args.get("brand"),
+            max_width=float(request.args.get("max_width")) if request.args.get("max_width") else None
+        )
+
+        return jsonify({"count": len(results), "models": results})
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/design/fridge/recommend", methods=["POST"])
+def recommend_fridge():
+    """냉장고 추천"""
+    try:
+        data = request.get_json()
+        total_width = data.get("total_width")
+
+        if not total_width:
+            return jsonify({"error": "total_width 필드가 필요합니다"}), 400
+
+        from tools.fridge_lookup import FridgeLookup
+        lookup = FridgeLookup()
+
+        results = lookup.recommend_for_space(
+            total_width=float(total_width),
+            total_height=float(data.get("total_height", 2300)),
+            brand=data.get("brand"),
+            include_tall=data.get("include_tall", False)
+        )
+
+        return jsonify({"recommendations": results})
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+# ============================================================
+# 서버 실행
+# ============================================================
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+    port = int(os.getenv("PORT", 8000))
+    debug = os.getenv("DEBUG", "true").lower() == "true"
+
+    print(f"Starting Vibe Cabinet AI Agent server on port {port}...")
+    app.run(host="0.0.0.0", port=port, debug=debug)

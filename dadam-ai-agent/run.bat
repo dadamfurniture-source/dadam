@@ -7,14 +7,14 @@ echo            Vibe Cabinet AI Agent - Starting...
 echo ============================================================
 echo.
 echo  Frontend: http://localhost:3000
-echo  Backend API: http://localhost:8000/docs
+echo  Backend API: http://localhost:8000
 echo.
 echo  Close this window to stop the servers.
 echo ============================================================
 echo.
 
 :: Start Backend (new window)
-start "Backend Server" cmd /k "cd backend && python -m uvicorn main:app --reload --port 8000"
+start "Backend Server" cmd /k "cd backend && python main.py"
 
 :: Wait
 timeout /t 3 /nobreak > nul

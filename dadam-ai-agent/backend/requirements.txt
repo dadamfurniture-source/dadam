@@ -1,14 +1,10 @@
-# FastAPI & Server (pydantic v1 compatible)
-fastapi==0.99.1
-uvicorn==0.22.0
-python-multipart==0.0.6
+# Flask Server (Python 3.14 compatible)
+flask==3.0.0
+flask-cors==4.0.0
 python-dotenv==1.0.0
 
 # AI & LLM
 anthropic==0.18.1
-
-# Data & Validation (v1 - no Rust required)
-pydantic==1.10.13
 
 # Async
 httpx==0.24.1
