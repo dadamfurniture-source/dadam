@@ -334,11 +334,13 @@ const FRIDGE_DATA = {
   }
 };
 
-// ★ EL장 도어 타입
+// ★ EL장 도어 타입 (5가지)
 const EL_DOOR_TYPES = [
-  { id: 'pocket', name: '포켓레일' },
   { id: 'liftup', name: '리프트업' },
-  { id: 'swing', name: '여닫이' }
+  { id: 'flap', name: '플랩도어' },
+  { id: 'pocket', name: '포켓도어' },
+  { id: 'swing', name: '여닫이' },
+  { id: 'sliding', name: '슬라이딩' }
 ];
 
 // ★ 마감 타입 (휠라로 변경, 몰딩 기본)
@@ -2475,18 +2477,48 @@ function runWardrobeAutoCalc(itemUniqueId) {
   
   item.modules = item.modules.filter(m => m.pos !== 'wardrobe');
   
-  // ★ 모듈 타입 기본값 함수: 2D,2D,2D,1D → 짧은옷, 짧은옷, 긴옷, 선반형
+  // ★ 모듈 타입 기본값 함수 (업데이트: 2통/3통/4통/반통 규칙)
   const getModuleTypeDefaults = (modules2DCount, modules1DCount, idx, is2D) => {
-    if (modules2DCount === 3 && modules1DCount === 1) {
-      // 2D, 2D, 2D, 1D 구성
-      if (is2D) {
-        if (idx === 0) return { type: 'short', name: '짧은옷(2단)', isDivided: true };
-        if (idx === 1) return { type: 'short', name: '짧은옷(2단)', isDivided: true };
-        if (idx === 2) return { type: 'long', name: '긴옷(1단)', isDivided: false };
-      } else {
-        return { type: 'shelf', name: '선반형', isDivided: true };
-      }
+    // 반통(1D)만 있는 경우: 선반형
+    if (!is2D) {
+      return { type: 'shelf', name: '선반형', isDivided: true };
     }
+
+    // 2통 (2D, 2D): 짧은옷(2단), 긴옷(1단)
+    if (modules2DCount === 2 && modules1DCount === 0) {
+      if (idx === 0) return { type: 'short', name: '짧은옷(2단)', isDivided: true };
+      if (idx === 1) return { type: 'long', name: '긴옷(1단)', isDivided: false };
+    }
+
+    // 3통 (2D, 2D, 2D): 짧은옷(2단), 짧은옷(2단), 긴옷(1단)
+    if (modules2DCount === 3 && modules1DCount === 0) {
+      if (idx === 0) return { type: 'short', name: '짧은옷(2단)', isDivided: true };
+      if (idx === 1) return { type: 'short', name: '짧은옷(2단)', isDivided: true };
+      if (idx === 2) return { type: 'long', name: '긴옷(1단)', isDivided: false };
+    }
+
+    // 4통 (2D, 2D, 2D, 2D): 짧은옷(2단), 짧은옷(2단), 긴옷(1단), 선반형
+    if (modules2DCount === 4 && modules1DCount === 0) {
+      if (idx === 0) return { type: 'short', name: '짧은옷(2단)', isDivided: true };
+      if (idx === 1) return { type: 'short', name: '짧은옷(2단)', isDivided: true };
+      if (idx === 2) return { type: 'long', name: '긴옷(1단)', isDivided: false };
+      if (idx === 3) return { type: 'shelf', name: '선반형', isDivided: true };
+    }
+
+    // 2D + 1D 조합: 마지막 1D는 선반형
+    if (modules2DCount === 2 && modules1DCount === 1) {
+      // 2D, 2D, 1D: 짧은옷, 긴옷, 선반
+      if (idx === 0) return { type: 'short', name: '짧은옷(2단)', isDivided: true };
+      if (idx === 1) return { type: 'long', name: '긴옷(1단)', isDivided: false };
+    }
+
+    if (modules2DCount === 3 && modules1DCount === 1) {
+      // 2D, 2D, 2D, 1D: 짧은옷, 짧은옷, 긴옷, 선반
+      if (idx === 0) return { type: 'short', name: '짧은옷(2단)', isDivided: true };
+      if (idx === 1) return { type: 'short', name: '짧은옷(2단)', isDivided: true };
+      if (idx === 2) return { type: 'long', name: '긴옷(1단)', isDivided: false };
+    }
+
     // 기본값
     return { type: 'short', name: '짧은옷(2단)', isDivided: true };
   };
@@ -2588,39 +2620,35 @@ function runWardrobeAutoCalc(itemUniqueId) {
   } else {
     // ★ 일반 모드: 기존 분배규칙 적용
     const result = distributeModules(effectiveW);
-    
-    // 모듈 구성 분석: 2D/1D 패턴 확인
-    const moduleCount = result.modules.length;
+
+    // ★ 모듈 구성 분석: 600mm 기준으로 2D/1D 판별
     let modules2D = 0;
     let modules1D = 0;
-    
-    if (moduleCount === 4) {
-      // 4개 모듈인 경우, 너비로 2D/1D 판별
-      const avgWidth = result.modules.reduce((sum, m) => sum + m.w, 0) / moduleCount;
-      result.modules.forEach(m => {
-        if (m.w >= avgWidth * 0.8) modules2D++;
-        else modules1D++;
-      });
-    }
-    
+    const MODULE_2D_THRESHOLD = 600; // 600mm 이상이면 2D
+
+    result.modules.forEach(m => {
+      if (m.w >= MODULE_2D_THRESHOLD) modules2D++;
+      else modules1D++;
+    });
+
+    // 2D/1D 모듈 인덱스 추적
+    let idx2D = 0;
+    let idx1D = 0;
+
     result.modules.forEach((m, idx) => {
-      // 2D,2D,2D,1D 구성인 경우 타입 기본값 적용
-      let typeDefaults = { type: 'short', name: '짧은옷(2단)', isDivided: true };
-      
-      if (modules2D === 3 && modules1D === 1 && moduleCount === 4) {
-        // 마지막 모듈이 1D (선반형)
-        if (idx === 0) typeDefaults = { type: 'short', name: '짧은옷(2단)', isDivided: true };
-        else if (idx === 1) typeDefaults = { type: 'short', name: '짧은옷(2단)', isDivided: true };
-        else if (idx === 2) typeDefaults = { type: 'long', name: '긴옷(1단)', isDivided: false };
-        else if (idx === 3) typeDefaults = { type: 'shelf', name: '선반형', isDivided: true };
-      }
-      
+      const is2D = m.w >= MODULE_2D_THRESHOLD;
+      const currentIdx = is2D ? idx2D++ : idx1D++;
+
+      // ★ 새로운 규칙 적용
+      const typeDefaults = getModuleTypeDefaults(modules2D, modules1D, currentIdx, is2D);
+
       item.modules.push({
         id: Date.now() + idx,
         type: 'wardrobe',
         name: typeDefaults.name,
         pos: 'wardrobe',
         w: m.w,
+        doorCount: is2D ? 2 : 1,  // ★ 2D/1D에 따른 도어 수
         h: effectiveH,
         upperH: halfH,
         lowerH: halfH,
@@ -2635,6 +2663,8 @@ function runWardrobeAutoCalc(itemUniqueId) {
         isExternalDrawer: false
       });
     });
+
+    console.log(`붙박이장 자동계산: 2D=${modules2D}개, 1D=${modules1D}개`);
   }
   
   renderWorkspaceContent(item);
@@ -3100,12 +3130,14 @@ function renderFridgeWorkspace(item) {
             <span style="font-weight:700;font-size:12px;">${typeInfo.icon} ${typeInfo.name}</span>
             <button class="toggle-btn ${fixedClass}" onclick="toggleFridgeModuleFixed(${item.uniqueId}, ${mod.id})">고정</button>
             <button class="toggle-btn el ${elClass}" onclick="toggleFridgeModuleEL(${item.uniqueId}, ${mod.id})">EL장</button>
+            ${mod.isEL && mod.type === 'tall' ? `<button class="el-config-btn" onclick="openELPopup(${item.uniqueId}, ${mod.id})">⚙️ EL설정</button>` : ''}
           </div>
           <div class="module-inline-inputs">
             <label>W</label><input type="number" value="${mod.w}" style="width:55px;" onchange="updateFridgeModuleW(${item.uniqueId}, ${mod.id}, this.value)">
             <label>도어</label><select onchange="updateFridgeSideModule(${item.uniqueId}, ${mod.id}, 'doorType', this.value)">${EL_DOOR_TYPES.map(t => `<option value="${t.id}" ${mod.doorType === t.id ? 'selected' : ''}>${t.name}</option>`).join('')}</select>
             ${mod.type === 'tall' ? `<label>하부</label><select onchange="updateFridgeSideModule(${item.uniqueId}, ${mod.id}, 'lowerType', this.value)">${LOWER_MODULE_TYPES.map(t => `<option value="${t.id}" ${mod.lowerType === t.id ? 'selected' : ''}>${t.icon}</option>`).join('')}</select>` : ''}
           </div>
+          ${mod.elModules && mod.elModules.length > 0 ? `<div style="font-size:9px;color:#10b981;margin-top:4px;">⚡ EL모듈: ${mod.elModules.length}개</div>` : ''}
         </div>
         <button class="btn-delete" onclick="removeFridgeModule(${item.uniqueId}, ${mod.id})">×</button>
       </div>`;
@@ -3119,7 +3151,7 @@ function renderFridgeWorkspace(item) {
   
   ws.innerHTML = `
     <style>
-      .fridge-brand-tabs{display:flex;gap:8px;margin-bottom:12px}.fridge-brand-tab{padding:8px 20px;border:2px solid #ddd;border-radius:8px;background:#f9f9f9;cursor:pointer;font-weight:600;font-size:13px}.fridge-brand-tab.active{border-color:#0ea5e9;background:#e0f2fe;color:#0369a1}.fridge-cat-group{margin-bottom:10px}.fridge-cat-title{font-size:11px;font-weight:700;color:#666;margin-bottom:5px}.fridge-btn-row{display:flex;flex-wrap:wrap;gap:5px}.fridge-model-btn{padding:5px 8px;border:1px solid #ddd;border-radius:5px;background:white;font-size:10px;cursor:pointer;min-width:80px}.fridge-model-btn:hover{border-color:#0ea5e9;background:#f0f9ff}.fridge-model-btn.selected{border-color:#0ea5e9;background:#0ea5e9;color:white}.fridge-model-btn.selected span{color:#e0f2fe!important}.module-add-btns{display:flex;gap:8px;margin-bottom:12px}.module-add-btn{flex:1;padding:10px;border:2px dashed #ccc;border-radius:8px;background:white;font-size:12px;cursor:pointer;font-weight:600}.module-add-btn:hover{border-style:solid}.module-add-btn.tall{color:#10b981;border-color:#10b981}.module-add-btn.tall:hover{background:#dcfce7}.module-add-btn.homecafe{color:#8b5cf6;border-color:#8b5cf6}.module-add-btn.homecafe:hover{background:#f3e8ff}.auto-calc-btn{background:linear-gradient(135deg,#10b981 0%,#059669 100%);color:white;border:none;padding:10px 20px;border-radius:8px;font-weight:600;cursor:pointer;width:100%;margin-bottom:15px}.auto-calc-btn:hover{opacity:0.9}.auto-calc-btn:disabled{background:#ccc;cursor:not-allowed}.overflow-warning{background:#fee2e2;color:#b91c1c;padding:8px 12px;border-radius:6px;font-size:11px;margin-bottom:10px}.module-inline-inputs{display:flex;align-items:center;gap:4px;font-size:10px;margin-top:4px}.module-inline-inputs input,.module-inline-inputs select{padding:2px 4px;font-size:10px;border:1px solid #ddd;border-radius:4px}.module-order-btns{display:flex;flex-direction:column;gap:2px;margin-right:8px}.order-btn{width:24px;height:20px;border:1px solid #ddd;border-radius:4px;background:#f9f9f9;cursor:pointer;font-size:10px;padding:0}.order-btn:hover:not(:disabled){background:#e0e0e0}.order-btn:disabled{opacity:0.3;cursor:not-allowed}.module-card{display:flex;align-items:center;padding:10px;background:#f9fafb;border-radius:8px;margin-bottom:8px}.height-inputs{display:flex;gap:8px;margin-top:8px;padding:8px;background:#f0f9ff;border-radius:6px;font-size:10px}.height-inputs label{color:#0369a1;font-weight:600}.height-inputs input{width:50px;padding:2px 4px;border:1px solid #0ea5e9;border-radius:4px;font-size:10px}.toggle-btn{padding:2px 6px;border:1px solid #ccc;border-radius:4px;background:#f9f9f9;font-size:9px;cursor:pointer}.toggle-btn:hover{background:#e5e5e5}.toggle-btn.active{background:#ef4444;color:white;border-color:#ef4444}.toggle-btn.el{border-color:#10b981;color:#10b981}.toggle-btn.el.active{background:#10b981;color:white}
+      .fridge-brand-tabs{display:flex;gap:8px;margin-bottom:12px}.fridge-brand-tab{padding:8px 20px;border:2px solid #ddd;border-radius:8px;background:#f9f9f9;cursor:pointer;font-weight:600;font-size:13px}.fridge-brand-tab.active{border-color:#0ea5e9;background:#e0f2fe;color:#0369a1}.fridge-cat-group{margin-bottom:10px}.fridge-cat-title{font-size:11px;font-weight:700;color:#666;margin-bottom:5px}.fridge-btn-row{display:flex;flex-wrap:wrap;gap:5px}.fridge-model-btn{padding:5px 8px;border:1px solid #ddd;border-radius:5px;background:white;font-size:10px;cursor:pointer;min-width:80px}.fridge-model-btn:hover{border-color:#0ea5e9;background:#f0f9ff}.fridge-model-btn.selected{border-color:#0ea5e9;background:#0ea5e9;color:white}.fridge-model-btn.selected span{color:#e0f2fe!important}.module-add-btns{display:flex;gap:8px;margin-bottom:12px}.module-add-btn{flex:1;padding:10px;border:2px dashed #ccc;border-radius:8px;background:white;font-size:12px;cursor:pointer;font-weight:600}.module-add-btn:hover{border-style:solid}.module-add-btn.tall{color:#10b981;border-color:#10b981}.module-add-btn.tall:hover{background:#dcfce7}.module-add-btn.homecafe{color:#8b5cf6;border-color:#8b5cf6}.module-add-btn.homecafe:hover{background:#f3e8ff}.auto-calc-btn{background:linear-gradient(135deg,#10b981 0%,#059669 100%);color:white;border:none;padding:10px 20px;border-radius:8px;font-weight:600;cursor:pointer;width:100%;margin-bottom:15px}.auto-calc-btn:hover{opacity:0.9}.auto-calc-btn:disabled{background:#ccc;cursor:not-allowed}.overflow-warning{background:#fee2e2;color:#b91c1c;padding:8px 12px;border-radius:6px;font-size:11px;margin-bottom:10px}.module-inline-inputs{display:flex;align-items:center;gap:4px;font-size:10px;margin-top:4px}.module-inline-inputs input,.module-inline-inputs select{padding:2px 4px;font-size:10px;border:1px solid #ddd;border-radius:4px}.module-order-btns{display:flex;flex-direction:column;gap:2px;margin-right:8px}.order-btn{width:24px;height:20px;border:1px solid #ddd;border-radius:4px;background:#f9f9f9;cursor:pointer;font-size:10px;padding:0}.order-btn:hover:not(:disabled){background:#e0e0e0}.order-btn:disabled{opacity:0.3;cursor:not-allowed}.module-card{display:flex;align-items:center;padding:10px;background:#f9fafb;border-radius:8px;margin-bottom:8px}.height-inputs{display:flex;gap:8px;margin-top:8px;padding:8px;background:#f0f9ff;border-radius:6px;font-size:10px}.height-inputs label{color:#0369a1;font-weight:600}.height-inputs input{width:50px;padding:2px 4px;border:1px solid #0ea5e9;border-radius:4px;font-size:10px}.toggle-btn{padding:2px 6px;border:1px solid #ccc;border-radius:4px;background:#f9f9f9;font-size:9px;cursor:pointer}.toggle-btn:hover{background:#e5e5e5}.toggle-btn.active{background:#ef4444;color:white;border-color:#ef4444}.toggle-btn.el{border-color:#10b981;color:#10b981}.toggle-btn.el.active{background:#10b981;color:white}.el-config-btn{padding:2px 8px;border:1px solid #10b981;border-radius:4px;background:linear-gradient(135deg,#dcfce7 0%,#bbf7d0 100%);font-size:9px;cursor:pointer;color:#065f46;font-weight:600}.el-config-btn:hover{background:linear-gradient(135deg,#bbf7d0 0%,#86efac 100%)}
     </style>
     <div class="ws-header">
       <div class="ws-title">🧊 ${item.labelName || item.name} <span class="ws-info-badge">${W} × ${H} × ${D}</span></div>
@@ -3406,6 +3438,257 @@ function autoCalculateFridge(itemUniqueId) {
 
 // 초기화
 initCategoryGrid();
+
+// ============================================================
+// EL장 팝업 기능
+// ============================================================
+let currentELPopup = { itemId: null, modId: null };
+
+function openELPopup(itemUniqueId, modId) {
+  const item = selectedItems.find(i => i.uniqueId === itemUniqueId);
+  if (!item) return;
+  const mod = item.modules.find(m => m.id === modId);
+  if (!mod || !mod.isEL) return;
+
+  currentELPopup = { itemId: itemUniqueId, modId: modId };
+
+  // EL 모듈 배열 초기화
+  if (!mod.elModules) mod.elModules = [];
+
+  // 팝업 HTML 생성
+  renderELPopup(item, mod);
+}
+
+function renderELPopup(item, mod) {
+  // 기존 팝업 제거
+  const existingPopup = document.getElementById('el-popup-overlay');
+  if (existingPopup) existingPopup.remove();
+
+  const H = parseFloat(item.h) || 0;
+  const MOLDING_H = parseFloat(item.specs.fridgeMoldingH) || 50;
+  const PEDESTAL_H = parseFloat(item.specs.fridgePedestal) || 60;
+  const upperDoorH = parseFloat(item.specs.fridgeUpperH) || 300;
+  const moduleBodyH = H - MOLDING_H - upperDoorH - PEDESTAL_H;
+  const middleH = parseFloat(item.specs.fridgeMiddleH) || Math.round(moduleBodyH * 0.55);
+
+  // EL장 높이 = 중간장 높이
+  const elTotalH = middleH;
+  const modW = mod.w;
+
+  // SVG 프론트뷰 생성
+  const svgWidth = 300;
+  const svgHeight = 400;
+  const scale = Math.min((svgWidth - 40) / modW, (svgHeight - 80) / elTotalH);
+  const drawW = modW * scale;
+  const drawH = elTotalH * scale;
+  const offsetX = (svgWidth - drawW) / 2;
+  const offsetY = 40;
+
+  let moduleSvg = '';
+  let currentY = offsetY;
+  let usedH = 0;
+
+  // EL 모듈 그리기
+  if (mod.elModules && mod.elModules.length > 0) {
+    mod.elModules.forEach((elMod, idx) => {
+      const elModH = elMod.h * scale;
+      const isOpen = elMod.type === 'open';
+      const fillColor = isOpen ? '#fef3c7' : '#dcfce7';
+      const strokeColor = isOpen ? '#f59e0b' : '#10b981';
+      const label = isOpen ? '오픈장' : `EL장 (${EL_DOOR_TYPES.find(t=>t.id===elMod.doorType)?.name || '여닫이'})`;
+
+      moduleSvg += `
+        <rect x="${offsetX}" y="${currentY}" width="${drawW}" height="${elModH}" fill="${fillColor}" stroke="${strokeColor}" stroke-width="2" rx="3"/>
+        <text x="${offsetX + drawW/2}" y="${currentY + elModH/2 - 4}" text-anchor="middle" font-size="10" fill="${isOpen ? '#b45309' : '#065f46'}" font-weight="bold">${isOpen ? '📂' : '⚡'} ${label}</text>
+        <text x="${offsetX + drawW/2}" y="${currentY + elModH/2 + 12}" text-anchor="middle" font-size="9" fill="#666">${modW} × ${elMod.h}mm</text>
+      `;
+      currentY += elModH;
+      usedH += elMod.h;
+    });
+  }
+
+  // 남은 공간 표시
+  const remainingH = elTotalH - usedH;
+  if (remainingH > 0) {
+    const remainingScaled = remainingH * scale;
+    moduleSvg += `
+      <rect x="${offsetX}" y="${currentY}" width="${drawW}" height="${remainingScaled}" fill="#f3f4f6" stroke="#9ca3af" stroke-width="1" stroke-dasharray="4"/>
+      <text x="${offsetX + drawW/2}" y="${currentY + remainingScaled/2}" text-anchor="middle" font-size="10" fill="#6b7280">잔여: ${Math.round(remainingH)}mm</text>
+    `;
+  }
+
+  // EL 모듈 카드 HTML
+  const elModuleCards = (mod.elModules || []).map((elMod, idx) => {
+    const isOpen = elMod.type === 'open';
+    return `
+      <div class="el-module-card" style="border-left:3px solid ${isOpen ? '#f59e0b' : '#10b981'};">
+        <div style="flex:1;">
+          <div style="font-weight:600;font-size:11px;margin-bottom:4px;">${isOpen ? '📂 오픈장' : '⚡ EL장'}</div>
+          <div class="el-module-inputs">
+            <label>H</label>
+            <input type="number" value="${elMod.h}" style="width:60px;" onchange="updateELModule(${idx}, 'h', this.value)">
+            <span style="font-size:9px;color:#888;">mm</span>
+            ${!isOpen ? `
+              <label style="margin-left:8px;">도어</label>
+              <select onchange="updateELModule(${idx}, 'doorType', this.value)">
+                ${EL_DOOR_TYPES.map(t => `<option value="${t.id}" ${elMod.doorType === t.id ? 'selected' : ''}>${t.name}</option>`).join('')}
+              </select>
+            ` : ''}
+          </div>
+        </div>
+        <div class="el-module-btns">
+          <button onclick="moveELModule(${idx}, -1)" ${idx === 0 ? 'disabled' : ''}>▲</button>
+          <button onclick="moveELModule(${idx}, 1)" ${idx === mod.elModules.length - 1 ? 'disabled' : ''}>▼</button>
+          <button onclick="removeELModule(${idx})" style="color:#ef4444;">×</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  const popupHtml = `
+    <div id="el-popup-overlay" class="el-popup-overlay" onclick="if(event.target===this)closeELPopup()">
+      <div class="el-popup">
+        <div class="el-popup-header">
+          <span>⚡ EL장 설정 - ${mod.w}mm 키큰장</span>
+          <button onclick="closeELPopup()" class="el-popup-close">✕</button>
+        </div>
+        <div class="el-popup-body">
+          <div class="el-popup-preview">
+            <svg width="${svgWidth}" height="${svgHeight}" style="background:#fafafa;border-radius:8px;border:1px solid #eee;">
+              <text x="${svgWidth/2}" y="20" text-anchor="middle" font-size="12" font-weight="bold" fill="#333">EL장 Front View</text>
+              <text x="${svgWidth/2}" y="${svgHeight - 10}" text-anchor="middle" font-size="10" fill="#666">총 높이: ${elTotalH}mm | 사용: ${usedH}mm | 잔여: ${remainingH}mm</text>
+              ${moduleSvg}
+            </svg>
+          </div>
+          <div class="el-popup-controls">
+            <div class="el-popup-section-title">모듈 추가</div>
+            <div class="el-add-btns">
+              <button class="el-add-btn el-type" onclick="addELSubModule('el')">⚡ + EL장 모듈</button>
+              <button class="el-add-btn open-type" onclick="addELSubModule('open')">📂 + 오픈장 모듈</button>
+            </div>
+            <div class="el-popup-section-title" style="margin-top:12px;">모듈 목록</div>
+            <div class="el-module-list">
+              ${elModuleCards || '<div style="padding:15px;text-align:center;color:#999;font-size:11px;">모듈을 추가하세요</div>'}
+            </div>
+            <div style="margin-top:12px;font-size:10px;color:#666;">
+              <div>💡 EL장: 가전을 수납하는 전동 모듈</div>
+              <div>💡 오픈장: 도어 없이 오픈된 수납공간</div>
+            </div>
+          </div>
+        </div>
+        <div class="el-popup-footer">
+          <button onclick="closeELPopup()" class="el-popup-save-btn">확인</button>
+        </div>
+      </div>
+    </div>
+    <style>
+      .el-popup-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:10000;display:flex;align-items:center;justify-content:center}
+      .el-popup{background:white;border-radius:16px;width:640px;max-width:95vw;max-height:90vh;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.3)}
+      .el-popup-header{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;background:linear-gradient(135deg,#10b981 0%,#059669 100%);color:white;font-weight:600}
+      .el-popup-close{background:none;border:none;color:white;font-size:20px;cursor:pointer}
+      .el-popup-body{display:flex;gap:20px;padding:20px;max-height:calc(90vh - 140px);overflow-y:auto}
+      .el-popup-preview{flex:0 0 auto}
+      .el-popup-controls{flex:1;min-width:0}
+      .el-popup-section-title{font-size:12px;font-weight:700;color:#333;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid #e5e7eb}
+      .el-add-btns{display:flex;gap:8px}
+      .el-add-btn{flex:1;padding:12px;border:2px dashed #ccc;border-radius:8px;background:white;font-size:12px;cursor:pointer;font-weight:600;transition:all 0.2s}
+      .el-add-btn.el-type{color:#10b981;border-color:#10b981}.el-add-btn.el-type:hover{background:#dcfce7}
+      .el-add-btn.open-type{color:#f59e0b;border-color:#f59e0b}.el-add-btn.open-type:hover{background:#fef3c7}
+      .el-module-list{max-height:200px;overflow-y:auto}
+      .el-module-card{display:flex;align-items:center;padding:10px;background:#f9fafb;border-radius:8px;margin-bottom:8px}
+      .el-module-inputs{display:flex;align-items:center;gap:4px;font-size:10px}
+      .el-module-inputs input,.el-module-inputs select{padding:3px 6px;font-size:10px;border:1px solid #ddd;border-radius:4px}
+      .el-module-btns{display:flex;gap:4px}
+      .el-module-btns button{width:24px;height:24px;border:1px solid #ddd;border-radius:4px;background:#f9f9f9;cursor:pointer;font-size:10px}
+      .el-module-btns button:hover:not(:disabled){background:#e5e5e5}
+      .el-module-btns button:disabled{opacity:0.3}
+      .el-popup-footer{padding:12px 20px;border-top:1px solid #e5e7eb;text-align:right}
+      .el-popup-save-btn{padding:10px 24px;background:linear-gradient(135deg,#10b981 0%,#059669 100%);color:white;border:none;border-radius:8px;font-weight:600;cursor:pointer}
+      .el-popup-save-btn:hover{opacity:0.9}
+    </style>
+  `;
+
+  document.body.insertAdjacentHTML('beforeend', popupHtml);
+}
+
+function closeELPopup() {
+  const popup = document.getElementById('el-popup-overlay');
+  if (popup) popup.remove();
+
+  // 메인 워크스페이스 다시 렌더링
+  const item = selectedItems.find(i => i.uniqueId === currentELPopup.itemId);
+  if (item) renderWorkspaceContent(item);
+
+  currentELPopup = { itemId: null, modId: null };
+}
+
+function addELSubModule(type) {
+  const item = selectedItems.find(i => i.uniqueId === currentELPopup.itemId);
+  if (!item) return;
+  const mod = item.modules.find(m => m.id === currentELPopup.modId);
+  if (!mod) return;
+
+  if (!mod.elModules) mod.elModules = [];
+
+  // 기본 높이 계산 (잔여 높이 또는 300mm)
+  const H = parseFloat(item.h) || 0;
+  const MOLDING_H = parseFloat(item.specs.fridgeMoldingH) || 50;
+  const PEDESTAL_H = parseFloat(item.specs.fridgePedestal) || 60;
+  const upperDoorH = parseFloat(item.specs.fridgeUpperH) || 300;
+  const moduleBodyH = H - MOLDING_H - upperDoorH - PEDESTAL_H;
+  const middleH = parseFloat(item.specs.fridgeMiddleH) || Math.round(moduleBodyH * 0.55);
+
+  const usedH = mod.elModules.reduce((sum, m) => sum + m.h, 0);
+  const remainingH = middleH - usedH;
+  const defaultH = Math.min(300, Math.max(100, remainingH));
+
+  mod.elModules.push({
+    id: Date.now(),
+    type: type,
+    h: defaultH,
+    doorType: type === 'el' ? 'swing' : null  // 오픈장은 도어 없음
+  });
+
+  renderELPopup(item, mod);
+}
+
+function removeELModule(idx) {
+  const item = selectedItems.find(i => i.uniqueId === currentELPopup.itemId);
+  if (!item) return;
+  const mod = item.modules.find(m => m.id === currentELPopup.modId);
+  if (!mod || !mod.elModules) return;
+
+  mod.elModules.splice(idx, 1);
+  renderELPopup(item, mod);
+}
+
+function updateELModule(idx, field, value) {
+  const item = selectedItems.find(i => i.uniqueId === currentELPopup.itemId);
+  if (!item) return;
+  const mod = item.modules.find(m => m.id === currentELPopup.modId);
+  if (!mod || !mod.elModules || !mod.elModules[idx]) return;
+
+  if (field === 'h') {
+    mod.elModules[idx].h = parseFloat(value) || 100;
+  } else {
+    mod.elModules[idx][field] = value;
+  }
+
+  renderELPopup(item, mod);
+}
+
+function moveELModule(idx, direction) {
+  const item = selectedItems.find(i => i.uniqueId === currentELPopup.itemId);
+  if (!item) return;
+  const mod = item.modules.find(m => m.id === currentELPopup.modId);
+  if (!mod || !mod.elModules) return;
+
+  const newIdx = idx + direction;
+  if (newIdx < 0 || newIdx >= mod.elModules.length) return;
+
+  [mod.elModules[idx], mod.elModules[newIdx]] = [mod.elModules[newIdx], mod.elModules[idx]];
+  renderELPopup(item, mod);
+}
 
 // ============================================================
 // AI 어시스턴트 (부가 기능)
