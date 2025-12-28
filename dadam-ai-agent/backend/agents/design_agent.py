@@ -4,21 +4,35 @@ AI 설계 에이전트 - Claude 기반 가구 설계 어시스턴트
 import os
 import json
 import uuid
-from typing import Dict, Any, List, Optional
-from anthropic import Anthropic
 
 from tools.dimension_calc import DimensionCalculator
 from tools.fridge_lookup import FridgeLookup
 from tools.module_optimizer import ModuleOptimizer
 from data.fridge_data import CATEGORIES
 
+# Python 3.14 호환성: anthropic 라이브러리 로딩 시도
+try:
+    from anthropic import Anthropic
+    ANTHROPIC_AVAILABLE = True
+except Exception:
+    ANTHROPIC_AVAILABLE = False
+    Anthropic = None
+
 
 class DesignAgent:
     """AI 기반 가구 설계 에이전트"""
 
-    def __init__(self, api_key: str = None):
+    def __init__(self, api_key=None):
         self.api_key = api_key or os.getenv("ANTHROPIC_API_KEY")
-        self.client = Anthropic(api_key=self.api_key) if self.api_key else None
+
+        # Python 3.14 호환성: API 클라이언트 초기화
+        self.client = None
+        if ANTHROPIC_AVAILABLE and self.api_key:
+            try:
+                self.client = Anthropic(api_key=self.api_key)
+            except Exception as e:
+                print(f"Anthropic client init failed: {e}")
+                self.client = None
 
         # 도구 초기화
         self.calculator = DimensionCalculator()
