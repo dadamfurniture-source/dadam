@@ -1980,148 +1980,143 @@ function renderWardrobeWorkspace(item) {
     const effectiveH = totalH - pedestalH - moldingH;
     const halfH = Math.round(effectiveH / 2);
 
-    // 카운터 박스 스타일
-    const counterBoxStyle = 'display:flex;flex-direction:column;align-items:center;padding:6px 8px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:4px;min-width:55px;';
-    const counterBtnStyle = 'width:22px;height:22px;border:1px solid #ddd;background:#fff;border-radius:4px;cursor:pointer;font-size:13px;line-height:1;';
-    const settingsBtnStyle = 'padding:3px 6px;font-size:10px;background:#6366f1;color:white;border:none;border-radius:4px;cursor:pointer;';
-    
-    // 서랍 타입 토글 (외부형/내부형)
+    // 카운터 박스 스타일 (압축형)
+    const cBoxStyle = 'display:flex;flex-direction:column;align-items:center;padding:4px 6px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:4px;';
+    const cBtnStyle = 'width:20px;height:20px;border:1px solid #ddd;background:#fff;border-radius:3px;cursor:pointer;font-size:12px;line-height:1;';
+    const settBtnStyle = 'padding:2px 5px;font-size:9px;background:#6366f1;color:white;border:none;border-radius:3px;cursor:pointer;margin-left:auto;';
+    const dimInputStyle = 'width:52px;padding:3px 4px;border:1px solid #ccc;border-radius:3px;font-size:11px;font-weight:500;';
+    const dimLabelStyle = 'font-size:10px;color:#666;';
+
+    // 서랍 타입 토글 (압축형)
     const drawerToggle = `
-      <div style="display:flex;flex-direction:column;align-items:center;padding:4px 6px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:4px;min-width:50px;">
-        <div style="font-size:8px;color:#666;margin-bottom:3px;">서랍형</div>
-        <div style="display:flex;gap:2px;">
-          <button onclick="toggleWardrobeDrawerType(${item.uniqueId}, ${mod.id}, false)" style="padding:2px 4px;font-size:8px;border:1px solid ${!isExternalDrawer ? '#3b82f6' : '#ddd'};background:${!isExternalDrawer ? '#eff6ff' : '#fff'};border-radius:3px;cursor:pointer;color:${!isExternalDrawer ? '#3b82f6' : '#666'};">내부</button>
-          <button onclick="toggleWardrobeDrawerType(${item.uniqueId}, ${mod.id}, true)" style="padding:2px 4px;font-size:8px;border:1px solid ${isExternalDrawer ? '#3b82f6' : '#ddd'};background:${isExternalDrawer ? '#eff6ff' : '#fff'};border-radius:3px;cursor:pointer;color:${isExternalDrawer ? '#3b82f6' : '#666'};">외부</button>
+      <div style="display:flex;flex-direction:column;align-items:center;padding:3px 5px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:4px;">
+        <div style="font-size:8px;color:#666;margin-bottom:2px;">서랍형</div>
+        <div style="display:flex;gap:1px;">
+          <button onclick="toggleWardrobeDrawerType(${item.uniqueId}, ${mod.id}, false)" style="padding:1px 3px;font-size:8px;border:1px solid ${!isExternalDrawer ? '#3b82f6' : '#ddd'};background:${!isExternalDrawer ? '#eff6ff' : '#fff'};border-radius:2px;cursor:pointer;color:${!isExternalDrawer ? '#3b82f6' : '#666'};">내부</button>
+          <button onclick="toggleWardrobeDrawerType(${item.uniqueId}, ${mod.id}, true)" style="padding:1px 3px;font-size:8px;border:1px solid ${isExternalDrawer ? '#3b82f6' : '#ddd'};background:${isExternalDrawer ? '#eff6ff' : '#fff'};border-radius:2px;cursor:pointer;color:${isExternalDrawer ? '#3b82f6' : '#666'};">외부</button>
         </div>
       </div>
     `;
-    
+
     return `
-      <div class="module-card" data-module-id="${mod.id}" style="display:flex;gap:10px;padding:12px;align-items:flex-start;">
-        <!-- 좌측: 이동 버튼 + 타입 선택 -->
-        <div style="display:flex;flex-direction:column;gap:4px;min-width:60px;">
-          <div class="move-buttons" style="margin-bottom:4px;">
-            <button class="btn-move" onclick="moveWardrobeModule(${item.uniqueId}, ${mod.id}, 'up')" ${idx === 0 ? 'disabled' : ''}>▲</button>
-            <button class="btn-move" onclick="moveWardrobeModule(${item.uniqueId}, ${mod.id}, 'down')" ${idx === totalCount - 1 ? 'disabled' : ''}>▼</button>
+      <div class="module-card" data-module-id="${mod.id}" style="display:flex;gap:8px;padding:10px;align-items:flex-start;">
+        <!-- 좌측: 이동 + 타입 -->
+        <div style="display:flex;flex-direction:column;gap:3px;min-width:50px;">
+          <div style="display:flex;gap:2px;margin-bottom:2px;">
+            <button class="btn-move" onclick="moveWardrobeModule(${item.uniqueId}, ${mod.id}, 'up')" ${idx === 0 ? 'disabled' : ''} style="width:22px;height:22px;font-size:10px;">▲</button>
+            <button class="btn-move" onclick="moveWardrobeModule(${item.uniqueId}, ${mod.id}, 'down')" ${idx === totalCount - 1 ? 'disabled' : ''} style="width:22px;height:22px;font-size:10px;">▼</button>
           </div>
-          <button onclick="setWardrobeModuleType(${item.uniqueId}, ${mod.id}, 'short')" style="font-size:9px;padding:4px 3px;border:1px solid ${moduleType === 'short' ? '#10b981' : '#ddd'};background:${moduleType === 'short' ? '#ecfdf5' : '#fff'};border-radius:4px;cursor:pointer;color:${moduleType === 'short' ? '#10b981' : '#666'};">짧은옷</button>
-          <button onclick="setWardrobeModuleType(${item.uniqueId}, ${mod.id}, 'long')" style="font-size:9px;padding:4px 3px;border:1px solid ${moduleType === 'long' ? '#3b82f6' : '#ddd'};background:${moduleType === 'long' ? '#eff6ff' : '#fff'};border-radius:4px;cursor:pointer;color:${moduleType === 'long' ? '#3b82f6' : '#666'};">긴옷</button>
-          <button onclick="setWardrobeModuleType(${item.uniqueId}, ${mod.id}, 'shelf')" style="font-size:9px;padding:4px 3px;border:1px solid ${moduleType === 'shelf' ? '#f59e0b' : '#ddd'};background:${moduleType === 'shelf' ? '#fffbeb' : '#fff'};border-radius:4px;cursor:pointer;color:${moduleType === 'shelf' ? '#f59e0b' : '#666'};">선반형</button>
+          <button onclick="setWardrobeModuleType(${item.uniqueId}, ${mod.id}, 'short')" style="font-size:8px;padding:3px 2px;border:1px solid ${moduleType === 'short' ? '#10b981' : '#ddd'};background:${moduleType === 'short' ? '#ecfdf5' : '#fff'};border-radius:3px;cursor:pointer;color:${moduleType === 'short' ? '#10b981' : '#666'};">짧은옷</button>
+          <button onclick="setWardrobeModuleType(${item.uniqueId}, ${mod.id}, 'long')" style="font-size:8px;padding:3px 2px;border:1px solid ${moduleType === 'long' ? '#3b82f6' : '#ddd'};background:${moduleType === 'long' ? '#eff6ff' : '#fff'};border-radius:3px;cursor:pointer;color:${moduleType === 'long' ? '#3b82f6' : '#666'};">긴옷</button>
+          <button onclick="setWardrobeModuleType(${item.uniqueId}, ${mod.id}, 'shelf')" style="font-size:8px;padding:3px 2px;border:1px solid ${moduleType === 'shelf' ? '#f59e0b' : '#ddd'};background:${moduleType === 'shelf' ? '#fffbeb' : '#fff'};border-radius:3px;cursor:pointer;color:${moduleType === 'shelf' ? '#f59e0b' : '#666'};">선반형</button>
         </div>
-        
-        <!-- 중앙+우측: 모듈 정보 -->
-        <div style="flex:1;display:flex;flex-direction:column;gap:6px;">
+
+        <!-- 중앙: 모듈 정보 -->
+        <div style="flex:1;display:flex;flex-direction:column;gap:5px;">
           <!-- 헤더 -->
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
-            <span style="font-size:15px;">🚪</span>
-            <span style="font-weight:600;color:#333;font-size:14px;">${mod.name}</span>
-            <span style="font-size:10px;padding:2px 6px;background:${moduleType === 'short' ? '#ecfdf5' : moduleType === 'long' ? '#eff6ff' : '#fffbeb'};color:${moduleType === 'short' ? '#10b981' : moduleType === 'long' ? '#3b82f6' : '#f59e0b'};border-radius:4px;">${moduleType === 'short' ? '짧은옷' : moduleType === 'long' ? '긴옷' : '선반'}</span>
-            <label style="font-size:11px;color:#666;display:flex;align-items:center;gap:3px;margin-left:auto;"><input type="checkbox" ${mod.hasMirror ? 'checked' : ''} onchange="toggleWardrobeOption(${item.uniqueId}, ${mod.id}, 'hasMirror', this.checked)" style="transform:scale(0.9);"> 거울</label>
-            <button class="btn-delete-module" onclick="removeWardrobeModule(${item.uniqueId}, ${mod.id})" style="margin-left:4px;">×</button>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span style="font-size:14px;">🚪</span>
+            <span style="font-weight:600;color:#333;font-size:13px;">${mod.name}</span>
+            <span style="font-size:9px;padding:1px 5px;background:${moduleType === 'short' ? '#ecfdf5' : moduleType === 'long' ? '#eff6ff' : '#fffbeb'};color:${moduleType === 'short' ? '#10b981' : moduleType === 'long' ? '#3b82f6' : '#f59e0b'};border-radius:3px;">${moduleType === 'short' ? '짧은옷' : moduleType === 'long' ? '긴옷' : '선반'}</span>
+            <label style="font-size:10px;color:#666;display:flex;align-items:center;gap:2px;margin-left:auto;"><input type="checkbox" ${mod.hasMirror ? 'checked' : ''} onchange="toggleWardrobeOption(${item.uniqueId}, ${mod.id}, 'hasMirror', this.checked)" style="transform:scale(0.85);"> 거울</label>
+            <button class="btn-delete-module" onclick="removeWardrobeModule(${item.uniqueId}, ${mod.id})" style="width:20px;height:20px;font-size:12px;">×</button>
           </div>
-          
+
           ${isDivided ? `
           <!-- 상부장/하부장 분리형 -->
-          <div style="display:flex;flex-direction:column;gap:6px;">
-            <!-- 상부장 행 -->
-            <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:#ecfdf5;border:1px solid #10b981;border-radius:6px;flex-wrap:wrap;">
-              <span style="font-size:11px;color:#10b981;font-weight:700;min-width:45px;">상부장</span>
-              <span style="font-size:11px;color:#666;">W</span>
-              <input type="number" value="${mod.w}" onchange="updateWardrobeModuleDim(${item.uniqueId}, ${mod.id}, 'w', this.value)" style="width:60px;padding:4px 6px;border:1px solid #ccc;border-radius:4px;font-size:12px;font-weight:500;">
-              <span style="font-size:11px;color:#666;">H</span>
-              <input type="number" value="${mod.upperH || halfH}" onchange="updateWardrobeModuleDim(${item.uniqueId}, ${mod.id}, 'upperH', this.value)" style="width:60px;padding:4px 6px;border:1px solid #ccc;border-radius:4px;font-size:12px;font-weight:500;">
-              <span style="font-size:11px;color:#666;">D</span>
-              <input type="number" value="${mod.d}" onchange="updateWardrobeModuleDim(${item.uniqueId}, ${mod.id}, 'd', this.value)" style="width:55px;padding:4px 6px;border:1px solid #ccc;border-radius:4px;font-size:12px;font-weight:500;">
-              <!-- 상부장 선반 -->
-              <div style="${counterBoxStyle}">
-                <div style="font-size:9px;color:#666;margin-bottom:3px;">선반</div>
-                <div style="display:flex;align-items:center;gap:3px;">
-                  <button onclick="adjustWardrobeShelf(${item.uniqueId}, ${mod.id}, 'upper', -1)" style="${counterBtnStyle}">−</button>
-                  <span style="min-width:18px;text-align:center;font-weight:bold;font-size:13px;">${shelfCountUpper}</span>
-                  <button onclick="adjustWardrobeShelf(${item.uniqueId}, ${mod.id}, 'upper', 1)" style="${counterBtnStyle}">+</button>
+          <div style="display:flex;flex-direction:column;gap:4px;">
+            <!-- 상부장 -->
+            <div style="display:flex;align-items:center;gap:6px;padding:6px 8px;background:#ecfdf5;border:1px solid #10b981;border-radius:5px;">
+              <span style="font-size:10px;color:#10b981;font-weight:700;min-width:38px;">상부장</span>
+              <span style="${dimLabelStyle}">W</span>
+              <input type="number" value="${mod.w}" onchange="updateWardrobeModuleDim(${item.uniqueId}, ${mod.id}, 'w', this.value)" style="${dimInputStyle}">
+              <span style="${dimLabelStyle}">H</span>
+              <input type="number" value="${mod.upperH || halfH}" onchange="updateWardrobeModuleDim(${item.uniqueId}, ${mod.id}, 'upperH', this.value)" style="${dimInputStyle}">
+              <span style="${dimLabelStyle}">D</span>
+              <input type="number" value="${mod.d}" onchange="updateWardrobeModuleDim(${item.uniqueId}, ${mod.id}, 'd', this.value)" style="${dimInputStyle}">
+              <div style="${cBoxStyle}">
+                <div style="font-size:8px;color:#666;margin-bottom:2px;">선반</div>
+                <div style="display:flex;align-items:center;gap:2px;">
+                  <button onclick="adjustWardrobeShelf(${item.uniqueId}, ${mod.id}, 'upper', -1)" style="${cBtnStyle}">−</button>
+                  <span style="min-width:14px;text-align:center;font-weight:bold;font-size:11px;">${shelfCountUpper}</span>
+                  <button onclick="adjustWardrobeShelf(${item.uniqueId}, ${mod.id}, 'upper', 1)" style="${cBtnStyle}">+</button>
                 </div>
               </div>
               ${isShelfType ? `
-              <!-- 상부장 옷봉 (선반형만) -->
-              <div style="${counterBoxStyle}background:#fef3c7;border-color:#f59e0b;">
-                <div style="font-size:9px;color:#b45309;margin-bottom:3px;">옷봉</div>
-                <div style="display:flex;align-items:center;gap:3px;">
-                  <button onclick="adjustWardrobeRod(${item.uniqueId}, ${mod.id}, 'upper', -1)" style="${counterBtnStyle}">−</button>
-                  <span style="min-width:18px;text-align:center;font-weight:bold;font-size:13px;color:#b45309;">${rodCountUpper}</span>
-                  <button onclick="adjustWardrobeRod(${item.uniqueId}, ${mod.id}, 'upper', 1)" style="${counterBtnStyle}">+</button>
+              <div style="${cBoxStyle}background:#fef3c7;border-color:#f59e0b;">
+                <div style="font-size:8px;color:#b45309;margin-bottom:2px;">옷봉</div>
+                <div style="display:flex;align-items:center;gap:2px;">
+                  <button onclick="adjustWardrobeRod(${item.uniqueId}, ${mod.id}, 'upper', -1)" style="${cBtnStyle}">−</button>
+                  <span style="min-width:14px;text-align:center;font-weight:bold;font-size:11px;color:#b45309;">${rodCountUpper}</span>
+                  <button onclick="adjustWardrobeRod(${item.uniqueId}, ${mod.id}, 'upper', 1)" style="${cBtnStyle}">+</button>
                 </div>
               </div>
               ` : ''}
-              <button onclick="openWardrobeSectionSettings(${item.uniqueId}, ${mod.id}, 'upper')" style="${settingsBtnStyle}">⚙️ 설정</button>
+              <button onclick="openWardrobeSectionSettings(${item.uniqueId}, ${mod.id}, 'upper')" style="${settBtnStyle}">⚙️</button>
             </div>
-            <!-- 하부장 행 -->
-            <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:#eff6ff;border:1px solid #3b82f6;border-radius:6px;flex-wrap:wrap;">
-              <span style="font-size:11px;color:#3b82f6;font-weight:700;min-width:45px;">하부장</span>
-              <span style="font-size:11px;color:#666;">W</span>
-              <input type="number" value="${mod.w}" onchange="updateWardrobeModuleDim(${item.uniqueId}, ${mod.id}, 'w', this.value)" style="width:60px;padding:4px 6px;border:1px solid #ccc;border-radius:4px;font-size:12px;font-weight:500;">
-              <span style="font-size:11px;color:#666;">H</span>
-              <input type="number" value="${mod.lowerH || halfH}" onchange="updateWardrobeModuleDim(${item.uniqueId}, ${mod.id}, 'lowerH', this.value)" style="width:60px;padding:4px 6px;border:1px solid #ccc;border-radius:4px;font-size:12px;font-weight:500;">
-              <span style="font-size:11px;color:#666;">D</span>
-              <input type="number" value="${mod.d}" onchange="updateWardrobeModuleDim(${item.uniqueId}, ${mod.id}, 'd', this.value)" style="width:55px;padding:4px 6px;border:1px solid #ccc;border-radius:4px;font-size:12px;font-weight:500;">
-              <!-- 하부장 선반 -->
-              <div style="${counterBoxStyle}">
-                <div style="font-size:9px;color:#666;margin-bottom:3px;">선반</div>
-                <div style="display:flex;align-items:center;gap:3px;">
-                  <button onclick="adjustWardrobeShelf(${item.uniqueId}, ${mod.id}, 'lower', -1)" style="${counterBtnStyle}">−</button>
-                  <span style="min-width:18px;text-align:center;font-weight:bold;font-size:13px;">${shelfCountLower}</span>
-                  <button onclick="adjustWardrobeShelf(${item.uniqueId}, ${mod.id}, 'lower', 1)" style="${counterBtnStyle}">+</button>
+            <!-- 하부장 -->
+            <div style="display:flex;align-items:center;gap:6px;padding:6px 8px;background:#eff6ff;border:1px solid #3b82f6;border-radius:5px;">
+              <span style="font-size:10px;color:#3b82f6;font-weight:700;min-width:38px;">하부장</span>
+              <span style="${dimLabelStyle}">W</span>
+              <input type="number" value="${mod.w}" onchange="updateWardrobeModuleDim(${item.uniqueId}, ${mod.id}, 'w', this.value)" style="${dimInputStyle}">
+              <span style="${dimLabelStyle}">H</span>
+              <input type="number" value="${mod.lowerH || halfH}" onchange="updateWardrobeModuleDim(${item.uniqueId}, ${mod.id}, 'lowerH', this.value)" style="${dimInputStyle}">
+              <span style="${dimLabelStyle}">D</span>
+              <input type="number" value="${mod.d}" onchange="updateWardrobeModuleDim(${item.uniqueId}, ${mod.id}, 'd', this.value)" style="${dimInputStyle}">
+              <div style="${cBoxStyle}">
+                <div style="font-size:8px;color:#666;margin-bottom:2px;">선반</div>
+                <div style="display:flex;align-items:center;gap:2px;">
+                  <button onclick="adjustWardrobeShelf(${item.uniqueId}, ${mod.id}, 'lower', -1)" style="${cBtnStyle}">−</button>
+                  <span style="min-width:14px;text-align:center;font-weight:bold;font-size:11px;">${shelfCountLower}</span>
+                  <button onclick="adjustWardrobeShelf(${item.uniqueId}, ${mod.id}, 'lower', 1)" style="${cBtnStyle}">+</button>
                 </div>
               </div>
               ${isShelfType ? `
-              <!-- 하부장 옷봉 (선반형만) -->
-              <div style="${counterBoxStyle}background:#fef3c7;border-color:#f59e0b;">
-                <div style="font-size:9px;color:#b45309;margin-bottom:3px;">옷봉</div>
-                <div style="display:flex;align-items:center;gap:3px;">
-                  <button onclick="adjustWardrobeRod(${item.uniqueId}, ${mod.id}, 'lower', -1)" style="${counterBtnStyle}">−</button>
-                  <span style="min-width:18px;text-align:center;font-weight:bold;font-size:13px;color:#b45309;">${rodCountLower}</span>
-                  <button onclick="adjustWardrobeRod(${item.uniqueId}, ${mod.id}, 'lower', 1)" style="${counterBtnStyle}">+</button>
+              <div style="${cBoxStyle}background:#fef3c7;border-color:#f59e0b;">
+                <div style="font-size:8px;color:#b45309;margin-bottom:2px;">옷봉</div>
+                <div style="display:flex;align-items:center;gap:2px;">
+                  <button onclick="adjustWardrobeRod(${item.uniqueId}, ${mod.id}, 'lower', -1)" style="${cBtnStyle}">−</button>
+                  <span style="min-width:14px;text-align:center;font-weight:bold;font-size:11px;color:#b45309;">${rodCountLower}</span>
+                  <button onclick="adjustWardrobeRod(${item.uniqueId}, ${mod.id}, 'lower', 1)" style="${cBtnStyle}">+</button>
                 </div>
               </div>
               ` : ''}
-              <!-- 하부장 서랍 -->
-              <div style="${counterBoxStyle}">
-                <div style="font-size:9px;color:#666;margin-bottom:3px;">서랍</div>
-                <div style="display:flex;align-items:center;gap:3px;">
-                  <button onclick="adjustWardrobeDrawer(${item.uniqueId}, ${mod.id}, -1)" style="${counterBtnStyle}">−</button>
-                  <span style="min-width:18px;text-align:center;font-weight:bold;font-size:13px;">${drawerCount}</span>
-                  <button onclick="adjustWardrobeDrawer(${item.uniqueId}, ${mod.id}, 1)" style="${counterBtnStyle}">+</button>
+              <div style="${cBoxStyle}">
+                <div style="font-size:8px;color:#666;margin-bottom:2px;">서랍</div>
+                <div style="display:flex;align-items:center;gap:2px;">
+                  <button onclick="adjustWardrobeDrawer(${item.uniqueId}, ${mod.id}, -1)" style="${cBtnStyle}">−</button>
+                  <span style="min-width:14px;text-align:center;font-weight:bold;font-size:11px;">${drawerCount}</span>
+                  <button onclick="adjustWardrobeDrawer(${item.uniqueId}, ${mod.id}, 1)" style="${cBtnStyle}">+</button>
                 </div>
               </div>
               ${drawerToggle}
-              <button onclick="openWardrobeSectionSettings(${item.uniqueId}, ${mod.id}, 'lower')" style="${settingsBtnStyle}">⚙️ 설정</button>
+              <button onclick="openWardrobeSectionSettings(${item.uniqueId}, ${mod.id}, 'lower')" style="${settBtnStyle}">⚙️</button>
             </div>
           </div>
           ` : `
           <!-- 긴옷 단일형 -->
-          <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:#f0f7ff;border:1px solid #4a7dff;border-radius:6px;">
-            <span style="font-size:11px;color:#4a7dff;font-weight:700;min-width:45px;">긴옷장</span>
-            <span style="font-size:11px;color:#666;">W</span>
-            <input type="number" value="${mod.w}" onchange="updateWardrobeModuleDim(${item.uniqueId}, ${mod.id}, 'w', this.value)" style="width:60px;padding:4px 6px;border:1px solid #ccc;border-radius:4px;font-size:12px;font-weight:500;">
-            <span style="font-size:11px;color:#666;">H</span>
-            <input type="number" value="${mod.h || effectiveH}" onchange="updateWardrobeModuleDim(${item.uniqueId}, ${mod.id}, 'h', this.value)" style="width:60px;padding:4px 6px;border:1px solid #ccc;border-radius:4px;font-size:12px;font-weight:500;">
-            <span style="font-size:11px;color:#666;">D</span>
-            <input type="number" value="${mod.d}" onchange="updateWardrobeModuleDim(${item.uniqueId}, ${mod.id}, 'd', this.value)" style="width:55px;padding:4px 6px;border:1px solid #ccc;border-radius:4px;font-size:12px;font-weight:500;">
-            <!-- 선반 -->
-            <div style="${counterBoxStyle}">
-              <div style="font-size:9px;color:#666;margin-bottom:3px;">선반</div>
-              <div style="display:flex;align-items:center;gap:3px;">
-                <button onclick="adjustWardrobeShelfSingle(${item.uniqueId}, ${mod.id}, -1)" style="${counterBtnStyle}">−</button>
-                <span style="min-width:18px;text-align:center;font-weight:bold;font-size:13px;">${shelfCount}</span>
-                <button onclick="adjustWardrobeShelfSingle(${item.uniqueId}, ${mod.id}, 1)" style="${counterBtnStyle}">+</button>
+          <div style="display:flex;align-items:center;gap:6px;padding:6px 8px;background:#f0f7ff;border:1px solid #4a7dff;border-radius:5px;">
+            <span style="font-size:10px;color:#4a7dff;font-weight:700;min-width:38px;">긴옷장</span>
+            <span style="${dimLabelStyle}">W</span>
+            <input type="number" value="${mod.w}" onchange="updateWardrobeModuleDim(${item.uniqueId}, ${mod.id}, 'w', this.value)" style="${dimInputStyle}">
+            <span style="${dimLabelStyle}">H</span>
+            <input type="number" value="${mod.h || effectiveH}" onchange="updateWardrobeModuleDim(${item.uniqueId}, ${mod.id}, 'h', this.value)" style="${dimInputStyle}">
+            <span style="${dimLabelStyle}">D</span>
+            <input type="number" value="${mod.d}" onchange="updateWardrobeModuleDim(${item.uniqueId}, ${mod.id}, 'd', this.value)" style="${dimInputStyle}">
+            <div style="${cBoxStyle}">
+              <div style="font-size:8px;color:#666;margin-bottom:2px;">선반</div>
+              <div style="display:flex;align-items:center;gap:2px;">
+                <button onclick="adjustWardrobeShelfSingle(${item.uniqueId}, ${mod.id}, -1)" style="${cBtnStyle}">−</button>
+                <span style="min-width:14px;text-align:center;font-weight:bold;font-size:11px;">${shelfCount}</span>
+                <button onclick="adjustWardrobeShelfSingle(${item.uniqueId}, ${mod.id}, 1)" style="${cBtnStyle}">+</button>
               </div>
             </div>
-            <!-- 서랍 -->
-            <div style="${counterBoxStyle}">
-              <div style="font-size:9px;color:#666;margin-bottom:3px;">서랍</div>
-              <div style="display:flex;align-items:center;gap:3px;">
-                <button onclick="adjustWardrobeDrawer(${item.uniqueId}, ${mod.id}, -1)" style="${counterBtnStyle}">−</button>
-                <span style="min-width:18px;text-align:center;font-weight:bold;font-size:13px;">${drawerCount}</span>
-                <button onclick="adjustWardrobeDrawer(${item.uniqueId}, ${mod.id}, 1)" style="${counterBtnStyle}">+</button>
+            <div style="${cBoxStyle}">
+              <div style="font-size:8px;color:#666;margin-bottom:2px;">서랍</div>
+              <div style="display:flex;align-items:center;gap:2px;">
+                <button onclick="adjustWardrobeDrawer(${item.uniqueId}, ${mod.id}, -1)" style="${cBtnStyle}">−</button>
+                <span style="min-width:14px;text-align:center;font-weight:bold;font-size:11px;">${drawerCount}</span>
+                <button onclick="adjustWardrobeDrawer(${item.uniqueId}, ${mod.id}, 1)" style="${cBtnStyle}">+</button>
               </div>
             </div>
             ${drawerToggle}
@@ -3618,11 +3613,17 @@ function renderELPopup(item, mod) {
     <text x="${offsetX + drawW + 20}" y="${offsetY + middleH_s + (lowerH_s + pedestalH_s)/2}" font-size="9" fill="#6b7280" dominant-baseline="middle">하부 ${lowerWithPedestal}</text>
   `;
 
-  // EL 모듈 카드 HTML
+  // EL 모듈 카드 HTML - 이동버튼 좌측, 고정버튼 추가
   const elModuleCards = (mod.elModules || []).map((elMod, idx) => {
     const isOpen = elMod.type === 'open';
+    const isFixed = elMod.isFixed || false;
+    const fixedClass = isFixed ? 'fixed-active' : '';
     return `
       <div class="el-module-card" style="border-left:4px solid ${isOpen ? '#f59e0b' : '#10b981'};">
+        <div class="el-module-move-btns">
+          <button onclick="moveELModule(${idx}, -1)" ${idx === 0 ? 'disabled' : ''}>▲</button>
+          <button onclick="moveELModule(${idx}, 1)" ${idx === mod.elModules.length - 1 ? 'disabled' : ''}>▼</button>
+        </div>
         <div style="flex:1;">
           <div style="font-weight:700;font-size:12px;margin-bottom:6px;">${isOpen ? '📂 오픈장' : '⚡ EL장'}</div>
           <div class="el-module-inputs">
@@ -3637,9 +3638,8 @@ function renderELPopup(item, mod) {
             ` : ''}
           </div>
         </div>
-        <div class="el-module-btns">
-          <button onclick="moveELModule(${idx}, -1)" ${idx === 0 ? 'disabled' : ''}>▲</button>
-          <button onclick="moveELModule(${idx}, 1)" ${idx === mod.elModules.length - 1 ? 'disabled' : ''}>▼</button>
+        <div class="el-module-action-btns">
+          <button onclick="toggleELModuleFixed(${idx})" class="fixed-btn ${fixedClass}">고정</button>
           <button onclick="removeELModule(${idx})" class="del-btn">×</button>
         </div>
       </div>
@@ -3665,9 +3665,10 @@ function renderELPopup(item, mod) {
           </div>
           <div class="el-popup-controls">
             <div class="el-popup-info">
-              <div class="info-row"><span class="info-label">중간장 높이</span><span class="info-value">${middleH}mm</span></div>
+              <div class="info-row"><span class="info-label">유효공간</span><span class="info-value">${middleH}mm</span></div>
               <div class="info-row"><span class="info-label">EL 사용</span><span class="info-value">${usedH}mm</span></div>
-              <div class="info-row highlight"><span class="info-label">잔여 공간</span><span class="info-value">${remainingH}mm</span></div>
+              <div class="info-row highlight"><span class="info-label">잔여</span><span class="info-value ${remainingH < 0 ? 'over' : ''}">${remainingH}mm</span></div>
+              <div class="info-row auto-calc-row"><button onclick="autoCalculateELModules()" class="el-auto-calc-btn">⚡ 자동계산</button></div>
             </div>
             <div class="el-popup-section-title">EL 모듈 추가</div>
             <div class="el-add-btns">
@@ -3694,29 +3695,38 @@ function renderELPopup(item, mod) {
       .el-popup-body{display:flex;gap:24px;padding:24px;max-height:calc(90vh - 160px);overflow-y:auto}
       .el-popup-preview{flex:0 0 auto}
       .el-popup-controls{flex:1;min-width:0}
-      .el-popup-info{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px;padding:12px;background:#f0fdf4;border-radius:10px}
+      .el-popup-info{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px;padding:12px;background:#f0fdf4;border-radius:10px}
       .info-row{display:flex;flex-direction:column;align-items:center;padding:8px}
       .info-row.highlight{background:#dcfce7;border-radius:8px}
+      .info-row.auto-calc-row{justify-content:center}
       .info-label{font-size:10px;color:#666;margin-bottom:2px}
       .info-value{font-size:16px;font-weight:700;color:#065f46}
+      .info-value.over{color:#ef4444}
+      .el-auto-calc-btn{padding:8px 14px;background:linear-gradient(135deg,#6366f1,#4f46e5);color:white;border:none;border-radius:8px;font-weight:700;font-size:12px;cursor:pointer}
+      .el-auto-calc-btn:hover{opacity:0.9}
       .el-popup-section-title{font-size:13px;font-weight:700;color:#333;margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid #e5e7eb}
       .el-add-btns{display:flex;gap:10px;margin-bottom:16px}
       .el-add-btn{flex:1;padding:14px;border:2px dashed #ccc;border-radius:10px;background:white;font-size:13px;cursor:pointer;font-weight:700;transition:all 0.2s}
       .el-add-btn.el-type{color:#10b981;border-color:#10b981}.el-add-btn.el-type:hover{background:#dcfce7;border-style:solid}
       .el-add-btn.open-type{color:#f59e0b;border-color:#f59e0b}.el-add-btn.open-type:hover{background:#fef3c7;border-style:solid}
       .el-module-list{max-height:220px;overflow-y:auto}
-      .el-module-card{display:flex;align-items:center;padding:12px;background:#f9fafb;border-radius:10px;margin-bottom:10px}
-      .el-module-inputs{display:flex;align-items:center;gap:8px;font-size:11px}
+      .el-module-card{display:flex;align-items:center;gap:10px;padding:12px;background:#f9fafb;border-radius:10px;margin-bottom:10px}
+      .el-module-move-btns{display:flex;flex-direction:column;gap:4px}
+      .el-module-move-btns button{width:26px;height:26px;border:1px solid #ddd;border-radius:6px;background:#f9f9f9;cursor:pointer;font-size:11px}
+      .el-module-move-btns button:hover:not(:disabled){background:#e5e5e5}
+      .el-module-move-btns button:disabled{opacity:0.3}
+      .el-module-inputs{display:flex;align-items:center;gap:8px;font-size:11px;flex-wrap:wrap}
       .el-module-inputs label{font-weight:600;color:#555}
       .el-module-inputs input{width:70px;padding:6px 8px;font-size:12px;border:1px solid #ddd;border-radius:6px}
       .el-module-inputs select{padding:6px 8px;font-size:12px;border:1px solid #ddd;border-radius:6px}
       .el-module-inputs span{color:#888}
-      .el-module-btns{display:flex;gap:6px;margin-left:auto}
-      .el-module-btns button{width:28px;height:28px;border:1px solid #ddd;border-radius:6px;background:#f9f9f9;cursor:pointer;font-size:12px}
-      .el-module-btns button:hover:not(:disabled){background:#e5e5e5}
-      .el-module-btns button:disabled{opacity:0.3}
-      .el-module-btns .del-btn{color:#ef4444;border-color:#fecaca}
-      .el-module-btns .del-btn:hover{background:#fee2e2}
+      .el-module-action-btns{display:flex;gap:6px;margin-left:auto}
+      .el-module-action-btns button{height:28px;border:1px solid #ddd;border-radius:6px;background:#f9f9f9;cursor:pointer;font-size:11px}
+      .el-module-action-btns .fixed-btn{padding:0 10px;color:#6b7280;border-color:#d1d5db}
+      .el-module-action-btns .fixed-btn:hover{background:#e5e5e5}
+      .el-module-action-btns .fixed-btn.fixed-active{background:#dbeafe;color:#2563eb;border-color:#3b82f6;font-weight:700}
+      .el-module-action-btns .del-btn{width:28px;color:#ef4444;border-color:#fecaca}
+      .el-module-action-btns .del-btn:hover{background:#fee2e2}
       .empty-msg{padding:20px;text-align:center;color:#999;font-size:12px;background:#f9fafb;border-radius:8px}
       .el-popup-footer{display:flex;justify-content:space-between;align-items:center;padding:14px 24px;border-top:1px solid #e5e7eb;background:#f9fafb}
       .footer-info{font-size:11px;color:#666}
@@ -3757,13 +3767,15 @@ function addELSubModule(type) {
 
   const usedH = mod.elModules.reduce((sum, m) => sum + m.h, 0);
   const remainingH = middleH - usedH;
-  const defaultH = Math.min(300, Math.max(100, remainingH));
+  // 오픈장은 450mm 기본값, EL장은 잔여 높이 기반
+  const defaultH = type === 'open' ? 450 : Math.min(300, Math.max(100, remainingH));
 
   mod.elModules.push({
     id: Date.now(),
     type: type,
     h: defaultH,
-    doorType: type === 'el' ? 'swing' : null  // 오픈장은 도어 없음
+    doorType: type === 'el' ? 'swing' : null,  // 오픈장은 도어 없음
+    isFixed: false  // 고정 여부
   });
 
   renderELPopup(item, mod);
@@ -3804,6 +3816,52 @@ function moveELModule(idx, direction) {
   if (newIdx < 0 || newIdx >= mod.elModules.length) return;
 
   [mod.elModules[idx], mod.elModules[newIdx]] = [mod.elModules[newIdx], mod.elModules[idx]];
+  renderELPopup(item, mod);
+}
+
+// EL 모듈 고정 토글
+function toggleELModuleFixed(idx) {
+  const item = selectedItems.find(i => i.uniqueId === currentELPopup.itemId);
+  if (!item) return;
+  const mod = item.modules.find(m => m.id === currentELPopup.modId);
+  if (!mod || !mod.elModules || !mod.elModules[idx]) return;
+
+  mod.elModules[idx].isFixed = !mod.elModules[idx].isFixed;
+  renderELPopup(item, mod);
+}
+
+// EL 모듈 자동 계산 (고정되지 않은 모듈의 높이 균등 배분)
+function autoCalculateELModules() {
+  const item = selectedItems.find(i => i.uniqueId === currentELPopup.itemId);
+  if (!item) return;
+  const mod = item.modules.find(m => m.id === currentELPopup.modId);
+  if (!mod || !mod.elModules || mod.elModules.length === 0) return;
+
+  // 중간장 유효 높이 계산
+  const H = parseFloat(item.h) || 0;
+  const MOLDING_H = parseFloat(item.specs.fridgeMoldingH) || 50;
+  const PEDESTAL_H = parseFloat(item.specs.fridgePedestal) || 60;
+  const upperDoorH = parseFloat(item.specs.fridgeUpperH) || 300;
+  const moduleBodyH = H - MOLDING_H - upperDoorH - PEDESTAL_H;
+  const middleH = parseFloat(item.specs.fridgeMiddleH) || Math.round(moduleBodyH * 0.55);
+
+  // 고정된 모듈과 고정되지 않은 모듈 분리
+  const fixedModules = mod.elModules.filter(m => m.isFixed);
+  const unfixedModules = mod.elModules.filter(m => !m.isFixed);
+
+  // 고정된 모듈이 사용하는 높이
+  const fixedHeight = fixedModules.reduce((sum, m) => sum + m.h, 0);
+
+  // 고정되지 않은 모듈에 배분할 높이
+  const availableHeight = middleH - fixedHeight;
+
+  if (unfixedModules.length > 0 && availableHeight > 0) {
+    const heightPerModule = Math.floor(availableHeight / unfixedModules.length);
+    unfixedModules.forEach(m => {
+      m.h = heightPerModule;
+    });
+  }
+
   renderELPopup(item, mod);
 }
 
