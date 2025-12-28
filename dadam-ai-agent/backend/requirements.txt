@@ -6,19 +6,12 @@ python-dotenv==1.0.0
 
 # AI & LLM
 anthropic==0.18.1
-langchain==0.1.6
-langchain-anthropic==0.1.1
-langchain-core==0.1.22
 
 # Data & Validation (v1 - no Rust required)
 pydantic==1.10.13
-
-# Database (Optional - for session storage)
-redis==5.0.1
 
 # CORS & Security
 python-jose[cryptography]==3.3.0
 
 # Async
-aiohttp==3.9.3
 httpx==0.26.0
