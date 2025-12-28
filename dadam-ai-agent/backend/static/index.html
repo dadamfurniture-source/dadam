@@ -352,10 +352,10 @@ const FINISH_TYPES = [
 
 // ★ 하부장 모듈 타입
 const LOWER_MODULE_TYPES = [
-  { id: 'drawer', name: '서랍장', defaultW: 600, color: '#6b7280', icon: '🗄️' },
-  { id: 'el', name: 'EL장', defaultW: 600, color: '#10b981', icon: '⚡' },
-  { id: 'robot', name: '로봇청소기장', defaultW: 600, color: '#f59e0b', icon: '🤖' },
-  { id: 'rice', name: '밥솥장', defaultW: 450, color: '#ef4444', icon: '🍚' }
+  { id: 'default', name: '기본', defaultW: 600, color: '#6b7280', icon: '🗄️' },
+  { id: 'robot', name: '로봇청소기', defaultW: 600, color: '#f59e0b', icon: '🤖' },
+  { id: 'foodwaste', name: '음식물처리기', defaultW: 450, color: '#22c55e', icon: '♻️' },
+  { id: 'rice', name: '밥솥', defaultW: 450, color: '#ef4444', icon: '🍚' }
 ];
 
 let selectedItems = [];
@@ -3348,7 +3348,7 @@ function addFridgeSideModule(itemUniqueId, type) {
   const maxOrder = item.modules.length > 0 ? Math.max(...item.modules.map(m => m.order || 0)) : 0;
   item.modules.push({
     id: Date.now(), type: type, name: type === 'tall' ? '키큰장' : '홈카페장',
-    order: maxOrder + 1, w: defaultW, h: H, d: MODULE_D, doorType: 'swing', lowerType: 'drawer', isFixed: false, isEL: false
+    order: maxOrder + 1, w: defaultW, h: H, d: MODULE_D, doorType: 'swing', lowerType: 'default', isFixed: false, isEL: false
   });
   renderWorkspaceContent(item);
 }
@@ -3590,7 +3590,7 @@ function renderELPopup(item, mod) {
 
   // 하부장
   const lowerIcon = LOWER_MODULE_TYPES.find(t=>t.id===mod.lowerType)?.icon || '🗄️';
-  const lowerName = LOWER_MODULE_TYPES.find(t=>t.id===mod.lowerType)?.name || '수납장';
+  const lowerName = LOWER_MODULE_TYPES.find(t=>t.id===mod.lowerType)?.name || '기본';
   moduleSvg += `
     <rect x="${offsetX}" y="${currentY}" width="${drawW}" height="${lowerH_s}" fill="#f3f4f6" stroke="#6b7280" stroke-width="2" rx="4"/>
     <text x="${offsetX + drawW/2}" y="${currentY + lowerH_s/2 - 4}" text-anchor="middle" font-size="11" fill="#374151" font-weight="bold">${lowerIcon} 하부장</text>
@@ -3679,11 +3679,20 @@ function renderELPopup(item, mod) {
             <div class="el-module-list">
               ${elModuleCards || '<div class="empty-msg">모듈을 추가하세요</div>'}
             </div>
+            <div class="el-popup-section-title">하부장 설정</div>
+            <div class="el-lower-selector">
+              ${LOWER_MODULE_TYPES.map(t => `
+                <button onclick="updateELLowerType('${t.id}')" class="el-lower-btn ${mod.lowerType === t.id ? 'active' : ''}" data-type="${t.id}">
+                  <span class="lower-icon">${t.icon}</span>
+                  <span class="lower-name">${t.name}</span>
+                </button>
+              `).join('')}
+            </div>
           </div>
         </div>
         <div class="el-popup-footer">
           <div class="footer-info">💡 EL장: 전동 가전수납 | 오픈장: 도어 없음</div>
-          <button onclick="closeELPopup()" class="el-popup-save-btn">완료</button>
+          <button onclick="applyELPopupAndClose()" class="el-popup-save-btn">완료</button>
         </div>
       </div>
     </div>
@@ -3728,6 +3737,13 @@ function renderELPopup(item, mod) {
       .el-module-action-btns .del-btn{width:28px;color:#ef4444;border-color:#fecaca}
       .el-module-action-btns .del-btn:hover{background:#fee2e2}
       .empty-msg{padding:20px;text-align:center;color:#999;font-size:12px;background:#f9fafb;border-radius:8px}
+      .el-lower-selector{display:flex;gap:10px;margin-bottom:16px}
+      .el-lower-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 8px;border:2px solid #e5e7eb;border-radius:10px;background:white;cursor:pointer;transition:all 0.2s}
+      .el-lower-btn:hover{border-color:#6b7280;background:#f9fafb}
+      .el-lower-btn.active{border-color:#3b82f6;background:#eff6ff}
+      .el-lower-btn .lower-icon{font-size:20px}
+      .el-lower-btn .lower-name{font-size:11px;font-weight:600;color:#374151}
+      .el-lower-btn.active .lower-name{color:#2563eb}
       .el-popup-footer{display:flex;justify-content:space-between;align-items:center;padding:14px 24px;border-top:1px solid #e5e7eb;background:#f9fafb}
       .footer-info{font-size:11px;color:#666}
       .el-popup-save-btn{padding:12px 28px;background:linear-gradient(135deg,#10b981 0%,#059669 100%);color:white;border:none;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer}
@@ -3741,12 +3757,32 @@ function renderELPopup(item, mod) {
 function closeELPopup() {
   const popup = document.getElementById('el-popup-overlay');
   if (popup) popup.remove();
+  currentELPopup = { itemId: null, modId: null };
+}
 
-  // 메인 워크스페이스 다시 렌더링
+// EL 팝업 완료 시 프론트뷰 반영
+function applyELPopupAndClose() {
+  const popup = document.getElementById('el-popup-overlay');
+  if (popup) popup.remove();
+
+  // 메인 워크스페이스 다시 렌더링하여 프론트뷰 반영
   const item = selectedItems.find(i => i.uniqueId === currentELPopup.itemId);
-  if (item) renderWorkspaceContent(item);
+  if (item) {
+    renderWorkspaceContent(item);
+  }
 
   currentELPopup = { itemId: null, modId: null };
+}
+
+// EL 팝업에서 하부장 타입 변경
+function updateELLowerType(typeId) {
+  const item = selectedItems.find(i => i.uniqueId === currentELPopup.itemId);
+  if (!item) return;
+  const mod = item.modules.find(m => m.id === currentELPopup.modId);
+  if (!mod) return;
+
+  mod.lowerType = typeId;
+  renderELPopup(item, mod);
 }
 
 function addELSubModule(type) {
