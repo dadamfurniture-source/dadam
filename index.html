@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>냉장고장 규칙 계산기</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Malgun Gothic', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 30px;
+            gap: 30px;
+        }
+
+        /* 입력 패널 */
+        .input-panel {
+            flex: 1;
+            min-width: 320px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #3498db;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #34495e;
+            font-size: 14px;
+        }
+
+        .input-group label small {
+            font-weight: normal;
+            color: #7f8c8d;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 10px rgba(52, 152, 219, 0.2);
+        }
+
+        .input-group input:disabled {
+            background: #f8f9fa;
+            color: #6c757d;
+        }
+
+        .input-group input.auto-calculated {
+            background: #e8f6ff;
+            border-color: #3498db;
+            font-weight: bold;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .input-row .input-group {
+            flex: 1;
+        }
+
+        /* 프론트뷰 패널 */
+        .view-panel {
+            flex: 1;
+            min-width: 350px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .front-view-container {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            flex: 1;
+        }
+
+        .front-view {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 3px;
+            margin-bottom: 20px;
+        }
+
+        .cabinet-section {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .cabinet-part {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: bold;
+            color: white;
+            text-align: center;
+            border-radius: 4px;
+            min-height: 30px;
+            transition: all 0.3s;
+        }
+
+        .cabinet-part:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .upper-cabinet {
+            background: linear-gradient(180deg, #e74c3c 0%, #c0392b 100%);
+        }
+
+        .middle-cabinet {
+            background: linear-gradient(180deg, #f39c12 0%, #d68910 100%);
+        }
+
+        .lower-cabinet {
+            background: linear-gradient(180deg, #27ae60 0%, #1e8449 100%);
+        }
+
+        .fridge-space {
+            background: linear-gradient(180deg, #95a5a6 0%, #7f8c8d 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+        }
+
+        .fridge-icon {
+            font-size: 24px;
+        }
+
+        .dimension-label {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+
+        /* 자동계산 버튼 - 프론트뷰 아래 */
+        .auto-calc-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .btn-auto-calc {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 20px rgba(231, 76, 60, 0.4);
+        }
+
+        .btn-auto-calc:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(231, 76, 60, 0.5);
+        }
+
+        .btn-auto-calc:active {
+            transform: translateY(-1px);
+        }
+
+        /* 결과 패널 */
+        .result-panel {
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .result-card.upper { background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); }
+        .result-card.middle { background: linear-gradient(135deg, #f39c12 0%, #d68910 100%); }
+        .result-card.lower { background: linear-gradient(135deg, #27ae60 0%, #1e8449 100%); }
+        .result-card.total { background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); }
+
+        .result-card h4 {
+            font-size: 14px;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+
+        .result-card .value {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .result-card .unit {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* 규칙 설명 */
+        .rules-section {
+            background: #f8f9fa;
+            padding: 25px;
+            margin: 20px 30px 30px;
+            border-radius: 15px;
+        }
+
+        .rules-section h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .rules-list {
+            list-style: none;
+        }
+
+        .rules-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 14px;
+            color: #34495e;
+        }
+
+        .rules-list li:last-child {
+            border-bottom: none;
+        }
+
+        .rules-list li::before {
+            content: "✓";
+            color: #27ae60;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .highlight {
+            background: #fff3cd;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        /* 알림 메시지 */
+        .alert {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* 반응형 */
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧊 냉장고장 규칙 계산기</h1>
+            <p>전체 높이와 상부장 높이를 입력하면 자동으로 계산됩니다</p>
+        </div>
+
+        <div class="main-content">
+            <!-- 입력 패널 -->
+            <div class="input-panel">
+                <h2 class="section-title">📐 치수 입력</h2>
+
+                <div class="input-group">
+                    <label>전체 높이 (TotalH) <small>* 필수</small></label>
+                    <input type="number" id="totalH" placeholder="예: 2400" value="2400">
+                </div>
+
+                <div class="input-group">
+                    <label>전체 너비 (TotalW) <small>* 필수</small></label>
+                    <input type="number" id="totalW" placeholder="예: 1800" value="1800">
+                </div>
+
+                <div class="input-group">
+                    <label>냉장고 너비 (FridgeW)</label>
+                    <input type="number" id="fridgeW" placeholder="예: 900" value="900">
+                </div>
+
+                <div class="input-row">
+                    <div class="input-group">
+                        <label>냉장고 높이 (FridgeH)</label>
+                        <input type="number" id="fridgeH" placeholder="예: 1850" value="1850">
+                    </div>
+                    <div class="input-group">
+                        <label>냉장고 깊이 (FridgeD)</label>
+                        <input type="number" id="fridgeD" placeholder="예: 700" value="700">
+                    </div>
+                </div>
+
+                <hr style="margin: 25px 0; border: none; border-top: 2px dashed #e0e0e0;">
+
+                <h2 class="section-title">📦 몸체 구성</h2>
+
+                <div class="input-group">
+                    <label>상부장 높이 (UpperH) <small>사용자 지정</small></label>
+                    <input type="number" id="upperH" placeholder="예: 400" value="400">
+                </div>
+
+                <div class="input-group">
+                    <label>중간 오픈장 높이 (MiddleH) <small>자동 계산</small></label>
+                    <input type="number" id="middleH" class="auto-calculated" readonly>
+                </div>
+
+                <div class="input-group">
+                    <label>하부 수납장 높이 (LowerH) <small>기준값: 870</small></label>
+                    <input type="number" id="lowerH" placeholder="기준값: 870" value="870">
+                </div>
+
+                <div class="input-group">
+                    <label>장 깊이 (Depth)</label>
+                    <input type="number" id="depth" placeholder="예: 600" value="600">
+                </div>
+
+                <div id="alertContainer"></div>
+            </div>
+
+            <!-- 프론트뷰 패널 -->
+            <div class="view-panel">
+                <h2 class="section-title">👁️ 프론트뷰</h2>
+
+                <div class="front-view-container">
+                    <div class="front-view" id="frontView">
+                        <!-- 동적 생성 -->
+                    </div>
+
+                    <!-- 자동계산 버튼 - 프론트뷰 아래 -->
+                    <div class="auto-calc-container">
+                        <button class="btn-auto-calc" onclick="autoCalculate()">
+                            ⚡ 자동계산
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 결과 카드 -->
+                <div class="result-panel">
+                    <h2 class="section-title">📊 계산 결과</h2>
+                    <div class="result-grid">
+                        <div class="result-card upper">
+                            <h4>상부장 (UpperH)</h4>
+                            <span class="value" id="resultUpperH">-</span>
+                            <span class="unit">mm</span>
+                        </div>
+                        <div class="result-card middle">
+                            <h4>중간 오픈장 (MiddleH)</h4>
+                            <span class="value" id="resultMiddleH">-</span>
+                            <span class="unit">mm</span>
+                        </div>
+                        <div class="result-card lower">
+                            <h4>하부 수납장 (LowerH)</h4>
+                            <span class="value" id="resultLowerH">-</span>
+                            <span class="unit">mm</span>
+                        </div>
+                        <div class="result-card total">
+                            <h4>전체 높이 (TotalH)</h4>
+                            <span class="value" id="resultTotalH">-</span>
+                            <span class="unit">mm</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 규칙 설명 -->
+        <div class="rules-section">
+            <h3>📋 냉장고장 규칙</h3>
+            <ul class="rules-list">
+                <li><strong>전체 높이 공식:</strong> TotalH = UpperH + MiddleH + LowerH</li>
+                <li><strong>하부 수납장 (LowerH):</strong> 기준값 <span class="highlight">870mm</span> (사용자 수정 가능)</li>
+                <li><strong>중간 오픈장 (MiddleH):</strong> 자동 계산 = TotalH - UpperH - LowerH</li>
+                <li><strong>상부장 (UpperH):</strong> 사용자가 직접 입력 (기본값: 400mm)</li>
+                <li><strong>장 너비:</strong> (TotalW - FridgeW) ÷ 2 로 좌우 균등 배분</li>
+                <li>LowerH 수정 시 MiddleH가 자동으로 보정됩니다</li>
+                <li>MiddleH가 음수가 되면 경고 메시지가 표시됩니다</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // ===== 냉장고장 규칙 계산기 통합 코드 =====
+
+        // 기본값 상수
+        const DEFAULT_LOWER_H = 870;  // 하부 수납장 기준값
+
+        // DOM 요소 참조
+        const elements = {
+            totalH: document.getElementById('totalH'),
+            totalW: document.getElementById('totalW'),
+            fridgeW: document.getElementById('fridgeW'),
+            fridgeH: document.getElementById('fridgeH'),
+            fridgeD: document.getElementById('fridgeD'),
+            upperH: document.getElementById('upperH'),
+            middleH: document.getElementById('middleH'),
+            lowerH: document.getElementById('lowerH'),
+            depth: document.getElementById('depth'),
+            frontView: document.getElementById('frontView'),
+            alertContainer: document.getElementById('alertContainer')
+        };
+
+        // 결과 표시 요소
+        const results = {
+            upperH: document.getElementById('resultUpperH'),
+            middleH: document.getElementById('resultMiddleH'),
+            lowerH: document.getElementById('resultLowerH'),
+            totalH: document.getElementById('resultTotalH')
+        };
+
+        /**
+         * 자동계산 함수
+         * LowerH를 기준값(870)으로 두고, MiddleH를 자동 계산
+         * 공식: MiddleH = TotalH - UpperH - LowerH
+         */
+        function autoCalculate() {
+            const totalH = parseFloat(elements.totalH.value) || 0;
+            const totalW = parseFloat(elements.totalW.value) || 0;
+            const fridgeW = parseFloat(elements.fridgeW.value) || 0;
+            const fridgeH = parseFloat(elements.fridgeH.value) || 0;
+            const upperH = parseFloat(elements.upperH.value) || 0;
+            const lowerH = parseFloat(elements.lowerH.value) || DEFAULT_LOWER_H;
+
+            // LowerH 기준값 적용 (입력이 없으면 기본값 사용)
+            if (!elements.lowerH.value) {
+                elements.lowerH.value = DEFAULT_LOWER_H;
+            }
+
+            // MiddleH 자동 계산
+            const middleH = totalH - upperH - lowerH;
+            elements.middleH.value = middleH;
+
+            // 유효성 검사
+            clearAlerts();
+
+            if (middleH < 0) {
+                showAlert('error', `⚠️ 중간 오픈장(MiddleH)이 음수입니다: ${middleH}mm. 전체 높이를 늘리거나 상부장/하부장 높이를 줄여주세요.`);
+            } else if (middleH < 200) {
+                showAlert('warning', `⚠️ 중간 오픈장(MiddleH)이 너무 작습니다: ${middleH}mm. 최소 200mm 이상을 권장합니다.`);
+            } else {
+                showAlert('success', `✅ 계산 완료! 중간 오픈장(MiddleH): ${middleH}mm`);
+            }
+
+            // 결과 카드 업데이트
+            updateResults(upperH, middleH, lowerH, totalH);
+
+            // 프론트뷰 렌더링
+            renderFrontView(totalH, totalW, fridgeW, fridgeH, upperH, middleH, lowerH);
+        }
+
+        /**
+         * 결과 카드 업데이트
+         */
+        function updateResults(upperH, middleH, lowerH, totalH) {
+            results.upperH.textContent = upperH;
+            results.middleH.textContent = middleH;
+            results.lowerH.textContent = lowerH;
+            results.totalH.textContent = totalH;
+        }
+
+        /**
+         * 프론트뷰 렌더링
+         */
+        function renderFrontView(totalH, totalW, fridgeW, fridgeH, upperH, middleH, lowerH) {
+            const scale = 0.15; // 스케일 비율
+            const cabinetW = (totalW - fridgeW) / 2;
+
+            // 스케일 적용
+            const scaledTotalH = totalH * scale;
+            const scaledUpperH = upperH * scale;
+            const scaledMiddleH = Math.max(middleH * scale, 20);
+            const scaledLowerH = lowerH * scale;
+            const scaledFridgeH = fridgeH * scale;
+            const scaledCabinetW = cabinetW * scale;
+            const scaledFridgeW = fridgeW * scale;
+
+            // 프론트뷰 HTML 생성
+            let html = '';
+
+            // 왼쪽 장
+            html += `
+                <div class="cabinet-section">
+                    <div class="cabinet-part upper-cabinet" style="width: ${scaledCabinetW}px; height: ${scaledUpperH}px;">
+                        상부장<br>${upperH}
+                    </div>
+                    <div class="cabinet-part middle-cabinet" style="width: ${scaledCabinetW}px; height: ${scaledMiddleH}px;">
+                        중간 오픈<br>${middleH}
+                    </div>
+                    <div class="cabinet-part lower-cabinet" style="width: ${scaledCabinetW}px; height: ${scaledLowerH}px;">
+                        하부장<br>${lowerH}
+                    </div>
+                </div>
+            `;
+
+            // 냉장고 공간
+            const fridgeTopMargin = upperH * scale;
+            html += `
+                <div class="fridge-space" style="width: ${scaledFridgeW}px; height: ${scaledFridgeH}px; margin-top: ${fridgeTopMargin}px;">
+                    <div class="fridge-icon">🧊<br><small>${fridgeW}×${fridgeH}</small></div>
+                </div>
+            `;
+
+            // 오른쪽 장
+            html += `
+                <div class="cabinet-section">
+                    <div class="cabinet-part upper-cabinet" style="width: ${scaledCabinetW}px; height: ${scaledUpperH}px;">
+                        상부장<br>${upperH}
+                    </div>
+                    <div class="cabinet-part middle-cabinet" style="width: ${scaledCabinetW}px; height: ${scaledMiddleH}px;">
+                        중간 오픈<br>${middleH}
+                    </div>
+                    <div class="cabinet-part lower-cabinet" style="width: ${scaledCabinetW}px; height: ${scaledLowerH}px;">
+                        하부장<br>${lowerH}
+                    </div>
+                </div>
+            `;
+
+            elements.frontView.innerHTML = html;
+        }
+
+        /**
+         * 알림 메시지 표시
+         */
+        function showAlert(type, message) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.textContent = message;
+            elements.alertContainer.appendChild(alertDiv);
+        }
+
+        /**
+         * 알림 메시지 초기화
+         */
+        function clearAlerts() {
+            elements.alertContainer.innerHTML = '';
+        }
+
+        /**
+         * LowerH 변경 시 MiddleH 자동 보정
+         */
+        function onLowerHChange() {
+            const totalH = parseFloat(elements.totalH.value) || 0;
+            const upperH = parseFloat(elements.upperH.value) || 0;
+            const lowerH = parseFloat(elements.lowerH.value) || DEFAULT_LOWER_H;
+
+            const middleH = totalH - upperH - lowerH;
+            elements.middleH.value = middleH;
+
+            // 유효성 검사
+            clearAlerts();
+            if (middleH < 0) {
+                showAlert('warning', `하부장 높이 변경으로 중간 오픈장이 ${middleH}mm가 됩니다.`);
+            }
+        }
+
+        /**
+         * 입력값 변경 이벤트 리스너
+         */
+        elements.lowerH.addEventListener('input', onLowerHChange);
+        elements.upperH.addEventListener('input', autoCalculate);
+        elements.totalH.addEventListener('input', autoCalculate);
+
+        // 초기 계산 실행
+        window.onload = function() {
+            autoCalculate();
+        };
+    </script>
+</body>
+</html>
