@@ -1,31 +1,25 @@
 @echo off
-title Vibe Cabinet AI Agent
+title Dadam AI Agent
 
 echo.
 echo ============================================================
-echo            Vibe Cabinet AI Agent - Starting...
+echo            Dadam AI Agent - Starting...
 echo ============================================================
 echo.
-echo  Frontend: http://localhost:3000
-echo  Backend API: http://localhost:8000
+echo  Main App: http://localhost:8000
 echo.
-echo  Close this window to stop the servers.
+echo  Close this window to stop the server.
 echo ============================================================
 echo.
 
-:: Start Backend (new window)
-start "Backend Server" cmd /k "cd backend && python main.py"
+cd backend
 
-:: Wait
-timeout /t 3 /nobreak > nul
+:: Check if virtual environment exists
+if exist "venv\Scripts\activate.bat" (
+    call venv\Scripts\activate.bat
+)
 
-:: Start Frontend (new window)
-start "Frontend Server" cmd /k "cd frontend && npm run dev"
+:: Start server
+python main.py
 
-:: Wait and open browser
-timeout /t 5 /nobreak > nul
-start http://localhost:3000
-
-echo Servers started. Browser will open automatically.
-echo.
 pause

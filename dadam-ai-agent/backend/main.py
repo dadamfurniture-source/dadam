@@ -1,7 +1,7 @@
 """
 Vibe Cabinet Agent - AI 기반 가구 설계 백엔드 서버 (Flask)
 """
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import os
 from dotenv import load_dotenv
@@ -9,8 +9,8 @@ from dotenv import load_dotenv
 # 환경 변수 로드
 load_dotenv()
 
-# Flask 앱 생성
-app = Flask(__name__)
+# Flask 앱 생성 (static 폴더 설정)
+app = Flask(__name__, static_folder='static', static_url_path='')
 CORS(app)
 
 # 에이전트 초기화 (지연 로딩)
@@ -25,15 +25,13 @@ def get_agent():
 
 
 # ============================================================
-# Health Check
+# 메인 페이지 (index.html 서빙)
 # ============================================================
 
 @app.route("/")
-def health_check():
-    return jsonify({
-        "status": "healthy",
-        "message": "Vibe Cabinet AI Agent 서버가 정상 작동 중입니다."
-    })
+def serve_index():
+    """메인 페이지 서빙"""
+    return send_from_directory('static', 'index.html')
 
 
 @app.route("/api/health")
@@ -42,7 +40,7 @@ def api_health():
 
 
 # ============================================================
-# Chat API
+# Chat API (AI 어시스턴트)
 # ============================================================
 
 @app.route("/api/chat", methods=["POST"])
@@ -102,7 +100,7 @@ def clear_session(session_id):
 
 
 # ============================================================
-# Calculate API
+# Calculate API (계산 도구)
 # ============================================================
 
 @app.route("/api/calculate/modules", methods=["POST"])
@@ -154,8 +152,29 @@ def calculate_effective_space():
         return jsonify({"error": str(e)}), 500
 
 
+@app.route("/api/calculate/upper-section", methods=["POST"])
+def calculate_upper_section():
+    """상부장 자동 계산"""
+    try:
+        data = request.get_json()
+
+        from tools.dimension_calc import DimensionCalculator
+        calculator = DimensionCalculator()
+        result = calculator.calculate_upper_section(
+            effective_width=float(data.get("effective_width", 0)),
+            distributor_start=float(data.get("distributor_start", 0)),
+            vent_position=float(data.get("vent_position", 0)),
+            upper_height=float(data.get("upper_height", 720))
+        )
+
+        return jsonify(result)
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 # ============================================================
-# Design API
+# Design API (설계 도구)
 # ============================================================
 
 @app.route("/api/design/fridge/search", methods=["GET"])
@@ -203,6 +222,28 @@ def recommend_fridge():
         return jsonify({"error": str(e)}), 500
 
 
+@app.route("/api/design/fridge/layout", methods=["POST"])
+def calculate_fridge_layout():
+    """냉장고장 레이아웃 계산"""
+    try:
+        data = request.get_json()
+
+        from tools.fridge_lookup import FridgeLookup
+        lookup = FridgeLookup()
+
+        result = lookup.calculate_fridge_layout(
+            model_id=data.get("model_id"),
+            total_width=float(data.get("total_width", 0)),
+            total_height=float(data.get("total_height", 2300)),
+            include_tall=data.get("include_tall", False)
+        )
+
+        return jsonify(result)
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 # ============================================================
 # 서버 실행
 # ============================================================
@@ -211,5 +252,11 @@ if __name__ == "__main__":
     port = int(os.getenv("PORT", 8000))
     debug = os.getenv("DEBUG", "true").lower() == "true"
 
-    print(f"Starting Vibe Cabinet AI Agent server on port {port}...")
+    print(f"")
+    print(f"=" * 50)
+    print(f"  Vibe Cabinet AI Agent")
+    print(f"  http://localhost:{port}")
+    print(f"=" * 50)
+    print(f"")
+
     app.run(host="0.0.0.0", port=port, debug=debug)
