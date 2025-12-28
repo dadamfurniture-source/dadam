@@ -3083,36 +3083,83 @@ function renderFridgeWorkspace(item) {
       
       if (mod.type === 'tall') {
         // 키큰장: 중간장 + 하부장 + 좌대
-        const midColor = isEL ? '#dcfce7' : '#dcfce7';
-        const midLabel = isEL ? '⚡ EL장' : '🗄️ 중간장';
-        moduleSvg += `<rect x="${currentX}" y="${bodyStartY}" width="${modW}" height="${middleH_scaled}" fill="${midColor}" stroke="#10b981" stroke-width="2" rx="2"/>
-          <text x="${currentX + modW/2}" y="${bodyStartY + middleH_scaled/2 - 8}" text-anchor="middle" font-size="10" fill="#065f46" font-weight="bold">${midLabel}</text>
-          <text x="${currentX + modW/2}" y="${bodyStartY + middleH_scaled/2 + 6}" text-anchor="middle" font-size="8" fill="#666">${mod.w}×${middleH}</text>
-          <text x="${currentX + modW/2}" y="${bodyStartY + middleH_scaled - 8}" text-anchor="middle" font-size="7" fill="#888">${EL_DOOR_TYPES.find(t=>t.id===mod.doorType)?.name || '여닫이'}</text>`;
-        
+        // EL 모듈들이 있으면 개별 렌더링, 없으면 기본 중간장 표시
+        if (mod.elModules && mod.elModules.length > 0) {
+          let elY = bodyStartY;
+          let usedH = 0;
+          mod.elModules.forEach((elMod, elIdx) => {
+            const elModH_scaled = (elMod.h / middleH) * middleH_scaled;
+            const isOpen = elMod.type === 'open';
+            const fillColor = isOpen ? '#fef3c7' : '#dcfce7';
+            const strokeColor = isOpen ? '#f59e0b' : '#10b981';
+            const label = isOpen ? '📂' : '⚡';
+            moduleSvg += `<rect x="${currentX}" y="${elY}" width="${modW}" height="${elModH_scaled}" fill="${fillColor}" stroke="${strokeColor}" stroke-width="2" rx="2"/>
+              <text x="${currentX + modW/2}" y="${elY + elModH_scaled/2}" text-anchor="middle" font-size="9" fill="${isOpen ? '#b45309' : '#065f46'}" font-weight="bold">${label} ${elMod.h}</text>`;
+            elY += elModH_scaled;
+            usedH += elMod.h;
+          });
+          // 남은 중간장 공간
+          const remainingH = middleH - usedH;
+          if (remainingH > 0) {
+            const remainingH_scaled = (remainingH / middleH) * middleH_scaled;
+            moduleSvg += `<rect x="${currentX}" y="${elY}" width="${modW}" height="${remainingH_scaled}" fill="#f0fdf4" stroke="#86efac" stroke-width="1" stroke-dasharray="3"/>
+              <text x="${currentX + modW/2}" y="${elY + remainingH_scaled/2}" text-anchor="middle" font-size="7" fill="#16a34a">잔여 ${remainingH}</text>`;
+          }
+        } else {
+          // EL 모듈 없을 때 기본 중간장 표시
+          const midColor = mod.isEL ? '#dcfce7' : '#dcfce7';
+          const midLabel = mod.isEL ? '⚡ EL장' : '🗄️ 중간장';
+          moduleSvg += `<rect x="${currentX}" y="${bodyStartY}" width="${modW}" height="${middleH_scaled}" fill="${midColor}" stroke="#10b981" stroke-width="2" rx="2"/>
+            <text x="${currentX + modW/2}" y="${bodyStartY + middleH_scaled/2 - 8}" text-anchor="middle" font-size="10" fill="#065f46" font-weight="bold">${midLabel}</text>
+            <text x="${currentX + modW/2}" y="${bodyStartY + middleH_scaled/2 + 6}" text-anchor="middle" font-size="8" fill="#666">${mod.w}×${middleH}</text>
+            <text x="${currentX + modW/2}" y="${bodyStartY + middleH_scaled - 8}" text-anchor="middle" font-size="7" fill="#888">${EL_DOOR_TYPES.find(t=>t.id===mod.doorType)?.name || '여닫이'}</text>`;
+        }
+
         // 하부장
-        const lowerColor = mod.lowerType === 'robot' ? '#fef3c7' : mod.lowerType === 'rice' ? '#fee2e2' : '#f3f4f6';
-        const lowerStroke = mod.lowerType === 'robot' ? '#f59e0b' : mod.lowerType === 'rice' ? '#ef4444' : '#6b7280';
+        const lowerColor = mod.lowerType === 'robot' ? '#fef3c7' : mod.lowerType === 'rice' ? '#fee2e2' : mod.lowerType === 'foodwaste' ? '#dcfce7' : '#f3f4f6';
+        const lowerStroke = mod.lowerType === 'robot' ? '#f59e0b' : mod.lowerType === 'rice' ? '#ef4444' : mod.lowerType === 'foodwaste' ? '#22c55e' : '#6b7280';
         const lowerIcon = LOWER_MODULE_TYPES.find(t=>t.id===mod.lowerType)?.icon || '🗄️';
         moduleSvg += `<rect x="${currentX}" y="${bodyStartY + middleH_scaled}" width="${modW}" height="${lowerH_scaled}" fill="${lowerColor}" stroke="${lowerStroke}" stroke-width="2" rx="2"/>
           <text x="${currentX + modW/2}" y="${bodyStartY + middleH_scaled + lowerH_scaled/2}" text-anchor="middle" font-size="9" fill="${lowerStroke}">${lowerIcon} 하부장</text>`;
-        
+
         moduleSvg += `<rect x="${currentX}" y="${bodyStartY + middleH_scaled + lowerH_scaled}" width="${modW}" height="${pedestalH_scaled}" fill="#d1d5db" stroke="#9ca3af" stroke-width="1"/>`;
         moduleSvg += `<text x="${currentX + modW/2}" y="${offsetY + drawH + 15}" text-anchor="middle" font-size="9" fill="#10b981">${mod.w}${mod.isFixed ? '🔒' : ''}</text>`;
         
       } else if (mod.type === 'homecafe') {
         // 홈카페장: 중간장 + 하부장 + 좌대 (키큰장과 동일 구조)
-        const midColor = '#f3e8ff';
-        const midStroke = '#8b5cf6';
-        const midLabel = '☕ 홈카페';
-
-        moduleSvg += `<rect x="${currentX}" y="${bodyStartY}" width="${modW}" height="${middleH_scaled}" fill="${midColor}" stroke="${midStroke}" stroke-width="2" rx="2"/>
-          <text x="${currentX + modW/2}" y="${bodyStartY + middleH_scaled/2 - 4}" text-anchor="middle" font-size="10" fill="#6b21a8" font-weight="bold">${midLabel}</text>
-          <text x="${currentX + modW/2}" y="${bodyStartY + middleH_scaled/2 + 10}" text-anchor="middle" font-size="8" fill="#666">${mod.w}×${middleH}</text>`;
+        // EL 모듈들이 있으면 개별 렌더링, 없으면 기본 표시
+        if (mod.elModules && mod.elModules.length > 0) {
+          let elY = bodyStartY;
+          let usedH = 0;
+          mod.elModules.forEach((elMod, elIdx) => {
+            const elModH_scaled = (elMod.h / middleH) * middleH_scaled;
+            const isOpen = elMod.type === 'open';
+            const fillColor = isOpen ? '#fef3c7' : '#f3e8ff';
+            const strokeColor = isOpen ? '#f59e0b' : '#8b5cf6';
+            const label = isOpen ? '📂' : '⚡';
+            moduleSvg += `<rect x="${currentX}" y="${elY}" width="${modW}" height="${elModH_scaled}" fill="${fillColor}" stroke="${strokeColor}" stroke-width="2" rx="2"/>
+              <text x="${currentX + modW/2}" y="${elY + elModH_scaled/2}" text-anchor="middle" font-size="9" fill="${isOpen ? '#b45309' : '#6b21a8'}" font-weight="bold">${label} ${elMod.h}</text>`;
+            elY += elModH_scaled;
+            usedH += elMod.h;
+          });
+          const remainingH = middleH - usedH;
+          if (remainingH > 0) {
+            const remainingH_scaled = (remainingH / middleH) * middleH_scaled;
+            moduleSvg += `<rect x="${currentX}" y="${elY}" width="${modW}" height="${remainingH_scaled}" fill="#faf5ff" stroke="#c4b5fd" stroke-width="1" stroke-dasharray="3"/>
+              <text x="${currentX + modW/2}" y="${elY + remainingH_scaled/2}" text-anchor="middle" font-size="7" fill="#7c3aed">잔여 ${remainingH}</text>`;
+          }
+        } else {
+          const midColor = '#f3e8ff';
+          const midStroke = '#8b5cf6';
+          const midLabel = '☕ 홈카페';
+          moduleSvg += `<rect x="${currentX}" y="${bodyStartY}" width="${modW}" height="${middleH_scaled}" fill="${midColor}" stroke="${midStroke}" stroke-width="2" rx="2"/>
+            <text x="${currentX + modW/2}" y="${bodyStartY + middleH_scaled/2 - 4}" text-anchor="middle" font-size="10" fill="#6b21a8" font-weight="bold">${midLabel}</text>
+            <text x="${currentX + modW/2}" y="${bodyStartY + middleH_scaled/2 + 10}" text-anchor="middle" font-size="8" fill="#666">${mod.w}×${middleH}</text>`;
+        }
 
         // 홈카페 하부장
-        const cafeLowerColor = mod.lowerType === 'robot' ? '#fef3c7' : mod.lowerType === 'rice' ? '#fee2e2' : '#ede9fe';
-        const cafeLowerStroke = mod.lowerType === 'robot' ? '#f59e0b' : mod.lowerType === 'rice' ? '#ef4444' : '#a78bfa';
+        const cafeLowerColor = mod.lowerType === 'robot' ? '#fef3c7' : mod.lowerType === 'rice' ? '#fee2e2' : mod.lowerType === 'foodwaste' ? '#dcfce7' : '#ede9fe';
+        const cafeLowerStroke = mod.lowerType === 'robot' ? '#f59e0b' : mod.lowerType === 'rice' ? '#ef4444' : mod.lowerType === 'foodwaste' ? '#22c55e' : '#a78bfa';
         const cafeLowerIcon = LOWER_MODULE_TYPES.find(t=>t.id===mod.lowerType)?.icon || '🗄️';
         moduleSvg += `<rect x="${currentX}" y="${bodyStartY + middleH_scaled}" width="${modW}" height="${lowerH_scaled}" fill="${cafeLowerColor}" stroke="${cafeLowerStroke}" stroke-width="2" rx="2"/>
           <text x="${currentX + modW/2}" y="${bodyStartY + middleH_scaled + lowerH_scaled/2}" text-anchor="middle" font-size="9" fill="${cafeLowerStroke}">${cafeLowerIcon} 하부장</text>`;
