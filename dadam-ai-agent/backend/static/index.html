@@ -2493,15 +2493,9 @@ function renderWardrobeSectionPopup(item, mod, section) {
       </div>
     `;
   } else if (isFullType) {
-    // 긴옷(1단): 옷봉 고정, 선반+서랍 (서랍은 선반 아래)
+    // 긴옷(1단): 옷봉 1개 자동(옵션 표시 없음), 선반+서랍 (서랍은 선반 아래)
     controlsHtml = `
-      <div class="ws-counter-row">
-        <span class="ws-counter-label" style="color:#b45309;">옷봉</span>
-        <div class="ws-counter-box" style="border-color:#f59e0b;background:#fef3c7;">
-          <span style="padding:0 10px;color:#b45309;">1</span>
-        </div>
-        <span style="font-size:10px;color:#888;">(기본)</span>
-      </div>
+      <div style="font-size:10px;color:#b45309;padding:6px 12px;background:#fef3c7;border-radius:4px;margin-bottom:8px;">※ 옷봉 1개 자동 설치 (상단 고정선반 아래)</div>
       <div class="ws-counter-row">
         <span class="ws-counter-label">선반 (내경 300mm)</span>
         <div class="ws-counter-box">
@@ -2518,17 +2512,17 @@ function renderWardrobeSectionPopup(item, mod, section) {
           <button onclick="adjustWardrobePopupValue('drawer', 1)">+</button>
         </div>
       </div>
-      <div style="font-size:10px;color:#888;padding:4px 12px;background:#fef3c7;border-radius:4px;">※ 서랍은 선반 아래에 배치됩니다</div>
+      <div style="font-size:10px;color:#888;padding:4px 12px;background:#f3f4f6;border-radius:4px;">※ 서랍은 선반 아래에 배치됩니다</div>
     `;
   } else if (isShelfType) {
-    // 선반형: 배타적 선택
+    // 선반형: 배타적 자동 선택 (선반↔옷봉 자동 전환)
     if (section === 'upper') {
-      // 상부장: 선반 OR 옷봉 1개
+      // 상부장: 선반 OR 옷봉 1개 (자동 전환)
       const shelfActive = shelfCount > 0;
       const rodActive = rodCount > 0;
       controlsHtml = `
-        <div style="font-size:11px;color:#666;padding:8px;background:#fff7ed;border-radius:6px;margin-bottom:8px;">※ 선반 또는 옷봉 중 하나만 선택 가능</div>
-        <div class="ws-counter-row" style="${rodActive ? 'opacity:0.4;pointer-events:none;' : ''}">
+        <div style="font-size:11px;color:#666;padding:8px;background:#fff7ed;border-radius:6px;margin-bottom:8px;">※ 선반/옷봉 선택 시 반대 항목 자동 해제</div>
+        <div class="ws-counter-row" style="${rodActive ? 'opacity:0.5;' : ''}">
           <span class="ws-counter-label">선반</span>
           <div class="ws-counter-box">
             <button onclick="adjustWardrobePopupValue('shelf', -1)">−</button>
@@ -2536,7 +2530,7 @@ function renderWardrobeSectionPopup(item, mod, section) {
             <button onclick="adjustWardrobePopupValue('shelf', 1)">+</button>
           </div>
         </div>
-        <div class="ws-counter-row" style="${shelfActive ? 'opacity:0.4;pointer-events:none;' : ''}">
+        <div class="ws-counter-row" style="${shelfActive ? 'opacity:0.5;' : ''}">
           <span class="ws-counter-label" style="color:#b45309;">옷봉 (1개)</span>
           <div class="ws-counter-box" style="border-color:#f59e0b;background:#fef3c7;">
             <button onclick="adjustWardrobePopupValue('rod', -1)">−</button>
@@ -2546,12 +2540,12 @@ function renderWardrobeSectionPopup(item, mod, section) {
         </div>
       `;
     } else {
-      // 하부장: (선반+서랍) OR 옷봉
+      // 하부장: (선반+서랍) OR 옷봉 (자동 전환)
       const rodActive = rodCount > 0;
       const shelfDrawerActive = shelfCount > 0 || drawerCount > 0;
       controlsHtml = `
-        <div style="font-size:11px;color:#666;padding:8px;background:#fff7ed;border-radius:6px;margin-bottom:8px;">※ 옷봉 선택 시 선반/서랍 추가 불가</div>
-        <div class="ws-counter-row" style="${rodActive ? 'opacity:0.4;pointer-events:none;' : ''}">
+        <div style="font-size:11px;color:#666;padding:8px;background:#fff7ed;border-radius:6px;margin-bottom:8px;">※ 선반/서랍↔옷봉 선택 시 반대 항목 자동 해제</div>
+        <div class="ws-counter-row" style="${rodActive ? 'opacity:0.5;' : ''}">
           <span class="ws-counter-label">선반</span>
           <div class="ws-counter-box">
             <button onclick="adjustWardrobePopupValue('shelf', -1)">−</button>
@@ -2559,7 +2553,7 @@ function renderWardrobeSectionPopup(item, mod, section) {
             <button onclick="adjustWardrobePopupValue('shelf', 1)">+</button>
           </div>
         </div>
-        <div class="ws-counter-row" style="${rodActive ? 'opacity:0.4;pointer-events:none;' : ''}">
+        <div class="ws-counter-row" style="${rodActive ? 'opacity:0.5;' : ''}">
           <span class="ws-counter-label" style="color:#6366f1;">서랍 (300mm)</span>
           <div class="ws-counter-box" style="border-color:#6366f1;background:#eef2ff;">
             <button onclick="adjustWardrobePopupValue('drawer', -1)">−</button>
@@ -2567,7 +2561,7 @@ function renderWardrobeSectionPopup(item, mod, section) {
             <button onclick="adjustWardrobePopupValue('drawer', 1)">+</button>
           </div>
         </div>
-        <div class="ws-counter-row" style="${shelfDrawerActive ? 'opacity:0.4;pointer-events:none;' : ''}">
+        <div class="ws-counter-row" style="${shelfDrawerActive ? 'opacity:0.5;' : ''}">
           <span class="ws-counter-label" style="color:#b45309;">옷봉 (1개)</span>
           <div class="ws-counter-box" style="border-color:#f59e0b;background:#fef3c7;">
             <button onclick="adjustWardrobePopupValue('rod', -1)">−</button>
@@ -2673,6 +2667,11 @@ function adjustWardrobePopupValue(type, delta) {
 function closeWardrobeSectionPopup() {
   const popup = document.getElementById('wardrobe-section-popup');
   if (popup) popup.remove();
+
+  // 메인 프론트뷰도 업데이트
+  const item = selectedItems.find(i => i.uniqueId === currentWardrobePopup.itemId);
+  if (item) renderWorkspaceContent(item);
+
   currentWardrobePopup = { itemId: null, modId: null, section: null };
 }
 
