@@ -343,6 +343,13 @@ const EL_DOOR_TYPES = [
   { id: 'sliding', name: '슬라이딩' }
 ];
 
+// ★ 도어 구분 타입 (3가지)
+const DOOR_DIVISION_TYPES = [
+  { id: 'individual', name: '개별' },
+  { id: 'midLower', name: '중간장ㆍ하부장' },
+  { id: 'all', name: '전체' }
+];
+
 // ★ 마감 타입 (휠라로 변경, 몰딩 기본)
 const FINISH_TYPES = [
   { id: 'molding', name: '몰딩', defaultW: 60, editable: true },
@@ -689,13 +696,11 @@ function runAutoCalcSection(itemUniqueId, section) {
   if (section === 'upper') {
     item.prevUpperModules = JSON.parse(JSON.stringify(item.modules.filter(m => m.pos === 'upper')));
     runAutoCalcUpper(item);
-    alert('상부장 자동 계산 완료!');
   } else {
     item.prevLowerModules = JSON.parse(JSON.stringify(item.modules.filter(m => m.pos === 'lower')));
     runAutoCalcLower(item);
-    alert('하부장 자동 계산 완료!');
   }
-  
+
   renderWorkspaceContent(item);
 }
 
@@ -2414,17 +2419,187 @@ function adjustWardrobeRod(itemUniqueId, modId, section, delta) {
 }
 
 // ★ 상부장/하부장 설정 팝업 열기
+// 현재 열린 붙박이장 섹션 설정 팝업 상태
+let currentWardrobePopup = { itemId: null, modId: null, section: null };
+
 function openWardrobeSectionSettings(itemUniqueId, modId, section) {
   const item = selectedItems.find(i => i.uniqueId === itemUniqueId);
   if (!item) return;
   const mod = item.modules.find(m => m.id === modId);
   if (!mod) return;
 
+  currentWardrobePopup = { itemId: itemUniqueId, modId: modId, section: section };
+  renderWardrobeSectionPopup(item, mod, section);
+}
+
+function renderWardrobeSectionPopup(item, mod, section) {
+  const existingPopup = document.getElementById('wardrobe-section-popup');
+  if (existingPopup) existingPopup.remove();
+
   const sectionName = section === 'upper' ? '상부장' : '하부장';
+  const sectionColor = section === 'upper' ? '#10b981' : '#3b82f6';
+  const sectionBg = section === 'upper' ? '#ecfdf5' : '#eff6ff';
+
   const shelfCount = section === 'upper' ? (mod.shelfCountUpper || 0) : (mod.shelfCountLower || 0);
   const rodCount = section === 'upper' ? (mod.rodCountUpper || 0) : (mod.rodCountLower || 0);
+  const drawerCount = section === 'lower' ? (mod.drawerCount || 0) : 0;
+  const isShelfType = mod.moduleType === 'shelf';
 
-  alert(`${sectionName} 설정\n- 선반 수: ${shelfCount}개\n- 옷봉 수: ${rodCount}개\n\n(추가 설정 옵션은 추후 구현 예정)`);
+  // 높이 계산
+  const pedestalH = parseFloat(item.specs.wardrobePedestal) || 60;
+  const moldingH = parseFloat(item.specs.wardrobeMoldingH) || 15;
+  const totalH = parseFloat(item.h) || 0;
+  const effectiveH = totalH - pedestalH - moldingH;
+  const halfH = Math.round(effectiveH / 2);
+  const sectionH = section === 'upper' ? (mod.upperH || halfH) : (mod.lowerH || halfH);
+
+  // SVG 프론트뷰 생성
+  const svgW = 180;
+  const svgH = 280;
+  const scale = Math.min((svgW - 40) / mod.w, (svgH - 80) / sectionH);
+  const drawW = mod.w * scale;
+  const drawH = sectionH * scale;
+  const offsetX = (svgW - drawW) / 2;
+  const offsetY = 40;
+
+  // 선반, 옷봉, 서랍 그리기
+  let contentSvg = '';
+  const shelfGap = drawH / (shelfCount + 1);
+  for (let i = 1; i <= shelfCount; i++) {
+    const y = offsetY + shelfGap * i;
+    contentSvg += `<line x1="${offsetX + 5}" y1="${y}" x2="${offsetX + drawW - 5}" y2="${y}" stroke="#9ca3af" stroke-width="2"/>`;
+  }
+  // 옷봉 표시
+  for (let i = 0; i < rodCount; i++) {
+    const y = offsetY + 20 + i * 30;
+    contentSvg += `<line x1="${offsetX + 10}" y1="${y}" x2="${offsetX + drawW - 10}" y2="${y}" stroke="#f59e0b" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="${offsetX + 10}" cy="${y}" r="4" fill="#f59e0b"/>
+      <circle cx="${offsetX + drawW - 10}" cy="${y}" r="4" fill="#f59e0b"/>`;
+  }
+  // 서랍 표시 (하부장만)
+  if (section === 'lower' && drawerCount > 0) {
+    const drawerH = Math.min(60 * scale, drawH / drawerCount);
+    for (let i = 0; i < drawerCount; i++) {
+      const y = offsetY + drawH - drawerH * (i + 1);
+      contentSvg += `<rect x="${offsetX + 3}" y="${y}" width="${drawW - 6}" height="${drawerH - 2}" fill="#e5e7eb" stroke="#9ca3af" stroke-width="1" rx="2"/>
+        <line x1="${offsetX + drawW/2 - 15}" y1="${y + drawerH/2}" x2="${offsetX + drawW/2 + 15}" y2="${y + drawerH/2}" stroke="#6b7280" stroke-width="2" stroke-linecap="round"/>`;
+    }
+  }
+
+  const popupHtml = `
+    <div id="wardrobe-section-popup" class="ws-popup-overlay" onclick="if(event.target===this)closeWardrobeSectionPopup()">
+      <div class="ws-popup">
+        <div class="ws-popup-header" style="background:${sectionColor};">
+          <span>🚪 ${mod.name} - ${sectionName} 설정</span>
+          <button onclick="closeWardrobeSectionPopup()" class="ws-popup-close">✕</button>
+        </div>
+        <div class="ws-popup-body">
+          <div class="ws-popup-preview">
+            <svg width="${svgW}" height="${svgH}" style="background:#fafafa;border-radius:10px;border:1px solid #e5e7eb;">
+              <text x="${svgW/2}" y="20" text-anchor="middle" font-size="12" font-weight="bold" fill="#333">${sectionName} Front View</text>
+              <rect x="${offsetX}" y="${offsetY}" width="${drawW}" height="${drawH}" fill="${sectionBg}" stroke="${sectionColor}" stroke-width="2" rx="4"/>
+              ${contentSvg}
+              <text x="${svgW/2}" y="${offsetY + drawH + 20}" text-anchor="middle" font-size="10" fill="#666">${mod.w} × ${sectionH}mm</text>
+            </svg>
+          </div>
+          <div class="ws-popup-controls">
+            <div class="ws-counter-row">
+              <span class="ws-counter-label">선반</span>
+              <div class="ws-counter-box">
+                <button onclick="adjustWardrobePopupValue('shelf', -1)">−</button>
+                <span id="ws-shelf-count">${shelfCount}</span>
+                <button onclick="adjustWardrobePopupValue('shelf', 1)">+</button>
+              </div>
+            </div>
+            ${isShelfType ? `
+            <div class="ws-counter-row">
+              <span class="ws-counter-label" style="color:#b45309;">옷봉</span>
+              <div class="ws-counter-box" style="border-color:#f59e0b;background:#fef3c7;">
+                <button onclick="adjustWardrobePopupValue('rod', -1)">−</button>
+                <span id="ws-rod-count" style="color:#b45309;">${rodCount}</span>
+                <button onclick="adjustWardrobePopupValue('rod', 1)">+</button>
+              </div>
+            </div>
+            ` : ''}
+            ${section === 'lower' ? `
+            <div class="ws-counter-row">
+              <span class="ws-counter-label" style="color:#6366f1;">서랍</span>
+              <div class="ws-counter-box" style="border-color:#6366f1;background:#eef2ff;">
+                <button onclick="adjustWardrobePopupValue('drawer', -1)">−</button>
+                <span id="ws-drawer-count" style="color:#6366f1;">${drawerCount}</span>
+                <button onclick="adjustWardrobePopupValue('drawer', 1)">+</button>
+              </div>
+            </div>
+            ` : ''}
+          </div>
+        </div>
+        <div class="ws-popup-footer">
+          <button onclick="applyWardrobeSectionAndClose()" class="ws-popup-save-btn">완료</button>
+        </div>
+      </div>
+    </div>
+    <style>
+      .ws-popup-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);z-index:10000;display:flex;align-items:center;justify-content:center}
+      .ws-popup{background:white;border-radius:16px;width:400px;max-width:95vw;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.3)}
+      .ws-popup-header{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;color:white;font-weight:700;font-size:14px}
+      .ws-popup-close{background:none;border:none;color:white;font-size:20px;cursor:pointer}
+      .ws-popup-body{display:flex;gap:20px;padding:20px}
+      .ws-popup-preview{flex:0 0 auto}
+      .ws-popup-controls{flex:1;display:flex;flex-direction:column;gap:12px;justify-content:center}
+      .ws-counter-row{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:#f9fafb;border-radius:8px}
+      .ws-counter-label{font-weight:700;font-size:13px;color:#374151}
+      .ws-counter-box{display:flex;align-items:center;gap:8px;padding:6px 10px;border:2px solid #e5e7eb;border-radius:8px;background:white}
+      .ws-counter-box button{width:28px;height:28px;border:1px solid #ddd;border-radius:6px;background:#fff;cursor:pointer;font-size:16px;font-weight:bold}
+      .ws-counter-box button:hover{background:#f3f4f6}
+      .ws-counter-box span{min-width:24px;text-align:center;font-weight:bold;font-size:16px}
+      .ws-popup-footer{padding:14px 20px;border-top:1px solid #e5e7eb;background:#f9fafb;text-align:right}
+      .ws-popup-save-btn{padding:10px 24px;background:linear-gradient(135deg,#6366f1,#4f46e5);color:white;border:none;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer}
+      .ws-popup-save-btn:hover{opacity:0.9}
+    </style>
+  `;
+  document.body.insertAdjacentHTML('beforeend', popupHtml);
+}
+
+function adjustWardrobePopupValue(type, delta) {
+  const item = selectedItems.find(i => i.uniqueId === currentWardrobePopup.itemId);
+  if (!item) return;
+  const mod = item.modules.find(m => m.id === currentWardrobePopup.modId);
+  if (!mod) return;
+  const section = currentWardrobePopup.section;
+
+  if (type === 'shelf') {
+    if (section === 'upper') {
+      mod.shelfCountUpper = Math.max(0, Math.min(6, (mod.shelfCountUpper || 0) + delta));
+    } else {
+      mod.shelfCountLower = Math.max(0, Math.min(6, (mod.shelfCountLower || 0) + delta));
+    }
+  } else if (type === 'rod') {
+    if (section === 'upper') {
+      mod.rodCountUpper = Math.max(0, Math.min(3, (mod.rodCountUpper || 0) + delta));
+    } else {
+      mod.rodCountLower = Math.max(0, Math.min(3, (mod.rodCountLower || 0) + delta));
+    }
+  } else if (type === 'drawer') {
+    mod.drawerCount = Math.max(0, Math.min(6, (mod.drawerCount || 0) + delta));
+  }
+
+  renderWardrobeSectionPopup(item, mod, section);
+}
+
+function closeWardrobeSectionPopup() {
+  const popup = document.getElementById('wardrobe-section-popup');
+  if (popup) popup.remove();
+  currentWardrobePopup = { itemId: null, modId: null, section: null };
+}
+
+function applyWardrobeSectionAndClose() {
+  const popup = document.getElementById('wardrobe-section-popup');
+  if (popup) popup.remove();
+
+  const item = selectedItems.find(i => i.uniqueId === currentWardrobePopup.itemId);
+  if (item) renderWorkspaceContent(item);
+
+  currentWardrobePopup = { itemId: null, modId: null, section: null };
 }
 
 // ★ 서랍 외부형/내부형 토글 함수
@@ -2829,7 +3004,13 @@ function toggleOption(itemUniqueId, moduleId, field, isChecked) {
   const item = selectedItems.find(i => i.uniqueId === itemUniqueId);
   if (item) {
     const mod = item.modules.find(m => m.id === moduleId);
-    if (mod) mod[field] = isChecked;
+    if (mod) {
+      mod[field] = isChecked;
+      // EL장 활성화 시 하부장 너비 600으로 자동 변경
+      if (field === 'isEL' && isChecked && mod.pos === 'lower') {
+        mod.w = 600;
+      }
+    }
     renderWorkspaceContent(item);
   }
 }
@@ -3233,14 +3414,15 @@ function renderFridgeWorkspace(item) {
           <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
             <span style="font-weight:700;font-size:12px;">${typeInfo.icon} ${typeInfo.name}</span>
             <button class="toggle-btn ${fixedClass}" onclick="toggleFridgeModuleFixed(${item.uniqueId}, ${mod.id})">고정</button>
-            <button class="el-config-btn" onclick="openELPopup(${item.uniqueId}, ${mod.id})">⚙️ EL설정</button>
+            <button class="el-config-btn" onclick="openELPopup(${item.uniqueId}, ${mod.id})">⚙️ 설정</button>
           </div>
           <div class="module-inline-inputs">
             <label>W</label><input type="number" value="${mod.w}" style="width:55px;" onchange="updateFridgeModuleW(${item.uniqueId}, ${mod.id}, this.value)">
-            <label>도어</label><select onchange="updateFridgeSideModule(${item.uniqueId}, ${mod.id}, 'doorType', this.value)">${EL_DOOR_TYPES.map(t => `<option value="${t.id}" ${mod.doorType === t.id ? 'selected' : ''}>${t.name}</option>`).join('')}</select>
+            <label>도어 구분</label><select onchange="updateFridgeDoorDivision(${item.uniqueId}, ${mod.id}, this.value)">${DOOR_DIVISION_TYPES.map(t => `<option value="${t.id}" ${mod.doorDivision === t.id ? 'selected' : ''}>${t.name}</option>`).join('')}</select>
             <label>하부</label><select onchange="updateFridgeSideModule(${item.uniqueId}, ${mod.id}, 'lowerType', this.value)">${LOWER_MODULE_TYPES.map(t => `<option value="${t.id}" ${mod.lowerType === t.id ? 'selected' : ''}>${t.icon}</option>`).join('')}</select>
+            <button class="toggle-btn el ${mod.hasEL ? 'active' : ''}" onclick="toggleFridgeModuleEL(${item.uniqueId}, ${mod.id})">⚡ EL장</button>
           </div>
-          ${mod.elModules && mod.elModules.length > 0 ? `<div style="font-size:9px;color:#10b981;margin-top:4px;">⚡ EL모듈: ${mod.elModules.length}개</div>` : ''}
+          ${mod.hasEL && mod.elModules && mod.elModules.length > 0 ? `<div style="font-size:9px;color:#10b981;margin-top:4px;">⚡ EL모듈: ${mod.elModules.length}개</div>` : ''}
         </div>
         <button class="btn-delete" onclick="removeFridgeModule(${item.uniqueId}, ${mod.id})">×</button>
       </div>`;
@@ -3451,6 +3633,30 @@ function updateFridgeSideModule(itemUniqueId, modId, field, value) {
   if (!item) return;
   const mod = item.modules.find(m => m.id === modId);
   if (mod) { mod[field] = value; renderWorkspaceContent(item); }
+}
+
+function updateFridgeDoorDivision(itemUniqueId, modId, value) {
+  const item = selectedItems.find(i => i.uniqueId === itemUniqueId);
+  if (!item) return;
+  const mod = item.modules.find(m => m.id === modId);
+  if (mod) {
+    mod.doorDivision = value;
+    renderWorkspaceContent(item);
+  }
+}
+
+function toggleFridgeModuleEL(itemUniqueId, modId) {
+  const item = selectedItems.find(i => i.uniqueId === itemUniqueId);
+  if (!item) return;
+  const mod = item.modules.find(m => m.id === modId);
+  if (mod) {
+    mod.hasEL = !mod.hasEL;
+    // EL장이 없을 때 활성화하면 기본 EL모듈 추가
+    if (mod.hasEL && (!mod.elModules || mod.elModules.length === 0)) {
+      mod.elModules = [{ id: 1, type: 'open', h: 450 }];
+    }
+    renderWorkspaceContent(item);
+  }
 }
 
 function updateFridgeSpec(itemUniqueId, field, value) {
@@ -3679,9 +3885,10 @@ function renderELPopup(item, mod) {
             <span>mm</span>
             ${!isOpen ? `
               <label>도어</label>
-              <select onchange="updateELModule(${idx}, 'doorType', this.value)">
+              <select onchange="updateELModule(${idx}, 'doorType', this.value)" ${mod.doorDivision && mod.doorDivision !== 'individual' ? 'disabled style="opacity:0.5;"' : ''}>
                 ${EL_DOOR_TYPES.map(t => `<option value="${t.id}" ${elMod.doorType === t.id ? 'selected' : ''}>${t.name}</option>`).join('')}
               </select>
+              ${mod.doorDivision && mod.doorDivision !== 'individual' ? '<span style="font-size:8px;color:#888;">(도어 구분 적용)</span>' : ''}
             ` : ''}
           </div>
         </div>
@@ -3699,7 +3906,7 @@ function renderELPopup(item, mod) {
     <div id="el-popup-overlay" class="el-popup-overlay" onclick="if(event.target===this)closeELPopup()">
       <div class="el-popup">
         <div class="el-popup-header">
-          <span>⚡ ${modTypeName} EL설정 (${mod.w}mm)</span>
+          <span>⚡ ${modTypeName} 설정 (${mod.w}mm)</span>
           <button onclick="closeELPopup()" class="el-popup-close">✕</button>
         </div>
         <div class="el-popup-body">
@@ -3719,7 +3926,7 @@ function renderELPopup(item, mod) {
             </div>
             <div class="el-popup-section-title">EL 모듈 추가</div>
             <div class="el-add-btns">
-              <button class="el-add-btn el-type" onclick="addELSubModule('el')">⚡ EL장 추가</button>
+              <button class="el-add-btn el-type" onclick="addELSubModule('el')">⚡ 모듈 추가</button>
               <button class="el-add-btn open-type" onclick="addELSubModule('open')">📂 오픈장 추가</button>
             </div>
             <div class="el-popup-section-title">모듈 목록 (${mod.elModules?.length || 0}개)</div>
