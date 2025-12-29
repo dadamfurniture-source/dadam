@@ -2039,24 +2039,6 @@ function renderWardrobeWorkspace(item) {
               <input type="number" value="${mod.upperH || halfH}" onchange="updateWardrobeModuleDim(${item.uniqueId}, ${mod.id}, 'upperH', this.value)" style="${dimInputStyle}">
               <span style="${dimLabelStyle}">D</span>
               <input type="number" value="${mod.d}" onchange="updateWardrobeModuleDim(${item.uniqueId}, ${mod.id}, 'd', this.value)" style="${dimInputStyle}">
-              <div style="${cBoxStyle}">
-                <div style="font-size:8px;color:#666;margin-bottom:2px;">선반</div>
-                <div style="display:flex;align-items:center;gap:2px;">
-                  <button onclick="adjustWardrobeShelf(${item.uniqueId}, ${mod.id}, 'upper', -1)" style="${cBtnStyle}">−</button>
-                  <span style="min-width:14px;text-align:center;font-weight:bold;font-size:11px;">${shelfCountUpper}</span>
-                  <button onclick="adjustWardrobeShelf(${item.uniqueId}, ${mod.id}, 'upper', 1)" style="${cBtnStyle}">+</button>
-                </div>
-              </div>
-              ${isShelfType ? `
-              <div style="${cBoxStyle}background:#fef3c7;border-color:#f59e0b;">
-                <div style="font-size:8px;color:#b45309;margin-bottom:2px;">옷봉</div>
-                <div style="display:flex;align-items:center;gap:2px;">
-                  <button onclick="adjustWardrobeRod(${item.uniqueId}, ${mod.id}, 'upper', -1)" style="${cBtnStyle}">−</button>
-                  <span style="min-width:14px;text-align:center;font-weight:bold;font-size:11px;color:#b45309;">${rodCountUpper}</span>
-                  <button onclick="adjustWardrobeRod(${item.uniqueId}, ${mod.id}, 'upper', 1)" style="${cBtnStyle}">+</button>
-                </div>
-              </div>
-              ` : ''}
               <button onclick="openWardrobeSectionSettings(${item.uniqueId}, ${mod.id}, 'upper')" style="${settBtnStyle}">⚙️</button>
             </div>
             <!-- 하부장 -->
@@ -2068,33 +2050,6 @@ function renderWardrobeWorkspace(item) {
               <input type="number" value="${mod.lowerH || halfH}" onchange="updateWardrobeModuleDim(${item.uniqueId}, ${mod.id}, 'lowerH', this.value)" style="${dimInputStyle}">
               <span style="${dimLabelStyle}">D</span>
               <input type="number" value="${mod.d}" onchange="updateWardrobeModuleDim(${item.uniqueId}, ${mod.id}, 'd', this.value)" style="${dimInputStyle}">
-              <div style="${cBoxStyle}">
-                <div style="font-size:8px;color:#666;margin-bottom:2px;">선반</div>
-                <div style="display:flex;align-items:center;gap:2px;">
-                  <button onclick="adjustWardrobeShelf(${item.uniqueId}, ${mod.id}, 'lower', -1)" style="${cBtnStyle}">−</button>
-                  <span style="min-width:14px;text-align:center;font-weight:bold;font-size:11px;">${shelfCountLower}</span>
-                  <button onclick="adjustWardrobeShelf(${item.uniqueId}, ${mod.id}, 'lower', 1)" style="${cBtnStyle}">+</button>
-                </div>
-              </div>
-              ${isShelfType ? `
-              <div style="${cBoxStyle}background:#fef3c7;border-color:#f59e0b;">
-                <div style="font-size:8px;color:#b45309;margin-bottom:2px;">옷봉</div>
-                <div style="display:flex;align-items:center;gap:2px;">
-                  <button onclick="adjustWardrobeRod(${item.uniqueId}, ${mod.id}, 'lower', -1)" style="${cBtnStyle}">−</button>
-                  <span style="min-width:14px;text-align:center;font-weight:bold;font-size:11px;color:#b45309;">${rodCountLower}</span>
-                  <button onclick="adjustWardrobeRod(${item.uniqueId}, ${mod.id}, 'lower', 1)" style="${cBtnStyle}">+</button>
-                </div>
-              </div>
-              ` : ''}
-              <div style="${cBoxStyle}">
-                <div style="font-size:8px;color:#666;margin-bottom:2px;">서랍</div>
-                <div style="display:flex;align-items:center;gap:2px;">
-                  <button onclick="adjustWardrobeDrawer(${item.uniqueId}, ${mod.id}, -1)" style="${cBtnStyle}">−</button>
-                  <span style="min-width:14px;text-align:center;font-weight:bold;font-size:11px;">${drawerCount}</span>
-                  <button onclick="adjustWardrobeDrawer(${item.uniqueId}, ${mod.id}, 1)" style="${cBtnStyle}">+</button>
-                </div>
-              </div>
-              ${drawerToggle}
               <button onclick="openWardrobeSectionSettings(${item.uniqueId}, ${mod.id}, 'lower')" style="${settBtnStyle}">⚙️</button>
             </div>
           </div>
@@ -2108,23 +2063,7 @@ function renderWardrobeWorkspace(item) {
             <input type="number" value="${mod.h || effectiveH}" onchange="updateWardrobeModuleDim(${item.uniqueId}, ${mod.id}, 'h', this.value)" style="${dimInputStyle}">
             <span style="${dimLabelStyle}">D</span>
             <input type="number" value="${mod.d}" onchange="updateWardrobeModuleDim(${item.uniqueId}, ${mod.id}, 'd', this.value)" style="${dimInputStyle}">
-            <div style="${cBoxStyle}">
-              <div style="font-size:8px;color:#666;margin-bottom:2px;">선반</div>
-              <div style="display:flex;align-items:center;gap:2px;">
-                <button onclick="adjustWardrobeShelfSingle(${item.uniqueId}, ${mod.id}, -1)" style="${cBtnStyle}">−</button>
-                <span style="min-width:14px;text-align:center;font-weight:bold;font-size:11px;">${shelfCount}</span>
-                <button onclick="adjustWardrobeShelfSingle(${item.uniqueId}, ${mod.id}, 1)" style="${cBtnStyle}">+</button>
-              </div>
-            </div>
-            <div style="${cBoxStyle}">
-              <div style="font-size:8px;color:#666;margin-bottom:2px;">서랍</div>
-              <div style="display:flex;align-items:center;gap:2px;">
-                <button onclick="adjustWardrobeDrawer(${item.uniqueId}, ${mod.id}, -1)" style="${cBtnStyle}">−</button>
-                <span style="min-width:14px;text-align:center;font-weight:bold;font-size:11px;">${drawerCount}</span>
-                <button onclick="adjustWardrobeDrawer(${item.uniqueId}, ${mod.id}, 1)" style="${cBtnStyle}">+</button>
-              </div>
-            </div>
-            ${drawerToggle}
+            <button onclick="openWardrobeSectionSettings(${item.uniqueId}, ${mod.id}, 'full')" style="${settBtnStyle}">⚙️</button>
           </div>
           `}
         </div>
@@ -2436,14 +2375,27 @@ function renderWardrobeSectionPopup(item, mod, section) {
   const existingPopup = document.getElementById('wardrobe-section-popup');
   if (existingPopup) existingPopup.remove();
 
-  const sectionName = section === 'upper' ? '상부장' : '하부장';
-  const sectionColor = section === 'upper' ? '#10b981' : '#3b82f6';
-  const sectionBg = section === 'upper' ? '#ecfdf5' : '#eff6ff';
+  let sectionName, sectionColor, sectionBg;
+  if (section === 'upper') {
+    sectionName = '상부장'; sectionColor = '#10b981'; sectionBg = '#ecfdf5';
+  } else if (section === 'lower') {
+    sectionName = '하부장'; sectionColor = '#3b82f6'; sectionBg = '#eff6ff';
+  } else {
+    sectionName = '긴옷장'; sectionColor = '#4a7dff'; sectionBg = '#f0f7ff';
+  }
 
-  const shelfCount = section === 'upper' ? (mod.shelfCountUpper || 0) : (mod.shelfCountLower || 0);
-  const rodCount = section === 'upper' ? (mod.rodCountUpper || 0) : (mod.rodCountLower || 0);
-  const drawerCount = section === 'lower' ? (mod.drawerCount || 0) : 0;
+  let shelfCount, rodCount, drawerCount;
+  if (section === 'full') {
+    shelfCount = mod.shelfCount || 0;
+    rodCount = 1; // 긴옷장은 기본 옷봉 1개
+    drawerCount = mod.drawerCount || 0;
+  } else {
+    shelfCount = section === 'upper' ? (mod.shelfCountUpper || 0) : (mod.shelfCountLower || 0);
+    rodCount = section === 'upper' ? (mod.rodCountUpper || 0) : (mod.rodCountLower || 0);
+    drawerCount = section === 'lower' ? (mod.drawerCount || 0) : 0;
+  }
   const isShelfType = mod.moduleType === 'shelf';
+  const isFullType = section === 'full';
 
   // 높이 계산
   const pedestalH = parseFloat(item.specs.wardrobePedestal) || 60;
@@ -2451,7 +2403,12 @@ function renderWardrobeSectionPopup(item, mod, section) {
   const totalH = parseFloat(item.h) || 0;
   const effectiveH = totalH - pedestalH - moldingH;
   const halfH = Math.round(effectiveH / 2);
-  const sectionH = section === 'upper' ? (mod.upperH || halfH) : (mod.lowerH || halfH);
+  let sectionH;
+  if (section === 'full') {
+    sectionH = mod.h || effectiveH;
+  } else {
+    sectionH = section === 'upper' ? (mod.upperH || halfH) : (mod.lowerH || halfH);
+  }
 
   // SVG 프론트뷰 생성
   const svgW = 180;
@@ -2476,8 +2433,8 @@ function renderWardrobeSectionPopup(item, mod, section) {
       <circle cx="${offsetX + 10}" cy="${y}" r="4" fill="#f59e0b"/>
       <circle cx="${offsetX + drawW - 10}" cy="${y}" r="4" fill="#f59e0b"/>`;
   }
-  // 서랍 표시 (하부장만)
-  if (section === 'lower' && drawerCount > 0) {
+  // 서랍 표시 (하부장 또는 긴옷장)
+  if ((section === 'lower' || section === 'full') && drawerCount > 0) {
     const drawerH = Math.min(60 * scale, drawH / drawerCount);
     for (let i = 0; i < drawerCount; i++) {
       const y = offsetY + drawH - drawerH * (i + 1);
@@ -2521,7 +2478,16 @@ function renderWardrobeSectionPopup(item, mod, section) {
               </div>
             </div>
             ` : ''}
-            ${section === 'lower' ? `
+            ${isFullType ? `
+            <div class="ws-counter-row">
+              <span class="ws-counter-label" style="color:#b45309;">옷봉</span>
+              <div class="ws-counter-box" style="border-color:#f59e0b;background:#fef3c7;">
+                <span style="padding:0 10px;color:#b45309;">1</span>
+              </div>
+              <span style="font-size:10px;color:#888;">(긴옷장 기본)</span>
+            </div>
+            ` : ''}
+            ${(section === 'lower' || section === 'full') ? `
             <div class="ws-counter-row">
               <span class="ws-counter-label" style="color:#6366f1;">서랍</span>
               <div class="ws-counter-box" style="border-color:#6366f1;background:#eef2ff;">
@@ -2570,13 +2536,15 @@ function adjustWardrobePopupValue(type, delta) {
   if (type === 'shelf') {
     if (section === 'upper') {
       mod.shelfCountUpper = Math.max(0, Math.min(6, (mod.shelfCountUpper || 0) + delta));
+    } else if (section === 'full') {
+      mod.shelfCount = Math.max(0, Math.min(6, (mod.shelfCount || 0) + delta));
     } else {
       mod.shelfCountLower = Math.max(0, Math.min(6, (mod.shelfCountLower || 0) + delta));
     }
   } else if (type === 'rod') {
     if (section === 'upper') {
       mod.rodCountUpper = Math.max(0, Math.min(3, (mod.rodCountUpper || 0) + delta));
-    } else {
+    } else if (section !== 'full') { // full은 옷봉 고정
       mod.rodCountLower = Math.max(0, Math.min(3, (mod.rodCountLower || 0) + delta));
     }
   } else if (type === 'drawer') {
@@ -3420,9 +3388,8 @@ function renderFridgeWorkspace(item) {
             <label>W</label><input type="number" value="${mod.w}" style="width:55px;" onchange="updateFridgeModuleW(${item.uniqueId}, ${mod.id}, this.value)">
             <label>도어 구분</label><select onchange="updateFridgeDoorDivision(${item.uniqueId}, ${mod.id}, this.value)">${DOOR_DIVISION_TYPES.map(t => `<option value="${t.id}" ${mod.doorDivision === t.id ? 'selected' : ''}>${t.name}</option>`).join('')}</select>
             <label>하부</label><select onchange="updateFridgeSideModule(${item.uniqueId}, ${mod.id}, 'lowerType', this.value)">${LOWER_MODULE_TYPES.map(t => `<option value="${t.id}" ${mod.lowerType === t.id ? 'selected' : ''}>${t.icon}</option>`).join('')}</select>
-            <button class="toggle-btn el ${mod.hasEL ? 'active' : ''}" onclick="toggleFridgeModuleEL(${item.uniqueId}, ${mod.id})">⚡ EL장</button>
           </div>
-          ${mod.hasEL && mod.elModules && mod.elModules.length > 0 ? `<div style="font-size:9px;color:#10b981;margin-top:4px;">⚡ EL모듈: ${mod.elModules.length}개</div>` : ''}
+          ${mod.elModules && mod.elModules.length > 0 ? `<div style="font-size:9px;color:#10b981;margin-top:4px;">⚡ 모듈: ${mod.elModules.length}개</div>` : ''}
         </div>
         <button class="btn-delete" onclick="removeFridgeModule(${item.uniqueId}, ${mod.id})">×</button>
       </div>`;
@@ -3815,15 +3782,22 @@ function renderELPopup(item, mod) {
     mod.elModules.forEach((elMod, idx) => {
       const elModH = elMod.h * scale;
       const isOpen = elMod.type === 'open';
-      const fillColor = isOpen ? '#fef3c7' : '#dcfce7';
-      const strokeColor = isOpen ? '#f59e0b' : '#10b981';
+      const isEL = elMod.isEL !== false; // 기본값 true
+      // EL장: 녹색, 기본모듈: 회색, 오픈장: 노란색
+      let fillColor, strokeColor, labelColor, icon, label;
+      if (isOpen) {
+        fillColor = '#fef3c7'; strokeColor = '#f59e0b'; labelColor = '#b45309'; icon = '📂'; label = '오픈장';
+      } else if (isEL) {
+        fillColor = '#dcfce7'; strokeColor = '#10b981'; labelColor = '#065f46'; icon = '⚡'; label = 'EL장';
+      } else {
+        fillColor = '#f3f4f6'; strokeColor = '#9ca3af'; labelColor = '#4b5563'; icon = '📦'; label = '기본모듈';
+      }
       const doorName = EL_DOOR_TYPES.find(t=>t.id===elMod.doorType)?.name || '여닫이';
-      const label = isOpen ? '오픈장' : `EL장`;
 
       moduleSvg += `
         <rect x="${offsetX}" y="${currentY}" width="${drawW}" height="${elModH}" fill="${fillColor}" stroke="${strokeColor}" stroke-width="2" rx="4"/>
-        <text x="${offsetX + drawW/2}" y="${currentY + elModH/2 - 6}" text-anchor="middle" font-size="11" fill="${isOpen ? '#b45309' : '#065f46'}" font-weight="bold">${isOpen ? '📂' : '⚡'} ${label}</text>
-        <text x="${offsetX + drawW/2}" y="${currentY + elModH/2 + 8}" text-anchor="middle" font-size="9" fill="#666">${!isOpen ? doorName + ' | ' : ''}${elMod.h}mm</text>
+        <text x="${offsetX + drawW/2}" y="${currentY + elModH/2 - 6}" text-anchor="middle" font-size="11" fill="${labelColor}" font-weight="bold">${icon} ${label}</text>
+        <text x="${offsetX + drawW/2}" y="${currentY + elModH/2 + 8}" text-anchor="middle" font-size="9" fill="#666">${!isOpen && isEL ? doorName + ' | ' : ''}${elMod.h}mm</text>
       `;
       currentY += elModH;
       usedH += elMod.h;
@@ -3866,24 +3840,29 @@ function renderELPopup(item, mod) {
     <text x="${offsetX + drawW + 20}" y="${offsetY + middleH_s + (lowerH_s + pedestalH_s)/2}" font-size="9" fill="#6b7280" dominant-baseline="middle">하부 ${lowerWithPedestal}</text>
   `;
 
-  // EL 모듈 카드 HTML - 이동버튼 좌측, 고정버튼 추가
+  // EL 모듈 카드 HTML - 이동버튼 좌측, 고정버튼 추가, EL장 토글
   const elModuleCards = (mod.elModules || []).map((elMod, idx) => {
     const isOpen = elMod.type === 'open';
+    const isEL = elMod.isEL !== false; // 기본값 true (EL장)
     const isFixed = elMod.isFixed || false;
     const fixedClass = isFixed ? 'fixed-active' : '';
+    const elClass = isEL ? 'active' : '';
     return `
-      <div class="el-module-card" style="border-left:4px solid ${isOpen ? '#f59e0b' : '#10b981'};">
+      <div class="el-module-card" style="border-left:4px solid ${isOpen ? '#f59e0b' : (isEL ? '#10b981' : '#9ca3af')};">
         <div class="el-module-move-btns">
           <button onclick="moveELModule(${idx}, -1)" ${idx === 0 ? 'disabled' : ''}>▲</button>
           <button onclick="moveELModule(${idx}, 1)" ${idx === mod.elModules.length - 1 ? 'disabled' : ''}>▼</button>
         </div>
         <div style="flex:1;">
-          <div style="font-weight:700;font-size:12px;margin-bottom:6px;">${isOpen ? '📂 오픈장' : '⚡ EL장'}</div>
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
+            <span style="font-weight:700;font-size:12px;">${isOpen ? '📂 오픈장' : (isEL ? '⚡ EL장' : '📦 기본모듈')}</span>
+            ${!isOpen ? `<button class="toggle-btn el ${elClass}" onclick="toggleELModuleIsEL(${idx})">EL</button>` : ''}
+          </div>
           <div class="el-module-inputs">
             <label>높이</label>
             <input type="number" value="${elMod.h}" onchange="updateELModule(${idx}, 'h', this.value)">
             <span>mm</span>
-            ${!isOpen ? `
+            ${!isOpen && isEL ? `
               <label>도어</label>
               <select onchange="updateELModule(${idx}, 'doorType', this.value)" ${mod.doorDivision && mod.doorDivision !== 'individual' ? 'disabled style="opacity:0.5;"' : ''}>
                 ${EL_DOOR_TYPES.map(t => `<option value="${t.id}" ${elMod.doorType === t.id ? 'selected' : ''}>${t.name}</option>`).join('')}
@@ -4117,6 +4096,18 @@ function toggleELModuleFixed(idx) {
   if (!mod || !mod.elModules || !mod.elModules[idx]) return;
 
   mod.elModules[idx].isFixed = !mod.elModules[idx].isFixed;
+  renderELPopup(item, mod);
+}
+
+// EL 모듈 EL장/기본모듈 토글
+function toggleELModuleIsEL(idx) {
+  const item = selectedItems.find(i => i.uniqueId === currentELPopup.itemId);
+  if (!item) return;
+  const mod = item.modules.find(m => m.id === currentELPopup.modId);
+  if (!mod || !mod.elModules || !mod.elModules[idx]) return;
+
+  // 토글: undefined 또는 true면 false로, false면 true로
+  mod.elModules[idx].isEL = mod.elModules[idx].isEL === false ? true : false;
   renderELPopup(item, mod);
 }
 
