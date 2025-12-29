@@ -1769,7 +1769,7 @@ function renderWardrobeWorkspace(item) {
   const PANEL_THICKNESS = 15; // 천판/지판/선반 두께
   const ROD_OFFSET = 75; // 옷봉 위치: 상단에서 -75mm
   const LONG_FIRST_SHELF = 315; // 긴옷 첫 선반: 상단에서 -315mm
-  const DRAWER_HEIGHT = 180; // 서랍 높이
+  const DRAWER_HEIGHT = 300; // 서랍 높이 (300mm 고정)
   const SMARTBAR_WIDTH = 30; // 스마트바 너비
   const handleType = item.specs.handleType || 'bar';
   
@@ -2041,7 +2041,7 @@ function renderWardrobeWorkspace(item) {
               <input type="number" value="${mod.upperH || halfH}" onchange="updateWardrobeModuleDim(${item.uniqueId}, ${mod.id}, 'upperH', this.value)" style="${dimInputStyle}">
               <span style="${dimLabelStyle}">D</span>
               <input type="number" value="${mod.d}" onchange="updateWardrobeModuleDim(${item.uniqueId}, ${mod.id}, 'd', this.value)" style="${dimInputStyle}">
-              <button onclick="openWardrobeSectionSettings(${item.uniqueId}, ${mod.id}, 'upper')" style="${settBtnStyle}">⚙️</button>
+              ${moduleType !== 'short' ? `<button onclick="openWardrobeSectionSettings(${item.uniqueId}, ${mod.id}, 'upper')" style="${settBtnStyle}">⚙️</button>` : ''}
             </div>
             <!-- 하부장 -->
             <div style="display:flex;align-items:center;gap:6px;padding:6px 8px;background:#eff6ff;border:1px solid #3b82f6;border-radius:5px;">
@@ -2377,6 +2377,12 @@ function renderWardrobeSectionPopup(item, mod, section) {
   const existingPopup = document.getElementById('wardrobe-section-popup');
   if (existingPopup) existingPopup.remove();
 
+  const moduleType = mod.moduleType || 'short'; // short, long, shelf
+  const isShortType = moduleType === 'short';
+  const isLongType = moduleType === 'long';
+  const isShelfType = moduleType === 'shelf';
+  const isFullType = section === 'full';
+
   let sectionName, sectionColor, sectionBg;
   if (section === 'upper') {
     sectionName = '상부장'; sectionColor = '#10b981'; sectionBg = '#ecfdf5';
@@ -2386,18 +2392,29 @@ function renderWardrobeSectionPopup(item, mod, section) {
     sectionName = '긴옷장'; sectionColor = '#4a7dff'; sectionBg = '#f0f7ff';
   }
 
-  let shelfCount, rodCount, drawerCount;
-  if (section === 'full') {
+  // 서랍 높이 300mm 고정
+  const DRAWER_HEIGHT = 300;
+  // 선반 내경 300mm
+  const SHELF_INNER_HEIGHT = 300;
+
+  let shelfCount, rodCount, drawerCount, hasRod;
+  if (isFullType) {
+    // 긴옷(1단) - 선반, 서랍 가능
     shelfCount = mod.shelfCount || 0;
-    rodCount = 1; // 긴옷장은 기본 옷봉 1개
     drawerCount = mod.drawerCount || 0;
+    rodCount = 1; // 기본 옷봉 1개
+    hasRod = true;
+  } else if (section === 'upper') {
+    shelfCount = mod.shelfCountUpper || 0;
+    rodCount = mod.rodCountUpper || 0;
+    hasRod = rodCount > 0;
+    drawerCount = 0;
   } else {
-    shelfCount = section === 'upper' ? (mod.shelfCountUpper || 0) : (mod.shelfCountLower || 0);
-    rodCount = section === 'upper' ? (mod.rodCountUpper || 0) : (mod.rodCountLower || 0);
-    drawerCount = section === 'lower' ? (mod.drawerCount || 0) : 0;
+    shelfCount = mod.shelfCountLower || 0;
+    rodCount = mod.rodCountLower || 0;
+    hasRod = rodCount > 0;
+    drawerCount = mod.drawerCount || 0;
   }
-  const isShelfType = mod.moduleType === 'shelf';
-  const isFullType = section === 'full';
 
   // 높이 계산
   const pedestalH = parseFloat(item.specs.wardrobePedestal) || 60;
@@ -2406,7 +2423,7 @@ function renderWardrobeSectionPopup(item, mod, section) {
   const effectiveH = totalH - pedestalH - moldingH;
   const halfH = Math.round(effectiveH / 2);
   let sectionH;
-  if (section === 'full') {
+  if (isFullType) {
     sectionH = mod.h || effectiveH;
   } else {
     sectionH = section === 'upper' ? (mod.upperH || halfH) : (mod.lowerH || halfH);
@@ -2421,27 +2438,144 @@ function renderWardrobeSectionPopup(item, mod, section) {
   const offsetX = (svgW - drawW) / 2;
   const offsetY = 40;
 
-  // 선반, 옷봉, 서랍 그리기
+  // 서랍/선반/옷봉 그리기
   let contentSvg = '';
-  const shelfGap = drawH / (shelfCount + 1);
-  for (let i = 1; i <= shelfCount; i++) {
-    const y = offsetY + shelfGap * i;
-    contentSvg += `<line x1="${offsetX + 5}" y1="${y}" x2="${offsetX + drawW - 5}" y2="${y}" stroke="#9ca3af" stroke-width="2"/>`;
+
+  // 서랍 그리기 (300mm 고정 높이, 아래부터)
+  const drawerH_scaled = DRAWER_HEIGHT * scale;
+  const totalDrawerH = drawerCount * DRAWER_HEIGHT;
+  for (let i = 0; i < drawerCount; i++) {
+    const y = offsetY + drawH - drawerH_scaled * (i + 1);
+    contentSvg += `<rect x="${offsetX + 3}" y="${y}" width="${drawW - 6}" height="${drawerH_scaled - 2}" fill="#e5e7eb" stroke="#6366f1" stroke-width="1.5" rx="2"/>
+      <line x1="${offsetX + drawW/2 - 15}" y1="${y + drawerH_scaled/2}" x2="${offsetX + drawW/2 + 15}" y2="${y + drawerH_scaled/2}" stroke="#6b7280" stroke-width="2" stroke-linecap="round"/>
+      <text x="${offsetX + drawW - 8}" y="${y + drawerH_scaled/2 + 3}" text-anchor="end" font-size="7" fill="#6366f1">${DRAWER_HEIGHT}</text>`;
   }
+
+  // 선반 그리기 (긴옷장은 서랍 위부터, 내경 300mm 간격)
+  if (isFullType && shelfCount > 0) {
+    const availableH = sectionH - totalDrawerH - 50; // 옷봉 공간 제외
+    const shelfStartY = offsetY + 50; // 옷봉 아래
+    for (let i = 0; i < shelfCount; i++) {
+      const y = offsetY + drawH - totalDrawerH * scale - (i + 1) * SHELF_INNER_HEIGHT * scale;
+      if (y > shelfStartY) {
+        contentSvg += `<line x1="${offsetX + 5}" y1="${y}" x2="${offsetX + drawW - 5}" y2="${y}" stroke="#9ca3af" stroke-width="2"/>`;
+      }
+    }
+  } else if (!isFullType && shelfCount > 0) {
+    const shelfGap = (drawH - totalDrawerH * scale) / (shelfCount + 1);
+    for (let i = 1; i <= shelfCount; i++) {
+      const y = offsetY + shelfGap * i;
+      contentSvg += `<line x1="${offsetX + 5}" y1="${y}" x2="${offsetX + drawW - 5}" y2="${y}" stroke="#9ca3af" stroke-width="2"/>`;
+    }
+  }
+
   // 옷봉 표시
-  for (let i = 0; i < rodCount; i++) {
-    const y = offsetY + 20 + i * 30;
-    contentSvg += `<line x1="${offsetX + 10}" y1="${y}" x2="${offsetX + drawW - 10}" y2="${y}" stroke="#f59e0b" stroke-width="3" stroke-linecap="round"/>
-      <circle cx="${offsetX + 10}" cy="${y}" r="4" fill="#f59e0b"/>
-      <circle cx="${offsetX + drawW - 10}" cy="${y}" r="4" fill="#f59e0b"/>`;
+  if (isFullType || hasRod) {
+    const rodY = offsetY + 25;
+    contentSvg += `<line x1="${offsetX + 10}" y1="${rodY}" x2="${offsetX + drawW - 10}" y2="${rodY}" stroke="#f59e0b" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="${offsetX + 10}" cy="${rodY}" r="4" fill="#f59e0b"/>
+      <circle cx="${offsetX + drawW - 10}" cy="${rodY}" r="4" fill="#f59e0b"/>`;
   }
-  // 서랍 표시 (하부장 또는 긴옷장)
-  if ((section === 'lower' || section === 'full') && drawerCount > 0) {
-    const drawerH = Math.min(60 * scale, drawH / drawerCount);
-    for (let i = 0; i < drawerCount; i++) {
-      const y = offsetY + drawH - drawerH * (i + 1);
-      contentSvg += `<rect x="${offsetX + 3}" y="${y}" width="${drawW - 6}" height="${drawerH - 2}" fill="#e5e7eb" stroke="#9ca3af" stroke-width="1" rx="2"/>
-        <line x1="${offsetX + drawW/2 - 15}" y1="${y + drawerH/2}" x2="${offsetX + drawW/2 + 15}" y2="${y + drawerH/2}" stroke="#6b7280" stroke-width="2" stroke-linecap="round"/>`;
+
+  // 컨트롤 생성 - 타입별로 다른 옵션
+  let controlsHtml = '';
+
+  if (isShortType && section === 'lower') {
+    // 짧은옷 하부장: 서랍만
+    controlsHtml = `
+      <div class="ws-counter-row">
+        <span class="ws-counter-label" style="color:#6366f1;">서랍 (300mm)</span>
+        <div class="ws-counter-box" style="border-color:#6366f1;background:#eef2ff;">
+          <button onclick="adjustWardrobePopupValue('drawer', -1)">−</button>
+          <span id="ws-drawer-count" style="color:#6366f1;">${drawerCount}</span>
+          <button onclick="adjustWardrobePopupValue('drawer', 1)">+</button>
+        </div>
+      </div>
+    `;
+  } else if (isFullType) {
+    // 긴옷(1단): 옷봉 고정, 선반+서랍 (서랍은 선반 아래)
+    controlsHtml = `
+      <div class="ws-counter-row">
+        <span class="ws-counter-label" style="color:#b45309;">옷봉</span>
+        <div class="ws-counter-box" style="border-color:#f59e0b;background:#fef3c7;">
+          <span style="padding:0 10px;color:#b45309;">1</span>
+        </div>
+        <span style="font-size:10px;color:#888;">(기본)</span>
+      </div>
+      <div class="ws-counter-row">
+        <span class="ws-counter-label">선반 (내경 300mm)</span>
+        <div class="ws-counter-box">
+          <button onclick="adjustWardrobePopupValue('shelf', -1)">−</button>
+          <span id="ws-shelf-count">${shelfCount}</span>
+          <button onclick="adjustWardrobePopupValue('shelf', 1)">+</button>
+        </div>
+      </div>
+      <div class="ws-counter-row">
+        <span class="ws-counter-label" style="color:#6366f1;">서랍 (300mm)</span>
+        <div class="ws-counter-box" style="border-color:#6366f1;background:#eef2ff;">
+          <button onclick="adjustWardrobePopupValue('drawer', -1)">−</button>
+          <span id="ws-drawer-count" style="color:#6366f1;">${drawerCount}</span>
+          <button onclick="adjustWardrobePopupValue('drawer', 1)">+</button>
+        </div>
+      </div>
+      <div style="font-size:10px;color:#888;padding:4px 12px;background:#fef3c7;border-radius:4px;">※ 서랍은 선반 아래에 배치됩니다</div>
+    `;
+  } else if (isShelfType) {
+    // 선반형: 배타적 선택
+    if (section === 'upper') {
+      // 상부장: 선반 OR 옷봉 1개
+      const shelfActive = shelfCount > 0;
+      const rodActive = rodCount > 0;
+      controlsHtml = `
+        <div style="font-size:11px;color:#666;padding:8px;background:#fff7ed;border-radius:6px;margin-bottom:8px;">※ 선반 또는 옷봉 중 하나만 선택 가능</div>
+        <div class="ws-counter-row" style="${rodActive ? 'opacity:0.4;pointer-events:none;' : ''}">
+          <span class="ws-counter-label">선반</span>
+          <div class="ws-counter-box">
+            <button onclick="adjustWardrobePopupValue('shelf', -1)">−</button>
+            <span id="ws-shelf-count">${shelfCount}</span>
+            <button onclick="adjustWardrobePopupValue('shelf', 1)">+</button>
+          </div>
+        </div>
+        <div class="ws-counter-row" style="${shelfActive ? 'opacity:0.4;pointer-events:none;' : ''}">
+          <span class="ws-counter-label" style="color:#b45309;">옷봉 (1개)</span>
+          <div class="ws-counter-box" style="border-color:#f59e0b;background:#fef3c7;">
+            <button onclick="adjustWardrobePopupValue('rod', -1)">−</button>
+            <span id="ws-rod-count" style="color:#b45309;">${rodCount}</span>
+            <button onclick="adjustWardrobePopupValue('rod', 1)">+</button>
+          </div>
+        </div>
+      `;
+    } else {
+      // 하부장: (선반+서랍) OR 옷봉
+      const rodActive = rodCount > 0;
+      const shelfDrawerActive = shelfCount > 0 || drawerCount > 0;
+      controlsHtml = `
+        <div style="font-size:11px;color:#666;padding:8px;background:#fff7ed;border-radius:6px;margin-bottom:8px;">※ 옷봉 선택 시 선반/서랍 추가 불가</div>
+        <div class="ws-counter-row" style="${rodActive ? 'opacity:0.4;pointer-events:none;' : ''}">
+          <span class="ws-counter-label">선반</span>
+          <div class="ws-counter-box">
+            <button onclick="adjustWardrobePopupValue('shelf', -1)">−</button>
+            <span id="ws-shelf-count">${shelfCount}</span>
+            <button onclick="adjustWardrobePopupValue('shelf', 1)">+</button>
+          </div>
+        </div>
+        <div class="ws-counter-row" style="${rodActive ? 'opacity:0.4;pointer-events:none;' : ''}">
+          <span class="ws-counter-label" style="color:#6366f1;">서랍 (300mm)</span>
+          <div class="ws-counter-box" style="border-color:#6366f1;background:#eef2ff;">
+            <button onclick="adjustWardrobePopupValue('drawer', -1)">−</button>
+            <span id="ws-drawer-count" style="color:#6366f1;">${drawerCount}</span>
+            <button onclick="adjustWardrobePopupValue('drawer', 1)">+</button>
+          </div>
+        </div>
+        <div class="ws-counter-row" style="${shelfDrawerActive ? 'opacity:0.4;pointer-events:none;' : ''}">
+          <span class="ws-counter-label" style="color:#b45309;">옷봉 (1개)</span>
+          <div class="ws-counter-box" style="border-color:#f59e0b;background:#fef3c7;">
+            <button onclick="adjustWardrobePopupValue('rod', -1)">−</button>
+            <span id="ws-rod-count" style="color:#b45309;">${rodCount}</span>
+            <button onclick="adjustWardrobePopupValue('rod', 1)">+</button>
+          </div>
+        </div>
+      `;
     }
   }
 
@@ -2462,43 +2596,7 @@ function renderWardrobeSectionPopup(item, mod, section) {
             </svg>
           </div>
           <div class="ws-popup-controls">
-            <div class="ws-counter-row">
-              <span class="ws-counter-label">선반</span>
-              <div class="ws-counter-box">
-                <button onclick="adjustWardrobePopupValue('shelf', -1)">−</button>
-                <span id="ws-shelf-count">${shelfCount}</span>
-                <button onclick="adjustWardrobePopupValue('shelf', 1)">+</button>
-              </div>
-            </div>
-            ${isShelfType ? `
-            <div class="ws-counter-row">
-              <span class="ws-counter-label" style="color:#b45309;">옷봉</span>
-              <div class="ws-counter-box" style="border-color:#f59e0b;background:#fef3c7;">
-                <button onclick="adjustWardrobePopupValue('rod', -1)">−</button>
-                <span id="ws-rod-count" style="color:#b45309;">${rodCount}</span>
-                <button onclick="adjustWardrobePopupValue('rod', 1)">+</button>
-              </div>
-            </div>
-            ` : ''}
-            ${isFullType ? `
-            <div class="ws-counter-row">
-              <span class="ws-counter-label" style="color:#b45309;">옷봉</span>
-              <div class="ws-counter-box" style="border-color:#f59e0b;background:#fef3c7;">
-                <span style="padding:0 10px;color:#b45309;">1</span>
-              </div>
-              <span style="font-size:10px;color:#888;">(긴옷장 기본)</span>
-            </div>
-            ` : ''}
-            ${(section === 'lower' || section === 'full') ? `
-            <div class="ws-counter-row">
-              <span class="ws-counter-label" style="color:#6366f1;">서랍</span>
-              <div class="ws-counter-box" style="border-color:#6366f1;background:#eef2ff;">
-                <button onclick="adjustWardrobePopupValue('drawer', -1)">−</button>
-                <span id="ws-drawer-count" style="color:#6366f1;">${drawerCount}</span>
-                <button onclick="adjustWardrobePopupValue('drawer', 1)">+</button>
-              </div>
-            </div>
-            ` : ''}
+            ${controlsHtml}
           </div>
         </div>
         <div class="ws-popup-footer">
@@ -2508,14 +2606,14 @@ function renderWardrobeSectionPopup(item, mod, section) {
     </div>
     <style>
       .ws-popup-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);z-index:10000;display:flex;align-items:center;justify-content:center}
-      .ws-popup{background:white;border-radius:16px;width:400px;max-width:95vw;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.3)}
+      .ws-popup{background:white;border-radius:16px;width:420px;max-width:95vw;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.3)}
       .ws-popup-header{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;color:white;font-weight:700;font-size:14px}
       .ws-popup-close{background:none;border:none;color:white;font-size:20px;cursor:pointer}
       .ws-popup-body{display:flex;gap:20px;padding:20px}
       .ws-popup-preview{flex:0 0 auto}
-      .ws-popup-controls{flex:1;display:flex;flex-direction:column;gap:12px;justify-content:center}
+      .ws-popup-controls{flex:1;display:flex;flex-direction:column;gap:10px;justify-content:center}
       .ws-counter-row{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:#f9fafb;border-radius:8px}
-      .ws-counter-label{font-weight:700;font-size:13px;color:#374151}
+      .ws-counter-label{font-weight:700;font-size:12px;color:#374151}
       .ws-counter-box{display:flex;align-items:center;gap:8px;padding:6px 10px;border:2px solid #e5e7eb;border-radius:8px;background:white}
       .ws-counter-box button{width:28px;height:28px;border:1px solid #ddd;border-radius:6px;background:#fff;cursor:pointer;font-size:16px;font-weight:bold}
       .ws-counter-box button:hover{background:#f3f4f6}
@@ -2534,23 +2632,39 @@ function adjustWardrobePopupValue(type, delta) {
   const mod = item.modules.find(m => m.id === currentWardrobePopup.modId);
   if (!mod) return;
   const section = currentWardrobePopup.section;
+  const isShelfType = mod.moduleType === 'shelf';
 
   if (type === 'shelf') {
     if (section === 'upper') {
       mod.shelfCountUpper = Math.max(0, Math.min(6, (mod.shelfCountUpper || 0) + delta));
+      // 선반형 상부장: 선반 추가시 옷봉 제거
+      if (isShelfType && mod.shelfCountUpper > 0) mod.rodCountUpper = 0;
     } else if (section === 'full') {
       mod.shelfCount = Math.max(0, Math.min(6, (mod.shelfCount || 0) + delta));
     } else {
       mod.shelfCountLower = Math.max(0, Math.min(6, (mod.shelfCountLower || 0) + delta));
+      // 선반형 하부장: 선반/서랍 추가시 옷봉 제거
+      if (isShelfType && mod.shelfCountLower > 0) mod.rodCountLower = 0;
     }
   } else if (type === 'rod') {
     if (section === 'upper') {
-      mod.rodCountUpper = Math.max(0, Math.min(3, (mod.rodCountUpper || 0) + delta));
-    } else if (section !== 'full') { // full은 옷봉 고정
-      mod.rodCountLower = Math.max(0, Math.min(3, (mod.rodCountLower || 0) + delta));
+      mod.rodCountUpper = Math.max(0, Math.min(1, (mod.rodCountUpper || 0) + delta));
+      // 선반형 상부장: 옷봉 추가시 선반 제거
+      if (isShelfType && mod.rodCountUpper > 0) mod.shelfCountUpper = 0;
+    } else if (section !== 'full') {
+      mod.rodCountLower = Math.max(0, Math.min(1, (mod.rodCountLower || 0) + delta));
+      // 선반형 하부장: 옷봉 추가시 선반/서랍 제거
+      if (isShelfType && mod.rodCountLower > 0) {
+        mod.shelfCountLower = 0;
+        mod.drawerCount = 0;
+      }
     }
   } else if (type === 'drawer') {
     mod.drawerCount = Math.max(0, Math.min(6, (mod.drawerCount || 0) + delta));
+    // 선반형 하부장: 서랍 추가시 옷봉 제거
+    if (isShelfType && section === 'lower' && mod.drawerCount > 0) {
+      mod.rodCountLower = 0;
+    }
   }
 
   renderWardrobeSectionPopup(item, mod, section);
