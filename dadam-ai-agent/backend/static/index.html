@@ -166,7 +166,7 @@
 // 전역 변수 및 상수
 // ============================================================
 const CATEGORIES = [
-  { id: 'sink', name: '싱크대', defaultD: 600 },
+  { id: 'sink', name: '싱크대', defaultD: 650 },
   { id: 'island', name: '아일랜드', defaultD: 800 },
   { id: 'wardrobe', name: '붙박이장', defaultD: 650 },
   { id: 'fridge', name: '냉장고장', defaultD: 700 },
@@ -1521,6 +1521,7 @@ function renderWorkspaceContent(item) {
     else if (isBase) cardClass += ' base-module';
     else if (mod.isFixed) cardClass += ' fixed-module';
 
+    const fixedClass = mod.isFixed ? 'active' : '';
     return `
       <div class="${cardClass}" data-module-id="${mod.id}">
         <div class="move-buttons">
@@ -1532,6 +1533,7 @@ function renderWorkspaceContent(item) {
           <div class="module-header">
             <span class="module-title">${mod.name}</span>
             ${isTall ? '<span class="module-type-badge">키큰장</span>' : ''}
+            <button class="toggle-btn ${fixedClass}" style="margin-left:auto;font-size:9px;padding:2px 6px;" onclick="toggleSinkModuleFixed(${item.uniqueId}, ${mod.id})">고정</button>
           </div>
           <div class="module-dims">
             <div class="dim-group"><label class="dim-label">W</label><input type="number" class="dim-input" value="${mod.w}" onchange="updateModuleDim(${item.uniqueId}, ${mod.id}, 'w', this.value)"></div>
@@ -3011,6 +3013,17 @@ function removeModule(itemUniqueId, moduleId) {
   }
 }
 
+// 싱크대 모듈 고정 토글
+function toggleSinkModuleFixed(itemUniqueId, moduleId) {
+  const item = selectedItems.find(i => i.uniqueId === itemUniqueId);
+  if (!item) return;
+  const mod = item.modules.find(m => m.id === moduleId);
+  if (mod) {
+    mod.isFixed = !mod.isFixed;
+    renderWorkspaceContent(item);
+  }
+}
+
 function addStorageModule(itemUniqueId, type) {
   const item = selectedItems.find(i => i.uniqueId === itemUniqueId);
   if (!item) return;
@@ -3239,11 +3252,17 @@ function renderFridgeWorkspace(item) {
           mod.elModules.forEach((elMod, elIdx) => {
             const elModH_scaled = (elMod.h / middleH) * middleH_scaled;
             const isOpen = elMod.type === 'open';
-            const fillColor = isOpen ? '#fef3c7' : '#dcfce7';
-            const strokeColor = isOpen ? '#f59e0b' : '#10b981';
-            const label = isOpen ? '📂' : '⚡';
+            const isEL = elMod.isEL !== false; // 기본값 true
+            let fillColor, strokeColor, label, labelColor;
+            if (isOpen) {
+              fillColor = '#fef3c7'; strokeColor = '#f59e0b'; label = '📂'; labelColor = '#b45309';
+            } else if (isEL) {
+              fillColor = '#dcfce7'; strokeColor = '#10b981'; label = '⚡'; labelColor = '#065f46';
+            } else {
+              fillColor = '#f3f4f6'; strokeColor = '#9ca3af'; label = '📦'; labelColor = '#4b5563';
+            }
             moduleSvg += `<rect x="${currentX}" y="${elY}" width="${modW}" height="${elModH_scaled}" fill="${fillColor}" stroke="${strokeColor}" stroke-width="2" rx="2"/>
-              <text x="${currentX + modW/2}" y="${elY + elModH_scaled/2}" text-anchor="middle" font-size="9" fill="${isOpen ? '#b45309' : '#065f46'}" font-weight="bold">${label} ${elMod.h}</text>`;
+              <text x="${currentX + modW/2}" y="${elY + elModH_scaled/2}" text-anchor="middle" font-size="9" fill="${labelColor}" font-weight="bold">${label} ${elMod.h}</text>`;
             elY += elModH_scaled;
             usedH += elMod.h;
           });
@@ -3283,11 +3302,17 @@ function renderFridgeWorkspace(item) {
           mod.elModules.forEach((elMod, elIdx) => {
             const elModH_scaled = (elMod.h / middleH) * middleH_scaled;
             const isOpen = elMod.type === 'open';
-            const fillColor = isOpen ? '#fef3c7' : '#f3e8ff';
-            const strokeColor = isOpen ? '#f59e0b' : '#8b5cf6';
-            const label = isOpen ? '📂' : '⚡';
+            const isEL = elMod.isEL !== false; // 기본값 true
+            let fillColor, strokeColor, label, labelColor;
+            if (isOpen) {
+              fillColor = '#fef3c7'; strokeColor = '#f59e0b'; label = '📂'; labelColor = '#b45309';
+            } else if (isEL) {
+              fillColor = '#f3e8ff'; strokeColor = '#8b5cf6'; label = '⚡'; labelColor = '#6b21a8';
+            } else {
+              fillColor = '#f3f4f6'; strokeColor = '#9ca3af'; label = '📦'; labelColor = '#4b5563';
+            }
             moduleSvg += `<rect x="${currentX}" y="${elY}" width="${modW}" height="${elModH_scaled}" fill="${fillColor}" stroke="${strokeColor}" stroke-width="2" rx="2"/>
-              <text x="${currentX + modW/2}" y="${elY + elModH_scaled/2}" text-anchor="middle" font-size="9" fill="${isOpen ? '#b45309' : '#6b21a8'}" font-weight="bold">${label} ${elMod.h}</text>`;
+              <text x="${currentX + modW/2}" y="${elY + elModH_scaled/2}" text-anchor="middle" font-size="9" fill="${labelColor}" font-weight="bold">${label} ${elMod.h}</text>`;
             elY += elModH_scaled;
             usedH += elMod.h;
           });
