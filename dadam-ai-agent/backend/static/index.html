@@ -3365,7 +3365,7 @@ function renderFridgeWorkspace(item) {
           mod.elModules.forEach((elMod, elIdx) => {
             const elModH_scaled = (elMod.h / middleH) * middleH_scaled;
             const isOpen = elMod.type === 'open';
-            const isEL = elMod.isEL !== false; // 기본값 true
+            const isEL = elMod.isEL === true; // 기본값 false (기본모듈)
             let fillColor, strokeColor, label, labelColor;
             if (isOpen) {
               fillColor = '#fef3c7'; strokeColor = '#f59e0b'; label = '📂'; labelColor = '#b45309';
@@ -3415,7 +3415,7 @@ function renderFridgeWorkspace(item) {
           mod.elModules.forEach((elMod, elIdx) => {
             const elModH_scaled = (elMod.h / middleH) * middleH_scaled;
             const isOpen = elMod.type === 'open';
-            const isEL = elMod.isEL !== false; // 기본값 true
+            const isEL = elMod.isEL === true; // 기본값 false (기본모듈)
             let fillColor, strokeColor, label, labelColor;
             if (isOpen) {
               fillColor = '#fef3c7'; strokeColor = '#f59e0b'; label = '📂'; labelColor = '#b45309';
@@ -3920,7 +3920,7 @@ function renderELPopup(item, mod) {
     mod.elModules.forEach((elMod, idx) => {
       const elModH = elMod.h * scale;
       const isOpen = elMod.type === 'open';
-      const isEL = elMod.isEL !== false; // 기본값 true
+      const isEL = elMod.isEL === true; // 기본값 false (기본모듈)
       // EL장: 녹색, 기본모듈: 회색, 오픈장: 노란색
       let fillColor, strokeColor, labelColor, icon, label;
       if (isOpen) {
@@ -3928,7 +3928,7 @@ function renderELPopup(item, mod) {
       } else if (isEL) {
         fillColor = '#dcfce7'; strokeColor = '#10b981'; labelColor = '#065f46'; icon = '⚡'; label = 'EL장';
       } else {
-        fillColor = '#f3f4f6'; strokeColor = '#9ca3af'; labelColor = '#4b5563'; icon = '📦'; label = '기본모듈';
+        fillColor = '#f3f4f6'; strokeColor = '#9ca3af'; labelColor = '#4b5563'; icon = '📦'; label = '모듈';
       }
       const doorName = EL_DOOR_TYPES.find(t=>t.id===elMod.doorType)?.name || '여닫이';
 
@@ -3981,7 +3981,7 @@ function renderELPopup(item, mod) {
   // EL 모듈 카드 HTML - 이동버튼 좌측, 고정버튼 추가, EL장 토글
   const elModuleCards = (mod.elModules || []).map((elMod, idx) => {
     const isOpen = elMod.type === 'open';
-    const isEL = elMod.isEL !== false; // 기본값 true (EL장)
+    const isEL = elMod.isEL === true; // 기본값 false (기본모듈)
     const isFixed = elMod.isFixed || false;
     const fixedClass = isFixed ? 'fixed-active' : '';
     const elClass = isEL ? 'active' : '';
@@ -3992,15 +3992,15 @@ function renderELPopup(item, mod) {
           <button onclick="moveELModule(${idx}, 1)" ${idx === mod.elModules.length - 1 ? 'disabled' : ''}>▼</button>
         </div>
         <div style="flex:1;">
-          <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
-            <span style="font-weight:700;font-size:12px;">${isOpen ? '📂 오픈장' : (isEL ? '⚡ EL장' : '📦 기본모듈')}</span>
-            ${!isOpen ? `<button class="toggle-btn el ${elClass}" onclick="toggleELModuleIsEL(${idx})">EL</button>` : ''}
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+            <span style="font-weight:700;font-size:12px;">${isOpen ? '📂 오픈장' : '📦 모듈'}</span>
+            ${!isOpen ? `<button class="toggle-btn el ${elClass}" onclick="toggleELModuleIsEL(${idx})" style="margin-left:auto;">EL장</button>` : ''}
           </div>
           <div class="el-module-inputs">
             <label>높이</label>
             <input type="number" value="${elMod.h}" onchange="updateELModule(${idx}, 'h', this.value)">
             <span>mm</span>
-            ${!isOpen && isEL ? `
+            ${!isOpen ? `
               <label>도어</label>
               <select onchange="updateELModule(${idx}, 'doorType', this.value)" ${mod.doorDivision && mod.doorDivision !== 'individual' ? 'disabled style="opacity:0.5;"' : ''}>
                 ${EL_DOOR_TYPES.map(t => `<option value="${t.id}" ${elMod.doorType === t.id ? 'selected' : ''}>${t.name}</option>`).join('')}
@@ -4182,7 +4182,8 @@ function addELSubModule(type) {
     type: type,
     h: defaultH,
     doorType: type === 'el' ? 'swing' : null,  // 오픈장은 도어 없음
-    isFixed: false  // 고정 여부
+    isFixed: false,  // 고정 여부
+    isEL: false  // 기본값: 기본모듈 (EL장 아님)
   });
 
   renderELPopup(item, mod);
@@ -4244,8 +4245,8 @@ function toggleELModuleIsEL(idx) {
   const mod = item.modules.find(m => m.id === currentELPopup.modId);
   if (!mod || !mod.elModules || !mod.elModules[idx]) return;
 
-  // 토글: undefined 또는 true면 false로, false면 true로
-  mod.elModules[idx].isEL = mod.elModules[idx].isEL === false ? true : false;
+  // 토글: true면 false로, false/undefined면 true로
+  mod.elModules[idx].isEL = !mod.elModules[idx].isEL;
   renderELPopup(item, mod);
 }
 
