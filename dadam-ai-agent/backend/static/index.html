@@ -1553,6 +1553,119 @@ function renderWorkspaceContent(item) {
   const upperEffDisplay = item.specs.effectiveUpperW !== null ? item.specs.effectiveUpperW : Math.round(autoEffectiveW);
   const lowerEffDisplay = item.specs.effectiveLowerW !== null ? item.specs.effectiveLowerW : Math.round(autoEffectiveW);
 
+  // ★ 싱크대 Front View SVG 생성
+  const sinkW = parseFloat(item.w) || 3000;
+  const sinkH = parseFloat(item.h) || 2400;
+  const upperH = parseFloat(item.specs.upperH) || 720;
+  const lowerH = parseFloat(item.specs.lowerH) || 870;
+  const moldingH = parseFloat(item.specs.moldingH) || 50;
+  const legH = parseFloat(item.specs.sinkLegHeight) || 120;
+  const finishL = item.specs.finishLeftType !== 'None' ? (parseFloat(item.specs.finishLeftWidth) || 0) : 0;
+  const finishR = item.specs.finishRightType !== 'None' ? (parseFloat(item.specs.finishRightWidth) || 0) : 0;
+
+  const svgWidth = 600;
+  const svgHeight = 380;
+  const scaleX = (svgWidth - 100) / sinkW;
+  const scaleY = (svgHeight - 100) / sinkH;
+  const scale = Math.min(scaleX, scaleY);
+  const drawW = sinkW * scale;
+  const drawH = sinkH * scale;
+  const offsetX = (svgWidth - drawW) / 2;
+  const offsetY = 50;
+
+  // 각 영역 높이 (스케일 적용)
+  const moldingH_s = moldingH * scale;
+  const upperH_s = upperH * scale;
+  const lowerH_s = lowerH * scale;
+  const legH_s = legH * scale;
+
+  let sinkModuleSvg = '';
+
+  // 상몰딩
+  sinkModuleSvg += `<rect x="${offsetX}" y="${offsetY}" width="${drawW}" height="${moldingH_s}" fill="#e5e7eb" stroke="#9ca3af" stroke-width="1"/>
+    <text x="${offsetX + drawW/2}" y="${offsetY + moldingH_s/2 + 3}" text-anchor="middle" font-size="9" fill="#666">상몰딩 ${moldingH}mm</text>`;
+
+  // 상부장 모듈들
+  let upperStartX = offsetX + finishL * scale;
+  const upperY = offsetY + moldingH_s;
+  upperModules.forEach((mod, idx) => {
+    const modW = parseFloat(mod.w) * scale;
+    const icons = { hood: '🌀', storage: '📦' };
+    const icon = icons[mod.type] || '📦';
+    const fillColor = mod.type === 'hood' ? '#fef3c7' : '#eff6ff';
+    const strokeColor = mod.type === 'hood' ? '#f59e0b' : '#3b82f6';
+    sinkModuleSvg += `<rect x="${upperStartX}" y="${upperY}" width="${modW}" height="${upperH_s}" fill="${fillColor}" stroke="${strokeColor}" stroke-width="2" rx="2"/>
+      <text x="${upperStartX + modW/2}" y="${upperY + upperH_s/2 - 8}" text-anchor="middle" font-size="11" fill="${mod.type === 'hood' ? '#b45309' : '#1d4ed8'}" font-weight="bold">${icon}</text>
+      <text x="${upperStartX + modW/2}" y="${upperY + upperH_s/2 + 8}" text-anchor="middle" font-size="9" fill="#666">${mod.w}</text>`;
+    upperStartX += modW;
+  });
+
+  // 중간 공간 (상판 영역)
+  const middleY = upperY + upperH_s;
+  const middleH_s = drawH - moldingH_s - upperH_s - lowerH_s - legH_s;
+  if (middleH_s > 0) {
+    sinkModuleSvg += `<rect x="${offsetX}" y="${middleY}" width="${drawW}" height="${middleH_s}" fill="#fafafa" stroke="#e5e7eb" stroke-width="1" stroke-dasharray="4"/>`;
+  }
+
+  // 하부장 모듈들
+  let lowerStartX = offsetX + finishL * scale;
+  const lowerY = middleY + middleH_s;
+  lowerModules.forEach((mod, idx) => {
+    const modW = parseFloat(mod.w) * scale;
+    const isTall = mod.type === 'tall';
+    const modH_s = isTall ? (upperH_s + middleH_s + lowerH_s) : lowerH_s;
+    const modY = isTall ? upperY : lowerY;
+
+    const icons = { sink: '🚰', cook: '🔥', tall: '↕️', storage: '🗄️' };
+    const icon = icons[mod.type] || '📦';
+    let fillColor = '#f3f4f6';
+    let strokeColor = '#6b7280';
+    if (mod.type === 'sink') { fillColor = '#dbeafe'; strokeColor = '#3b82f6'; }
+    else if (mod.type === 'cook') { fillColor = '#fee2e2'; strokeColor = '#ef4444'; }
+    else if (isTall) { fillColor = '#dcfce7'; strokeColor = '#10b981'; }
+    else if (mod.isDrawer) { fillColor = '#fef3c7'; strokeColor = '#f59e0b'; }
+
+    sinkModuleSvg += `<rect x="${lowerStartX}" y="${modY}" width="${modW}" height="${modH_s}" fill="${fillColor}" stroke="${strokeColor}" stroke-width="2" rx="2"/>
+      <text x="${lowerStartX + modW/2}" y="${modY + modH_s/2 - 8}" text-anchor="middle" font-size="12" fill="${strokeColor}" font-weight="bold">${icon}</text>
+      <text x="${lowerStartX + modW/2}" y="${modY + modH_s/2 + 8}" text-anchor="middle" font-size="9" fill="#666">${mod.w}${isTall ? ' (TL)' : ''}</text>`;
+    lowerStartX += modW;
+  });
+
+  // 다리발
+  const legY = lowerY + lowerH_s;
+  sinkModuleSvg += `<rect x="${offsetX}" y="${legY}" width="${drawW}" height="${legH_s}" fill="#d1d5db" stroke="#9ca3af" stroke-width="1"/>
+    <text x="${offsetX + drawW/2}" y="${legY + legH_s/2 + 3}" text-anchor="middle" font-size="8" fill="#666">다리발 ${legH}mm</text>`;
+
+  // 좌측 마감
+  if (finishL > 0) {
+    sinkModuleSvg += `<rect x="${offsetX}" y="${upperY}" width="${finishL * scale}" height="${upperH_s + middleH_s + lowerH_s}" fill="#e0e0e0" stroke="#999" stroke-width="1"/>
+      <text x="${offsetX + finishL * scale / 2}" y="${upperY + (upperH_s + middleH_s + lowerH_s)/2}" text-anchor="middle" font-size="8" fill="#666" transform="rotate(-90 ${offsetX + finishL * scale / 2} ${upperY + (upperH_s + middleH_s + lowerH_s)/2})">${finishL}</text>`;
+  }
+  // 우측 마감
+  if (finishR > 0) {
+    sinkModuleSvg += `<rect x="${offsetX + drawW - finishR * scale}" y="${upperY}" width="${finishR * scale}" height="${upperH_s + middleH_s + lowerH_s}" fill="#e0e0e0" stroke="#999" stroke-width="1"/>
+      <text x="${offsetX + drawW - finishR * scale / 2}" y="${upperY + (upperH_s + middleH_s + lowerH_s)/2}" text-anchor="middle" font-size="8" fill="#666" transform="rotate(-90 ${offsetX + drawW - finishR * scale / 2} ${upperY + (upperH_s + middleH_s + lowerH_s)/2})">${finishR}</text>`;
+  }
+
+  const sinkFrontViewSvg = `
+    <svg width="${svgWidth}" height="${svgHeight}" style="background:#fafafa;border:1px solid #e0e0e0;border-radius:8px;">
+      <!-- 치수선 - 상단 -->
+      <line x1="${offsetX}" y1="${offsetY - 15}" x2="${offsetX + drawW}" y2="${offsetY - 15}" stroke="#666" stroke-width="1"/>
+      <line x1="${offsetX}" y1="${offsetY - 20}" x2="${offsetX}" y2="${offsetY - 10}" stroke="#666" stroke-width="1"/>
+      <line x1="${offsetX + drawW}" y1="${offsetY - 20}" x2="${offsetX + drawW}" y2="${offsetY - 10}" stroke="#666" stroke-width="1"/>
+      <text x="${offsetX + drawW / 2}" y="${offsetY - 25}" text-anchor="middle" font-size="12" fill="#333" font-weight="bold">${sinkW}mm</text>
+
+      <!-- 치수선 - 좌측 -->
+      <line x1="${offsetX - 15}" y1="${offsetY}" x2="${offsetX - 15}" y2="${offsetY + drawH}" stroke="#666" stroke-width="1"/>
+      <line x1="${offsetX - 20}" y1="${offsetY}" x2="${offsetX - 10}" y2="${offsetY}" stroke="#666" stroke-width="1"/>
+      <line x1="${offsetX - 20}" y1="${offsetY + drawH}" x2="${offsetX - 10}" y2="${offsetY + drawH}" stroke="#666" stroke-width="1"/>
+      <text x="${offsetX - 25}" y="${offsetY + drawH / 2}" text-anchor="middle" font-size="12" fill="#333" font-weight="bold" transform="rotate(-90 ${offsetX - 25} ${offsetY + drawH / 2})">${sinkH}mm</text>
+
+      <!-- 모듈들 -->
+      ${sinkModuleSvg}
+    </svg>
+  `;
+
   // 마감 설정
   let cornerHtml = '';
   if (item.specs.layoutShape === 'L') {
@@ -1658,6 +1771,15 @@ function renderWorkspaceContent(item) {
       </div>
 
       <div class="module-panel">
+        <!-- ★ Front View 도면 -->
+        <div class="front-view-section" style="margin-bottom:20px;">
+          <div style="font-size:14px;font-weight:bold;color:#333;margin-bottom:10px;display:flex;align-items:center;gap:8px;">
+            <span>📐 Front View</span>
+            <span style="font-size:11px;color:#888;font-weight:normal;">(전면부 도면)</span>
+          </div>
+          ${sinkFrontViewSvg}
+        </div>
+
         <div class="module-section">
           <div class="module-section-header upper">
             <div class="section-title-row"><span>⬆️ 상부장 모듈</span></div>
