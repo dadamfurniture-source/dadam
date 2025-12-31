@@ -4,7 +4,7 @@
 from typing import List, Dict, Any, Optional, Tuple
 from data.constants import (
     DOOR_TARGET_WIDTH, DOOR_MAX_WIDTH, DOOR_MIN_WIDTH,
-    MIN_REMAINDER, MAX_REMAINDER
+    MIN_REMAINDER, MAX_REMAINDER, CATEGORY_DOOR_RULES
 )
 
 
@@ -163,6 +163,96 @@ class DimensionCalculator:
             "remaining": total_space - (door_width * door_count),
             "is_optimal": best.get("is_primary", False)
         }
+
+    def distribute_modules_single_door(self, total_space: float) -> Dict[str, Any]:
+        """
+        냉장고장 상부장 전용 모듈 분배
+        - 가로너비 분배규칙 미적용
+        - 모듈 하나에 도어 하나만 생성 (모두 1D)
+        """
+        if total_space < 100:
+            return {"modules": [], "door_width": 0, "door_count": 0, "remaining": 0}
+
+        # 도어 개수 범위 설정
+        min_count = max(1, int(total_space / self.door_max + 0.999))
+        max_door_count = int(total_space / self.door_min)
+        base_count = round(total_space / self.door_target)
+        max_count = min(max_door_count, max(base_count + 3, min_count + 5))
+
+        all_results = []
+
+        for count in range(min_count, max_count + 1):
+            width = self.find_best_door_width(total_space, count)
+            if width is not None:
+                gap = total_space - (width * count)
+                target_diff = abs(width - self.door_target)
+                is_primary = self.min_remainder <= gap <= self.max_remainder
+
+                all_results.append({
+                    "door_count": count,
+                    "door_width": width,
+                    "gap": gap,
+                    "target_diff": target_diff,
+                    "is_primary": is_primary
+                })
+
+        # 정렬: is_primary 우선 → target_diff 작은 순 → gap 작은 순
+        all_results.sort(key=lambda x: (not x["is_primary"], x["target_diff"], x["gap"]))
+
+        if all_results:
+            best = all_results[0]
+        else:
+            # 강제 계산
+            ideal_count = round(total_space / self.door_target)
+            count = max(min_count, min(max_door_count, ideal_count))
+            width = int(total_space / count / 2) * 2
+            width = max(self.door_min, min(self.door_max, width))
+            best = {
+                "door_count": count,
+                "door_width": width,
+                "gap": total_space - (width * count)
+            }
+
+        door_count = best["door_count"]
+        door_width = best["door_width"]
+
+        # 냉장고장 상부장: 모든 모듈을 1D로 생성
+        modules = []
+        for i in range(door_count):
+            modules.append({
+                "width": door_width,
+                "is_2d": False,
+                "door_count": 1
+            })
+
+        return {
+            "modules": modules,
+            "door_width": door_width,
+            "door_count": door_count,
+            "remaining": total_space - (door_width * door_count),
+            "is_optimal": best.get("is_primary", False),
+            "is_single_door_mode": True  # 단일 도어 모드 표시
+        }
+
+    def distribute_modules_for_category(
+        self,
+        total_space: float,
+        category: str = None,
+        is_upper: bool = False
+    ) -> Dict[str, Any]:
+        """
+        카테고리별 모듈 분배
+        - 냉장고장 상부장: 모듈당 1도어만 생성
+        - 그 외: 일반 분배규칙 적용
+        """
+        # 냉장고장 상부장 특별 규칙 확인
+        if category == "fridge" and is_upper:
+            fridge_rules = CATEGORY_DOOR_RULES.get("fridge", {})
+            if fridge_rules.get("upper_single_door_per_module", False):
+                return self.distribute_modules_single_door(total_space)
+
+        # 일반 분배규칙 적용
+        return self.distribute_modules(total_space)
 
     def calc_effective_space(
         self,

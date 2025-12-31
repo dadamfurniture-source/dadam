@@ -24,7 +24,8 @@ CATEGORY_DOOR_RULES = {
     "fridge": {
         "upper_has_door": True,    # 상부장 도어 있음
         "door_gap": 3,             # 2도어 사이 간격
-        "show_handle": False       # 손잡이 표시 안함
+        "show_handle": False,      # 손잡이 표시 안함
+        "upper_single_door_per_module": True  # 상부장: 모듈당 1도어만 생성 (가로너비 분배규칙 미적용)
     },
     "sink": {
         "upper_has_door": True,
