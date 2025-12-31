@@ -3599,7 +3599,7 @@ function renderFridgeWorkspace(item) {
     let upperDoorX = offsetX + fL * scale;
     upperCabinets.forEach(cab => {
       const cabW = cab.w * scale;
-      const doorCount = Math.max(1, Math.round(cab.w / 450));
+      const doorCount = 1; // 모듈당 1개 도어
       const doorWidth = cabW / doorCount;
       for (let d = 0; d < doorCount; d++) {
         const doorX = upperDoorX + d * doorWidth + doorGap/2;
@@ -3712,7 +3712,7 @@ function renderFridgeWorkspace(item) {
         // ★ 키큰장 도어 표시 (도어구분에 따라 다르게 표시)
         if (showDoors) {
           const doorDivision = mod.doorDivision || 'individual';
-          const doorCount = Math.max(1, Math.round(mod.w / 450));
+          const doorCount = 1; // 모듈당 1개 도어
           const dW = modW / doorCount;
 
           if (doorDivision === 'all') {
@@ -3808,7 +3808,7 @@ function renderFridgeWorkspace(item) {
 
         // ★ 홈카페장 하부장 도어만 표시 (중간장은 도어 없음)
         if (showDoors) {
-          const doorCount = Math.max(1, Math.round(mod.w / 450));
+          const doorCount = 1; // 모듈당 1개 도어
           const dW = modW / doorCount;
           for (let d = 0; d < doorCount; d++) {
             const dX = currentX + d * dW + doorGap/2;
