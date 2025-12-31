@@ -1,76 +1,76 @@
 @echo off
-chcp 65001 > nul
+chcp 949 > nul
 title Vibe Cabinet AI Agent
 
 echo.
-echo ╔════════════════════════════════════════════════════════════╗
-echo ║            Vibe Cabinet AI Agent 실행 중...                ║
-echo ╚════════════════════════════════════════════════════════════╝
+echo ========================================
+echo   Vibe Cabinet AI Agent - Starting...
+echo ========================================
 echo.
 
-:: 현재 디렉토리 확인
-echo [1] 현재 위치: %CD%
+:: Current directory
+echo [INFO] Current path: %CD%
 echo.
 
-:: Python 확인
+:: Python check
 where python >nul 2>nul
 if %ERRORLEVEL% NEQ 0 (
-    echo [오류] Python이 설치되지 않았거나 PATH에 없습니다.
-    echo        https://www.python.org/downloads/ 에서 설치하세요.
+    echo [ERROR] Python not found in PATH
+    echo         https://www.python.org/downloads/
     pause
     exit /b 1
 )
-echo [OK] Python 확인됨
+echo [OK] Python found
 
-:: Node.js 확인
+:: Node.js check
 where node >nul 2>nul
 if %ERRORLEVEL% NEQ 0 (
-    echo [오류] Node.js가 설치되지 않았거나 PATH에 없습니다.
-    echo        https://nodejs.org/ 에서 설치하세요.
+    echo [ERROR] Node.js not found in PATH
+    echo         https://nodejs.org/
     pause
     exit /b 1
 )
-echo [OK] Node.js 확인됨
+echo [OK] Node.js found
 
-:: backend 폴더 확인
+:: backend folder check
 if not exist "backend" (
-    echo [오류] backend 폴더를 찾을 수 없습니다.
-    echo        dadam-ai-agent 폴더에서 실행하세요.
+    echo [ERROR] backend folder not found
+    echo         Run from dadam-ai-agent folder
     pause
     exit /b 1
 )
-echo [OK] backend 폴더 확인됨
+echo [OK] backend folder found
 
-:: frontend 폴더 확인
+:: frontend folder check
 if not exist "frontend" (
-    echo [오류] frontend 폴더를 찾을 수 없습니다.
-    echo        dadam-ai-agent 폴더에서 실행하세요.
+    echo [ERROR] frontend folder not found
+    echo         Run from dadam-ai-agent folder
     pause
     exit /b 1
 )
-echo [OK] frontend 폴더 확인됨
+echo [OK] frontend folder found
 
 echo.
-echo  🌐 프론트엔드: http://localhost:3000
-echo  🔧 백엔드 API: http://localhost:8000/docs
+echo   Frontend: http://localhost:3000
+echo   Backend:  http://localhost:8000/docs
 echo.
-echo  종료하려면 이 창을 닫으세요.
-echo ════════════════════════════════════════════════════════════
+echo   Close this window to stop servers
+echo ========================================
 echo.
 
-:: 백엔드 실행 (새 창)
+:: Start backend (new window)
 start "Backend Server" cmd /k "cd /d %CD%\backend && python -m uvicorn main:app --reload --port 8000"
 
-:: 잠시 대기
+:: Wait
 timeout /t 3 /nobreak > nul
 
-:: 프론트엔드 실행 (새 창)
+:: Start frontend (new window)
 start "Frontend Server" cmd /k "cd /d %CD%\frontend && npm run dev"
 
-:: 잠시 대기 후 브라우저 열기
+:: Wait and open browser
 timeout /t 5 /nobreak > nul
 start http://localhost:3000
 
-echo 서버가 시작되었습니다. 브라우저가 자동으로 열립니다.
+echo Servers started. Browser will open automatically.
 echo.
 pause
