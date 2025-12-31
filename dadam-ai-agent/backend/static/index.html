@@ -1600,24 +1600,22 @@ function renderWorkspaceContent(item) {
     upperStartX += modW;
   });
 
-  // ★ 상부장 도어 표시 (showDoors가 true일 때, 후드 제외)
+  // ★ 상부장 도어 표시 (showDoors가 true일 때)
   const showDoors = item.specs.showDoors || false;
   if (showDoors) {
     let upperDoorX = offsetX + finishL * scale;
     upperModules.forEach((mod, idx) => {
       const modW = parseFloat(mod.w) * scale;
-      if (mod.type !== 'hood') { // 후드는 도어 없음
-        const doorCount = Math.max(1, Math.round(mod.w / 450));
-        const doorWidth = modW / doorCount;
-        for (let d = 0; d < doorCount; d++) {
-          const doorX = upperDoorX + d * doorWidth + 3;
-          const doorY = upperY + 3;
-          const doorW = doorWidth - 6;
-          const doorH = upperH_s - 6;
-          sinkModuleSvg += `<rect x="${doorX}" y="${doorY}" width="${doorW}" height="${doorH}" fill="none" stroke="#333" stroke-width="1.5" rx="2"/>`;
-          // 손잡이 (하단 중앙)
-          sinkModuleSvg += `<line x1="${doorX + doorW/2 - 10}" y1="${doorY + doorH - 12}" x2="${doorX + doorW/2 + 10}" y2="${doorY + doorH - 12}" stroke="#666" stroke-width="3" stroke-linecap="round"/>`;
-        }
+      const doorCount = Math.max(1, Math.round(mod.w / 450));
+      const doorWidth = modW / doorCount;
+      for (let d = 0; d < doorCount; d++) {
+        const doorX = upperDoorX + d * doorWidth + 3;
+        const doorY = upperY + 3;
+        const doorW = doorWidth - 6;
+        const doorH = upperH_s - 6;
+        sinkModuleSvg += `<rect x="${doorX}" y="${doorY}" width="${doorW}" height="${doorH}" fill="none" stroke="#333" stroke-width="1.5" rx="2"/>`;
+        // 손잡이 (하단 중앙)
+        sinkModuleSvg += `<line x1="${doorX + doorW/2 - 10}" y1="${doorY + doorH - 12}" x2="${doorX + doorW/2 + 10}" y2="${doorY + doorH - 12}" stroke="#666" stroke-width="3" stroke-linecap="round"/>`;
       }
       upperDoorX += modW;
     });
@@ -3361,9 +3359,10 @@ function toggleOption(itemUniqueId, moduleId, field, isChecked) {
     const mod = item.modules.find(m => m.id === moduleId);
     if (mod) {
       mod[field] = isChecked;
-      // EL장 활성화 시 하부장 너비 600으로 자동 변경
+      // EL장 활성화 시 하부장 너비 600으로 자동 변경 + 고정장 변환
       if (field === 'isEL' && isChecked && mod.pos === 'lower') {
         mod.w = 600;
+        mod.isFixed = true; // EL장은 고정장으로 변환
       }
     }
     renderWorkspaceContent(item);
@@ -3795,7 +3794,16 @@ function renderFridgeWorkspace(item) {
         moduleSvg += `<rect x="${currentX}" y="${bodyStartY + middleH_scaled + lowerH_scaled}" width="${modW}" height="${pedestalH_scaled}" fill="#d1d5db" stroke="#9ca3af" stroke-width="1"/>`;
         moduleSvg += `<text x="${currentX + modW/2}" y="${offsetY + drawH + 15}" text-anchor="middle" font-size="9" fill="#8b5cf6">${mod.w}${mod.isFixed ? '🔒' : ''}</text>`;
 
-        // ★ 홈카페장은 도어 없음
+        // ★ 홈카페장 하부장 도어만 표시 (중간장은 도어 없음)
+        if (showDoors) {
+          const doorCount = Math.max(1, Math.round(mod.w / 450));
+          const doorW = modW / doorCount;
+          for (let d = 0; d < doorCount; d++) {
+            const doorX = currentX + d * doorW;
+            moduleSvg += `<rect x="${doorX + 3}" y="${bodyStartY + middleH_scaled + 3}" width="${doorW - 6}" height="${lowerH_scaled - 6}" fill="none" stroke="#333" stroke-width="1.5" rx="2"/>`;
+            moduleSvg += `<line x1="${doorX + doorW - 12}" y1="${bodyStartY + middleH_scaled + lowerH_scaled/2 - 10}" x2="${doorX + doorW - 12}" y2="${bodyStartY + middleH_scaled + lowerH_scaled/2 + 10}" stroke="#333" stroke-width="2" stroke-linecap="round"/>`;
+          }
+        }
       }
       currentX += modW;
     }
