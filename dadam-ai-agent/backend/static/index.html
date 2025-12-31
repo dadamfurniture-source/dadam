@@ -3,19 +3,53 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Vibe Cabinet Agent - v30.5 (높이 연동)</title>
+  <title>다담 캐비넷 에이전트 - v31.0 (AI Agent Ready)</title>
   <style>
     :root {
+      /* 기본 색상 */
       --primary-color: #4a7dff;
       --bg-color: #f4f6f8;
       --card-bg: #ffffff;
       --text-color: #333;
-      --border-radius: 12px;
+      --text-muted: #666;
+      --border-color: #ddd;
+
+      /* 상태 색상 */
       --danger-color: #ff4d4f;
       --success-color: #00c853;
+      --warning-color: #f59e0b;
+
+      /* 가구 타입별 색상 */
       --upper-color: #5b8def;
       --lower-color: #f59e0b;
       --tall-color: #10b981;
+      --fridge-color: #0ea5e9;
+      --wardrobe-color: #10b981;
+      --homecafe-color: #8b5cf6;
+      --sink-color: #3b82f6;
+
+      /* 레이아웃 */
+      --border-radius: 12px;
+      --border-radius-sm: 6px;
+      --border-radius-xs: 4px;
+
+      /* 간격 */
+      --gap-xs: 4px;
+      --gap-sm: 8px;
+      --gap-md: 12px;
+      --gap-lg: 16px;
+      --gap-xl: 24px;
+
+      /* 폰트 크기 */
+      --font-xs: 9px;
+      --font-sm: 11px;
+      --font-md: 13px;
+      --font-lg: 15px;
+
+      /* 그림자 */
+      --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
+      --shadow-md: 0 4px 20px rgba(0,0,0,0.08);
+      --shadow-lg: 0 10px 40px rgba(0,0,0,0.15);
     }
     * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     body { margin: 0; padding: 20px; background: var(--bg-color); color: var(--text-color); }
@@ -132,8 +166,8 @@
 </head>
 <body>
 <div class="app-container">
-  <h1>Vibe Cabinet Agent</h1>
-  <div class="subtitle">통합 가구 설계 및 자동 자재 산출 솔루션 (v28)</div>
+  <h1>다담 캐비넷 에이전트</h1>
+  <div class="subtitle">통합 가구 설계 및 자동 자재 산출 솔루션 (v31.0 - AI Agent Ready)</div>
   <div class="stepper-indicator">
     <div id="step-dot-1" class="step-dot active">1</div>
     <div id="step-dot-2" class="step-dot">2</div>
@@ -162,6 +196,112 @@
 </div>
 
 <script>
+// ============================================================
+// 앱 설정 및 버전 정보
+// ============================================================
+const APP_CONFIG = {
+  version: '31.0',
+  versionName: 'AI Agent Ready',
+  lastUpdate: '2025-12-31',
+  features: ['싱크대', '붙박이장', '냉장고장', 'AI 어시스턴트']
+};
+
+// ============================================================
+// AI 에이전트 인터페이스
+// ============================================================
+const AIAgentInterface = {
+  // 현재 설계 상태 가져오기
+  getDesignState: () => ({
+    selectedItems: selectedItems,
+    currentStep: document.getElementById('step-dot-1').classList.contains('active') ? 1 : 2
+  }),
+
+  // 아이템 추가
+  addItem: (category, dimensions) => {
+    const categoryData = CATEGORIES.find(c => c.id === category);
+    if (!categoryData) return { success: false, error: 'Invalid category' };
+
+    const newItem = {
+      uniqueId: Date.now(),
+      category: category,
+      name: categoryData.name,
+      w: dimensions.w || 0,
+      h: dimensions.h || 0,
+      d: dimensions.d || categoryData.defaultD,
+      specs: { ...DEFAULT_SPECS },
+      modules: []
+    };
+    selectedItems.push(newItem);
+    return { success: true, item: newItem };
+  },
+
+  // 아이템 조회
+  getItem: (itemId) => getItem(itemId),
+
+  // 모듈 추가
+  addModule: (itemId, moduleData) => {
+    const item = getItem(itemId);
+    if (!item) return { success: false, error: 'Item not found' };
+
+    const newModule = {
+      id: Date.now(),
+      ...moduleData
+    };
+    item.modules.push(newModule);
+    return { success: true, module: newModule };
+  },
+
+  // 자동 계산 실행
+  runAutoCalc: (itemId, section) => {
+    const item = getItem(itemId);
+    if (!item) return { success: false, error: 'Item not found' };
+
+    if (item.category === 'sink') {
+      if (section === 'upper') runAutoCalcUpper(itemId);
+      else if (section === 'lower') runAutoCalcLower(itemId);
+    } else if (item.category === 'wardrobe') {
+      runWardrobeAutoCalc(itemId);
+    } else if (item.category === 'fridge') {
+      autoCalculateFridge(itemId);
+    }
+    return { success: true };
+  },
+
+  // 스펙 업데이트
+  updateSpec: (itemId, field, value) => {
+    const item = updateItemSpec(itemId, field, value, false);
+    return item ? { success: true } : { success: false, error: 'Item not found' };
+  },
+
+  // 설계 내보내기 (JSON)
+  exportDesign: () => ({
+    appVersion: APP_CONFIG.version,
+    exportDate: new Date().toISOString(),
+    items: selectedItems.map(item => ({
+      ...item,
+      specs: { ...item.specs },
+      modules: item.modules.map(m => ({ ...m }))
+    }))
+  }),
+
+  // 설계 가져오기
+  importDesign: (designData) => {
+    try {
+      if (designData.items) {
+        selectedItems = designData.items;
+        updateUI();
+        return { success: true };
+      }
+      return { success: false, error: 'Invalid design data' };
+    } catch (e) {
+      return { success: false, error: e.message };
+    }
+  }
+};
+
+// 전역으로 노출 (AI 에이전트 접근용)
+window.DadamAgent = AIAgentInterface;
+
 // ============================================================
 // 전역 변수 및 상수
 // ============================================================
@@ -379,6 +519,81 @@ const LOWER_MODULE_TYPES = [
 ];
 
 let selectedItems = [];
+
+// ============================================================
+// 공통 유틸리티 함수들
+// ============================================================
+
+/**
+ * 아이템 조회 헬퍼
+ */
+function getItem(itemUniqueId) {
+  return selectedItems.find(i => i.uniqueId === itemUniqueId);
+}
+
+/**
+ * 모듈 조회 헬퍼
+ */
+function getModule(itemUniqueId, modId) {
+  const item = getItem(itemUniqueId);
+  return item ? item.modules.find(m => m.id === modId) : null;
+}
+
+/**
+ * 스펙 업데이트 공통 함수
+ */
+function updateItemSpec(itemUniqueId, field, value, shouldRender = true) {
+  const item = getItem(itemUniqueId);
+  if (!item) return null;
+  item.specs[field] = isNaN(parseFloat(value)) ? value : parseFloat(value);
+  if (shouldRender) renderWorkspaceContent(item);
+  return item;
+}
+
+/**
+ * 모듈 업데이트 공통 함수
+ */
+function updateModuleField(itemUniqueId, modId, field, value, shouldRender = true) {
+  const item = getItem(itemUniqueId);
+  if (!item) return null;
+  const mod = item.modules.find(m => m.id === modId);
+  if (!mod) return null;
+  mod[field] = isNaN(parseFloat(value)) ? value : parseFloat(value);
+  if (shouldRender) renderWorkspaceContent(item);
+  return { item, mod };
+}
+
+/**
+ * SVG 사각형 생성 헬퍼
+ */
+function svgRect(x, y, w, h, fill, stroke, strokeWidth = 1, rx = 0) {
+  return `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}" stroke="${stroke}" stroke-width="${strokeWidth}" rx="${rx}"/>`;
+}
+
+/**
+ * SVG 텍스트 생성 헬퍼
+ */
+function svgText(x, y, text, opts = {}) {
+  const anchor = opts.anchor || 'middle';
+  const fontSize = opts.fontSize || 10;
+  const fill = opts.fill || '#333';
+  const fontWeight = opts.fontWeight || 'normal';
+  return `<text x="${x}" y="${y}" text-anchor="${anchor}" font-size="${fontSize}" fill="${fill}" font-weight="${fontWeight}">${text}</text>`;
+}
+
+/**
+ * 버튼 HTML 생성 헬퍼
+ */
+function createButton(label, onclick, className = '', style = '') {
+  return `<button class="${className}" onclick="${onclick}" style="${style}">${label}</button>`;
+}
+
+/**
+ * 인풋 HTML 생성 헬퍼
+ */
+function createNumberInput(value, onchange, style = 'width:60px;') {
+  return `<input type="number" value="${value}" onchange="${onchange}" style="${style}">`;
+}
 
 // ============================================================
 // 핵심 계산 함수들
@@ -4097,16 +4312,6 @@ function toggleFridgeModuleFixed(itemUniqueId, modId) {
   const mod = item.modules.find(m => m.id === modId);
   if (mod) {
     mod.isFixed = !mod.isFixed;
-    renderWorkspaceContent(item);
-  }
-}
-
-function toggleFridgeModuleEL(itemUniqueId, modId) {
-  const item = selectedItems.find(i => i.uniqueId === itemUniqueId);
-  if (!item) return;
-  const mod = item.modules.find(m => m.id === modId);
-  if (mod) {
-    mod.isEL = !mod.isEL;
     renderWorkspaceContent(item);
   }
 }
