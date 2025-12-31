@@ -1,25 +1,19 @@
 # FastAPI & Server
-fastapi==0.109.0
-uvicorn[standard]==0.27.0
-python-multipart==0.0.6
-python-dotenv==1.0.0
+fastapi>=0.109.0
+uvicorn>=0.27.0
+python-multipart>=0.0.6
+python-dotenv>=1.0.0
 
 # AI & LLM
-anthropic==0.18.1
-langchain==0.1.6
-langchain-anthropic==0.1.1
-langchain-core==0.1.22
+anthropic>=0.18.0
+httpx>=0.26.0
 
-# Data & Validation
-pydantic==2.6.0
-pydantic-settings==2.1.0
+# Data & Validation (pre-built wheels)
+pydantic>=2.0.0
+pydantic-settings>=2.0.0
 
-# Database (Optional - for session storage)
-redis==5.0.1
+# Database (Optional)
+redis>=5.0.0
 
 # CORS & Security
-python-jose[cryptography]==3.3.0
-
-# Async
-aiohttp==3.9.3
-httpx==0.26.0
+python-jose>=3.3.0
