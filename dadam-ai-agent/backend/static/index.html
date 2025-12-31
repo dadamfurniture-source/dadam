@@ -1896,9 +1896,11 @@ function renderWorkspaceContent(item) {
       }
     }
 
-    // 아이콘 & 텍스트
-    sinkModuleSvg += `<text x="${lowerStartX + modW/2}" y="${modY + (isTall ? modH_s : lowerH_s)/2 - 8}" text-anchor="middle" font-size="12" fill="${strokeColor}" font-weight="bold">${icon}</text>
-      <text x="${lowerStartX + modW/2}" y="${modY + (isTall ? modH_s : lowerH_s)/2 + 8}" text-anchor="middle" font-size="9" fill="#666">${mod.w}${isTall ? ' (TL)' : ''}</text>`;
+    // 아이콘 & 텍스트 (도어 표시시 일반 하부장 아이콘 숨김, 키큰장은 항상 표시)
+    if (!showDoors || isTall) {
+      sinkModuleSvg += `<text x="${lowerStartX + modW/2}" y="${modY + (isTall ? modH_s : lowerH_s)/2 - 8}" text-anchor="middle" font-size="12" fill="${strokeColor}" font-weight="bold">${icon}</text>
+        <text x="${lowerStartX + modW/2}" y="${modY + (isTall ? modH_s : lowerH_s)/2 + 8}" text-anchor="middle" font-size="9" fill="#666">${mod.w}${isTall ? ' (TL)' : ''}</text>`;
+    }
     lowerStartX += modW;
   });
 
@@ -3927,7 +3929,7 @@ function renderFridgeWorkspace(item) {
         // ★ 키큰장 도어 표시 (도어구분에 따라 다르게 표시)
         if (showDoors) {
           const doorDivision = mod.doorDivision || 'individual';
-          const doorCount = 1; // 모듈당 1개 도어
+          const doorCount = Math.max(1, Math.round(mod.w / 450)); // 가로너비 기준 도어분배
           const dW = modW / doorCount;
 
           if (doorDivision === 'all') {
@@ -4023,7 +4025,7 @@ function renderFridgeWorkspace(item) {
 
         // ★ 홈카페장 하부장 도어만 표시 (중간장은 도어 없음)
         if (showDoors) {
-          const doorCount = 1; // 모듈당 1개 도어
+          const doorCount = Math.max(1, Math.round(mod.w / 450)); // 가로너비 기준 도어분배
           const dW = modW / doorCount;
           for (let d = 0; d < doorCount; d++) {
             const dX = currentX + d * dW + doorGap/2;
