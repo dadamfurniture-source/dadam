@@ -10,6 +10,7 @@ export default function Home() {
     category: null,
     dimensions: { width: 0, height: 0, depth: 0 },
     modules: [],
+    doorColor: '#FFFFFF', // 기본 도어 색상: 화이트
   });
 
   const [activeTab, setActiveTab] = useState<'chat' | 'form'>('chat');
@@ -25,6 +26,13 @@ export default function Home() {
     setDesignContext((prev: any) => ({
       ...prev,
       category,
+    }));
+  };
+
+  const handleDoorColorChange = (doorColor: string) => {
+    setDesignContext((prev: any) => ({
+      ...prev,
+      doorColor,
     }));
   };
 
@@ -82,8 +90,10 @@ export default function Home() {
               <DimensionForm
                 dimensions={designContext.dimensions}
                 category={designContext.category}
+                doorColor={designContext.doorColor}
                 onDimensionChange={handleDimensionChange}
                 onCategoryChange={handleCategoryChange}
+                onDoorColorChange={handleDoorColorChange}
               />
             )}
           </div>

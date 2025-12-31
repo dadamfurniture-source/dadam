@@ -9,6 +9,35 @@ DOOR_MIN_WIDTH = 350      # 최소 도어 너비
 MIN_REMAINDER = 4         # 최소 잔여 공간
 MAX_REMAINDER = 10        # 최대 잔여 공간
 
+# 도어 간격 (2도어 사이 공간)
+DOOR_GAP = 3              # 2도어 사이 간격 (mm)
+
+# 도어 렌더링 규칙
+DOOR_RENDER_RULES = {
+    "show_handle": False,      # 도어 손잡이 표시 여부
+    "gap_between_doors": 3,    # 도어 사이 간격 (mm)
+    "upper_cabinet_door": True # 상부장 도어 표시 여부
+}
+
+# 카테고리별 도어 규칙 (냉장고장, 싱크대, 붙박이장 공통)
+CATEGORY_DOOR_RULES = {
+    "fridge": {
+        "upper_has_door": True,    # 상부장 도어 있음
+        "door_gap": 3,             # 2도어 사이 간격
+        "show_handle": False       # 손잡이 표시 안함
+    },
+    "sink": {
+        "upper_has_door": True,
+        "door_gap": 3,
+        "show_handle": False
+    },
+    "wardrobe": {
+        "upper_has_door": True,
+        "door_gap": 3,
+        "show_handle": False
+    }
+}
+
 # 기본 치수
 DEFAULT_UPPER_HEIGHT = 720
 DEFAULT_LOWER_HEIGHT = 870
