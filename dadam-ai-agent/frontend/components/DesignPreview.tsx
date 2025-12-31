@@ -4,8 +4,14 @@ interface DesignPreviewProps {
   context: any;
 }
 
+// 도어 간격 상수
+const DOOR_GAP = 3; // 2도어 사이 간격 (mm)
+
+// 도어가 있는 카테고리 (상부장 포함)
+const DOOR_CATEGORIES = ['fridge', 'sink', 'wardrobe'];
+
 export default function DesignPreview({ context }: DesignPreviewProps) {
-  const { dimensions, category, recommendations, calculation, modules } = context;
+  const { dimensions, category, recommendations, calculation, modules, doorColor = '#FFFFFF' } = context;
 
   const getCategoryName = (id: string) => {
     const names: Record<string, string> = {
@@ -132,7 +138,7 @@ export default function DesignPreview({ context }: DesignPreviewProps) {
         </div>
       )}
 
-      {/* 도면 프리뷰 (간단한 SVG) */}
+      {/* 도면 프리뷰 (도어 렌더링 포함) */}
       {dimensions?.width > 0 && (
         <div className="bg-white rounded-xl shadow-lg p-4">
           <h3 className="font-bold text-gray-800 mb-3 flex items-center gap-2">
@@ -140,52 +146,164 @@ export default function DesignPreview({ context }: DesignPreviewProps) {
           </h3>
           <div className="bg-gray-50 rounded-lg p-4 flex items-center justify-center">
             <svg
-              viewBox="0 0 300 200"
-              className="w-full h-auto max-h-40"
+              viewBox="0 0 300 240"
+              className="w-full h-auto max-h-60"
               style={{ background: '#fafafa' }}
             >
-              {/* 외곽선 */}
+              {/* 치수선 - 상단 */}
+              <line x1="30" y1="15" x2="270" y2="15" stroke="#666" strokeWidth="1" />
+              <line x1="30" y1="12" x2="30" y2="18" stroke="#666" strokeWidth="1" />
+              <line x1="270" y1="12" x2="270" y2="18" stroke="#666" strokeWidth="1" />
+              <text x="150" y="10" textAnchor="middle" fontSize="9" fill="#333">
+                {dimensions.width}mm
+              </text>
+
+              {/* 치수선 - 좌측 */}
+              <line x1="15" y1="30" x2="15" y2="210" stroke="#666" strokeWidth="1" />
+              <line x1="12" y1="30" x2="18" y2="30" stroke="#666" strokeWidth="1" />
+              <line x1="12" y1="210" x2="18" y2="210" stroke="#666" strokeWidth="1" />
+              <text
+                x="8"
+                y="120"
+                textAnchor="middle"
+                fontSize="9"
+                fill="#333"
+                transform="rotate(-90, 8, 120)"
+              >
+                {dimensions.height}mm
+              </text>
+
+              {/* 외곽 프레임 */}
               <rect
-                x="20"
-                y="20"
-                width="260"
-                height="160"
+                x="30"
+                y="30"
+                width="240"
+                height="180"
                 fill="none"
                 stroke="#333"
                 strokeWidth="2"
               />
 
-              {/* 치수선 - 상단 */}
-              <line x1="20" y1="10" x2="280" y2="10" stroke="#666" strokeWidth="1" />
-              <text x="150" y="8" textAnchor="middle" fontSize="10" fill="#333">
-                {dimensions.width}mm
-              </text>
+              {/* 냉장고장, 싱크대, 붙박이장: 상부장 + 하부장 도어 렌더링 */}
+              {DOOR_CATEGORIES.includes(category) && (
+                <>
+                  {/* 상부장 영역 (상단 30%) */}
+                  <rect
+                    x="32"
+                    y="32"
+                    width="236"
+                    height="50"
+                    fill={doorColor}
+                    stroke="#666"
+                    strokeWidth="1"
+                  />
+                  {/* 상부장 2도어 분할선 (3mm 간격 표현) */}
+                  <line x1="150" y1="32" x2="150" y2="82" stroke="#999" strokeWidth="1" strokeDasharray="2,2" />
 
-              {/* 치수선 - 좌측 */}
-              <line x1="10" y1="20" x2="10" y2="180" stroke="#666" strokeWidth="1" />
-              <text
-                x="8"
-                y="100"
-                textAnchor="middle"
-                fontSize="10"
-                fill="#333"
-                transform="rotate(-90, 8, 100)"
-              >
-                {dimensions.height}mm
-              </text>
+                  {/* 하부장 영역 - 냉장고장은 냉장고 공간 */}
+                  {category === 'fridge' ? (
+                    <>
+                      {/* 냉장고 공간 (중앙) */}
+                      <rect
+                        x="70"
+                        y="90"
+                        width="160"
+                        height="115"
+                        fill="#E8F4FF"
+                        stroke="#666"
+                        strokeWidth="1"
+                      />
+                      <text x="150" y="150" textAnchor="middle" fontSize="24">🧊</text>
+                      <text x="150" y="175" textAnchor="middle" fontSize="8" fill="#666">냉장고</text>
 
-              {/* 카테고리 아이콘 */}
-              <text x="150" y="110" textAnchor="middle" fontSize="40">
-                {category === 'fridge'
-                  ? '🧊'
-                  : category === 'sink'
-                  ? '🚰'
-                  : category === 'wardrobe'
-                  ? '👔'
-                  : '📦'}
-              </text>
+                      {/* 좌우 키큰장/EL장 도어 */}
+                      <rect
+                        x="32"
+                        y="90"
+                        width="35"
+                        height="115"
+                        fill={doorColor}
+                        stroke="#666"
+                        strokeWidth="1"
+                      />
+                      <rect
+                        x="233"
+                        y="90"
+                        width="35"
+                        height="115"
+                        fill={doorColor}
+                        stroke="#666"
+                        strokeWidth="1"
+                      />
+                    </>
+                  ) : (
+                    <>
+                      {/* 싱크대/붙박이장: 하부장 도어 (2도어) */}
+                      <rect
+                        x="32"
+                        y="90"
+                        width="117"
+                        height="115"
+                        fill={doorColor}
+                        stroke="#666"
+                        strokeWidth="1"
+                      />
+                      {/* 3mm 간격 */}
+                      <rect
+                        x="152"
+                        y="90"
+                        width="116"
+                        height="115"
+                        fill={doorColor}
+                        stroke="#666"
+                        strokeWidth="1"
+                      />
+                    </>
+                  )}
+                </>
+              )}
+
+              {/* 기타 카테고리: 기본 도어 렌더링 */}
+              {!DOOR_CATEGORIES.includes(category) && category && (
+                <>
+                  {/* 단일 도어 또는 기본 표시 */}
+                  <rect
+                    x="32"
+                    y="32"
+                    width="236"
+                    height="176"
+                    fill={doorColor}
+                    stroke="#666"
+                    strokeWidth="1"
+                  />
+                  <text x="150" y="130" textAnchor="middle" fontSize="28">
+                    {category === 'shoerack' ? '👟' :
+                     category === 'vanity' ? '💄' :
+                     category === 'storage' ? '📦' :
+                     category === 'warehouse' ? '🏭' :
+                     category === 'island' ? '🏝️' : '📦'}
+                  </text>
+                </>
+              )}
+
+              {/* 도어 색상 표시 */}
+              {category && (
+                <g>
+                  <rect x="250" y="215" width="12" height="12" fill={doorColor} stroke="#666" strokeWidth="1" />
+                  <text x="245" y="223" textAnchor="end" fontSize="7" fill="#666">도어색상</text>
+                </g>
+              )}
             </svg>
           </div>
+
+          {/* 도어 렌더링 규칙 안내 */}
+          {DOOR_CATEGORIES.includes(category) && (
+            <div className="mt-3 p-2 bg-blue-50 rounded-lg text-xs text-blue-700">
+              <p>• 상부장 도어 포함</p>
+              <p>• 2도어 간격: 3mm</p>
+              <p>• 손잡이 없음 (핸들리스)</p>
+            </div>
+          )}
         </div>
       )}
 

@@ -9,9 +9,23 @@ interface DimensionFormProps {
     depth: number;
   };
   category: string | null;
+  doorColor: string;
   onDimensionChange: (dims: any) => void;
   onCategoryChange: (cat: string) => void;
+  onDoorColorChange: (color: string) => void;
 }
+
+// 도어 색상 옵션
+const DOOR_COLORS = [
+  { id: 'white', name: '화이트', hex: '#FFFFFF' },
+  { id: 'cream', name: '크림', hex: '#FFFDD0' },
+  { id: 'gray', name: '그레이', hex: '#808080' },
+  { id: 'charcoal', name: '차콜', hex: '#36454F' },
+  { id: 'navy', name: '네이비', hex: '#000080' },
+  { id: 'beige', name: '베이지', hex: '#F5F5DC' },
+  { id: 'walnut', name: '월넛', hex: '#5D432C' },
+  { id: 'oak', name: '오크', hex: '#C4A35A' },
+];
 
 const CATEGORIES = [
   { id: 'sink', name: '싱크대', icon: '🚰', defaultD: 600 },
@@ -27,8 +41,10 @@ const CATEGORIES = [
 export default function DimensionForm({
   dimensions,
   category,
+  doorColor,
   onDimensionChange,
   onCategoryChange,
+  onDoorColorChange,
 }: DimensionFormProps) {
   const [localDims, setLocalDims] = useState(dimensions);
   const [finishLeft, setFinishLeft] = useState(60);
@@ -131,9 +147,35 @@ export default function DimensionForm({
         </div>
       </div>
 
+      {/* 상세 설계 - 도어 색상 */}
+      <div>
+        <h2 className="text-lg font-bold text-gray-800 mb-4">3. 도어 색상</h2>
+        <div className="grid grid-cols-4 gap-3">
+          {DOOR_COLORS.map((color) => (
+            <button
+              key={color.id}
+              onClick={() => onDoorColorChange(color.hex)}
+              className={`p-3 rounded-lg border-2 transition-all flex flex-col items-center ${
+                doorColor === color.hex
+                  ? 'border-primary shadow-md'
+                  : 'border-gray-200 hover:border-gray-300'
+              }`}
+            >
+              <div
+                className="w-8 h-8 rounded-full border border-gray-300 mb-2"
+                style={{ backgroundColor: color.hex }}
+              />
+              <span className="text-xs font-medium text-gray-600">
+                {color.name}
+              </span>
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* 마감 설정 */}
       <div>
-        <h2 className="text-lg font-bold text-gray-800 mb-4">3. 마감 설정</h2>
+        <h2 className="text-lg font-bold text-gray-800 mb-4">4. 마감 설정</h2>
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-600 mb-2">
