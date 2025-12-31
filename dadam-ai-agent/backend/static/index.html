@@ -1925,6 +1925,25 @@ function renderWorkspaceContent(item) {
       <text x="${offsetX + drawW - finishR * scale / 2}" y="${upperY + (upperH_s + middleH_s + lowerH_s)/2}" text-anchor="middle" font-size="8" fill="#666" transform="rotate(-90 ${offsetX + drawW - finishR * scale / 2} ${upperY + (upperH_s + middleH_s + lowerH_s)/2})">${finishR}</text>`;
   }
 
+  // ★ 걸레받이 (도어 표시시에만, 하부장에 설치)
+  if (showDoors) {
+    const baseboardH = legH - 5; // 걸레받이 높이 = 다리발 높이 - 5mm
+    const baseboardH_s = baseboardH * scale;
+    // 하부장 너비 합계 (키큰장 제외, 최대 2400mm)
+    const lowerTotalW = lowerModules
+      .filter(m => m.type !== 'tall')
+      .reduce((sum, m) => sum + parseFloat(m.w), 0);
+    const baseboardW = Math.min(lowerTotalW, 2400);
+    const baseboardW_s = baseboardW * scale;
+
+    if (baseboardW > 0 && baseboardH > 0) {
+      const baseboardX = offsetX + finishL * scale;
+      const baseboardY = legY + (legH_s - baseboardH_s); // 다리발 하단에서 위로
+      sinkModuleSvg += `<rect x="${baseboardX}" y="${baseboardY}" width="${baseboardW_s}" height="${baseboardH_s}" fill="#8b5cf6" stroke="#6d28d9" stroke-width="1.5" rx="1"/>
+        <text x="${baseboardX + baseboardW_s/2}" y="${baseboardY + baseboardH_s/2 + 3}" text-anchor="middle" font-size="8" fill="#fff" font-weight="bold">걸레받이 ${baseboardW}×${baseboardH}</text>`;
+    }
+  }
+
   const sinkFrontViewSvg = `
     <svg width="${svgWidth}" height="${svgHeight}" style="background:#fafafa;border:1px solid #e0e0e0;border-radius:8px;">
       <!-- 치수선 - 상단 -->
