@@ -11,9 +11,20 @@ import {
   Gem,
   Clock,
   CheckCircle2,
-  Star,
-  Play
+  Star
 } from 'lucide-react'
+
+// Unsplash 고급 인테리어/가구 이미지
+const images = {
+  hero: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=1920&q=80', // 모던 주방
+  bookshelf: 'https://images.unsplash.com/photo-1594026112284-02bb6f3352fe?w=1200&q=80', // 다크 수납장
+  kitchen: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1200&q=80', // 럭셔리 주방
+  sink: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=1200&q=80', // 싱크대 디테일
+  galley: 'https://images.unsplash.com/photo-1556909114-44e3e70034e2?w=1920&q=80', // 갤리 주방
+  storage: 'https://images.unsplash.com/photo-1617806118233-18e1de247200?w=1200&q=80', // 수납 시스템
+  marble: 'https://images.unsplash.com/photo-1600566752355-35792bedcfea?w=1200&q=80', // 대리석 주방
+  wood: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1200&q=80', // 우드 인테리어
+}
 
 // Featured portfolio items with images
 const featuredWorks = [
@@ -22,35 +33,35 @@ const featuredWorks = [
     title: '모던 빌트인 수납장',
     category: '거실 수납장',
     description: '블랙 프레임과 붉은 포인트 조명이 어우러진 프리미엄 빌트인 책장',
-    image: '/portfolio/bookshelf.jpg',
+    image: images.bookshelf,
   },
   {
     id: 2,
     title: '프리미엄 키친 아일랜드',
     category: '주방 가구',
     description: '다크 우드와 대리석이 조화를 이루는 고급 주방 시스템',
-    image: '/portfolio/kitchen-island.jpg',
+    image: images.kitchen,
   },
   {
     id: 3,
     title: '대리석 싱크대',
     category: '주방 상판',
     description: '천연 대리석 상판과 고급 수전이 돋보이는 싱크 시스템',
-    image: '/portfolio/sink-detail.jpg',
+    image: images.marble,
   },
   {
     id: 4,
     title: '갤리 키친 시스템',
     category: '주방 전체',
     description: '효율적인 동선과 넉넉한 수납을 갖춘 복도형 주방',
-    image: '/portfolio/galley-kitchen.jpg',
+    image: images.galley,
   },
   {
     id: 5,
     title: '스마트 수납 시스템',
     category: '빌트인 수납',
     description: 'Blum 서랍 시스템을 적용한 프리미엄 수납 솔루션',
-    image: '/portfolio/storage-detail.jpg',
+    image: images.wood,
   },
 ]
 
@@ -149,14 +160,14 @@ export default function HomePage() {
         {/* Background Image */}
         <div className="absolute inset-0">
           <Image
-            src="/portfolio/kitchen-island.jpg"
+            src={images.hero}
             alt="프리미엄 맞춤 가구"
             fill
             className="object-cover"
             priority
           />
           {/* Dark overlay */}
-          <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-black/40" />
         </div>
 
         {/* Content */}
@@ -214,22 +225,22 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Featured Project Showcase */}
+      {/* Featured Project Showcase - 2 Column Layout */}
       <section className="py-0">
         <div className="grid md:grid-cols-2">
           {/* Left - Large Image */}
           <div className="relative aspect-square md:aspect-auto md:h-[80vh]">
             <Image
-              src="/portfolio/bookshelf.jpg"
+              src={images.bookshelf}
               alt="빌트인 수납장"
               fill
               className="object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
             <div className="absolute bottom-8 left-8 right-8 text-white">
               <p className="text-sm tracking-widest uppercase text-dadam-gold mb-2">Featured Project</p>
               <h3 className="font-serif text-3xl mb-2">모던 빌트인 수납장</h3>
-              <p className="text-white/70">블랙 프레임과 붉은 포인트 조명의 조화</p>
+              <p className="text-white/70">블랙 프레임과 세련된 조명의 조화</p>
             </div>
           </div>
 
@@ -260,7 +271,7 @@ export default function HomePage() {
             </div>
             <div className="relative h-64 md:h-auto md:flex-1">
               <Image
-                src="/portfolio/sink-detail.jpg"
+                src={images.sink}
                 alt="대리석 싱크대"
                 fill
                 className="object-cover"
@@ -270,7 +281,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Portfolio Grid */}
+      {/* Portfolio Grid - Masonry Style */}
       <section className="section-padding bg-dadam-white">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12">
@@ -289,6 +300,7 @@ export default function HomePage() {
             </Link>
           </div>
 
+          {/* First Row - 3 columns */}
           <div className="grid md:grid-cols-3 gap-4">
             {featuredWorks.slice(0, 3).map((work) => (
               <Link
@@ -302,7 +314,7 @@ export default function HomePage() {
                   fill
                   className="object-cover transition-transform duration-700 group-hover:scale-105"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <div className="absolute bottom-0 left-0 right-0 p-6 text-white transform translate-y-full group-hover:translate-y-0 transition-transform duration-500">
                   <p className="text-xs tracking-widest uppercase text-dadam-gold mb-2">{work.category}</p>
                   <h3 className="font-serif text-xl">{work.title}</h3>
@@ -311,7 +323,7 @@ export default function HomePage() {
             ))}
           </div>
 
-          {/* Second row - 2 images */}
+          {/* Second Row - 2 columns wide */}
           <div className="grid md:grid-cols-2 gap-4 mt-4">
             {featuredWorks.slice(3, 5).map((work) => (
               <Link
@@ -325,13 +337,30 @@ export default function HomePage() {
                   fill
                   className="object-cover transition-transform duration-700 group-hover:scale-105"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <div className="absolute bottom-0 left-0 right-0 p-6 text-white transform translate-y-full group-hover:translate-y-0 transition-transform duration-500">
                   <p className="text-xs tracking-widest uppercase text-dadam-gold mb-2">{work.category}</p>
                   <h3 className="font-serif text-xl">{work.title}</h3>
                 </div>
               </Link>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Full Width Image Break */}
+      <section className="relative h-[50vh]">
+        <Image
+          src={images.marble}
+          alt="대리석 주방"
+          fill
+          className="object-cover"
+        />
+        <div className="absolute inset-0 bg-black/40" />
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="text-center text-white">
+            <p className="text-sm tracking-widest uppercase text-dadam-gold mb-4">Premium Materials</p>
+            <h2 className="font-serif text-4xl md:text-5xl">최고급 자재만을 사용합니다</h2>
           </div>
         </div>
       </section>
@@ -447,7 +476,7 @@ export default function HomePage() {
                   ))}
                 </div>
                 <p className="text-dadam-charcoal leading-relaxed mb-6">
-                  "{testimonial.content}"
+                  &ldquo;{testimonial.content}&rdquo;
                 </p>
                 <div className="pt-6 border-t border-dadam-warm/50">
                   <p className="font-medium text-dadam-charcoal">{testimonial.name}</p>
@@ -459,16 +488,16 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* CTA Section */}
+      {/* CTA Section with Background Image */}
       <section className="relative py-32">
         <div className="absolute inset-0">
           <Image
-            src="/portfolio/galley-kitchen.jpg"
+            src={images.galley}
             alt="프리미엄 주방"
             fill
             className="object-cover"
           />
-          <div className="absolute inset-0 bg-black/60" />
+          <div className="absolute inset-0 bg-black/70" />
         </div>
         <div className="relative z-10 max-w-4xl mx-auto text-center px-6">
           <p className="text-sm tracking-widest uppercase text-dadam-gold mb-4">Get Started</p>
