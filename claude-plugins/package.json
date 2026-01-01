@@ -4,7 +4,7 @@
   "description": "CLI tool for managing Claude AI plugins for the Dadam furniture design system",
   "main": "dist/index.js",
   "bin": {
-    "claude-plugins": "./dist/index.js"
+    "claude-plugins": "./bin/claude-plugins.js"
   },
   "scripts": {
     "build": "tsc",
@@ -27,12 +27,7 @@
     "ora": "^5.4.1",
     "fs-extra": "^11.2.0"
   },
-  "devDependencies": {
-    "@types/fs-extra": "^11.0.4",
-    "@types/node": "^20.10.0",
-    "typescript": "^5.3.0",
-    "ts-node": "^10.9.2"
-  },
+  "devDependencies": {},
   "engines": {
     "node": ">=16.0.0"
   }
