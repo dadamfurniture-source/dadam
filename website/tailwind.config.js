@@ -27,8 +27,8 @@ module.exports = {
         }
       },
       fontFamily: {
-        sans: ['Noto Sans KR', 'system-ui', 'sans-serif'],
-        serif: ['Noto Serif KR', 'serif'],
+        sans: ['Pretendard Variable', 'Pretendard', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'sans-serif'],
+        serif: ['Playfair Display', 'Georgia', 'serif'],
       },
       animation: {
         'fade-in': 'fadeIn 0.8s ease-out forwards',

@@ -34,8 +34,8 @@ export default function Footer() {
                 <rect x="30" y="14" width="9" height="12" rx="1" fill="#1B3A5F"/>
               </svg>
               <div>
-                <span className="text-lg font-medium">다담가구</span>
-                <span className="block text-xs text-neutral-500">당신을 담은 가구</span>
+                <span className="text-lg font-medium">DaDam</span>
+                <span className="block text-xs text-neutral-500">당신을 담다</span>
               </div>
             </Link>
             <p className="text-sm text-neutral-500 leading-relaxed max-w-md mb-6">
@@ -88,7 +88,7 @@ export default function Footer() {
       <div className="border-t border-neutral-800">
         <div className="max-w-screen-xl mx-auto px-6 lg:px-12 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-neutral-600">
-            <p>© 2024 다담가구. All rights reserved.</p>
+            <p>© 2024 DaDam. All rights reserved.</p>
             <div className="flex gap-6">
               <span>사업자등록번호: 123-45-67890</span>
               <span>대표: 홍길동</span>

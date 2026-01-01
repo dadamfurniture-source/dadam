@@ -61,8 +61,8 @@ export default function HomePage() {
         {/* Background Image */}
         <div className="absolute inset-0">
           <img
-            src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=1920&q=80"
-            alt="럭셔리 인테리어"
+            src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=1920&q=80"
+            alt="모던 일자형 싱크대"
             className="w-full h-full object-cover"
           />
           <div className="hero-overlay absolute inset-0"></div>
@@ -74,11 +74,11 @@ export default function HomePage() {
             Design-Centered Custom Furniture
           </p>
           <h1 className="font-serif text-4xl md:text-6xl lg:text-7xl font-medium leading-tight mb-6">
-            당신을 담은 가구
+            당신을 담다
           </h1>
           <p className="text-lg md:text-xl text-white/90 max-w-2xl mb-10 leading-relaxed">
             설계의 정밀함으로 완성하는 맞춤 가구,<br className="hidden md:block" />
-            다담가구가 당신의 공간에 가치를 더합니다.
+            DaDam이 당신의 공간에 가치를 더합니다.
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
             <Link href="/portfolio" className="btn-primary">

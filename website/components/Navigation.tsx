@@ -49,7 +49,7 @@ export default function Navigation() {
               <span className={`text-lg lg:text-xl font-medium tracking-tight transition-colors ${
                 isScrolled ? 'text-neutral-800' : 'text-white'
               } group-hover:text-primary-sky`}>
-                다담가구
+                DaDam
               </span>
             </Link>
 
