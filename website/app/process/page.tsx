@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { MessageSquare, Ruler, PenTool, Factory, Truck, Wrench, Phone, CheckCircle } from 'lucide-react'
+import { MessageSquare, PenTool, Factory, Truck, Wrench, Phone, CheckCircle } from 'lucide-react'
 
 const processSteps = [
   {
@@ -111,15 +111,16 @@ export default function ProcessPage() {
   return (
     <>
       {/* Hero Section */}
-      <section className="pt-32 pb-16 bg-gallery-cream">
+      <section className="pt-32 pb-16 bg-neutral-100">
         <div className="max-w-7xl mx-auto px-6 md:px-12">
-          <p className="text-xs tracking-[0.3em] uppercase text-gallery-gold mb-4">
+          <p className="text-xs tracking-[0.3em] uppercase text-primary-navy mb-4">
             Our Process
           </p>
-          <h1 className="font-serif text-5xl md:text-6xl text-gallery-charcoal">
+          <div className="section-divider mb-6"></div>
+          <h1 className="font-serif text-5xl md:text-6xl text-neutral-800">
             서비스 안내
           </h1>
-          <p className="mt-6 text-gallery-gray max-w-2xl">
+          <p className="mt-6 text-neutral-500 max-w-2xl">
             다담가구는 상담부터 A/S까지 모든 과정을 직접 관리하여
             최상의 결과물을 약속합니다.
           </p>
@@ -127,32 +128,32 @@ export default function ProcessPage() {
       </section>
 
       {/* Process Timeline */}
-      <section className="section-padding bg-gallery-white">
+      <section className="py-20 md:py-32 px-6 md:px-12 bg-white">
         <div className="max-w-7xl mx-auto">
           <div className="space-y-0">
             {processSteps.map((step, index) => (
               <div key={step.step} className="relative">
                 {/* Connector line */}
                 {index < processSteps.length - 1 && (
-                  <div className="absolute left-8 md:left-1/2 top-32 bottom-0 w-px bg-gradient-to-b from-gallery-gold to-gallery-warm md:-translate-x-px" />
+                  <div className="absolute left-8 md:left-1/2 top-32 bottom-0 w-px bg-gradient-to-b from-primary-sky to-primary-navy md:-translate-x-px" />
                 )}
 
                 <div className={`grid md:grid-cols-2 gap-8 md:gap-16 ${index % 2 === 1 ? 'md:flex-row-reverse' : ''}`}>
                   {/* Step Number & Icon */}
                   <div className={`flex items-start gap-6 ${index % 2 === 1 ? 'md:order-2 md:flex-row-reverse' : ''}`}>
                     <div className="relative z-10 flex-shrink-0">
-                      <div className="w-16 h-16 rounded-full bg-gallery-charcoal flex items-center justify-center">
-                        <step.icon size={24} className="text-gallery-white" />
+                      <div className="w-16 h-16 rounded-full bg-primary-navy flex items-center justify-center">
+                        <step.icon size={24} className="text-white" />
                       </div>
                     </div>
                     <div className={`${index % 2 === 1 ? 'md:text-right' : ''}`}>
-                      <p className="text-xs tracking-[0.3em] uppercase text-gallery-gold">
+                      <p className="text-xs tracking-[0.3em] uppercase text-primary-navy">
                         Step {step.step}
                       </p>
-                      <h3 className="font-serif text-3xl text-gallery-charcoal mt-1">
+                      <h3 className="font-serif text-3xl text-neutral-800 mt-1">
                         {step.title}
                       </h3>
-                      <p className="text-sm text-gallery-gray mt-1">
+                      <p className="text-sm text-neutral-500 mt-1">
                         {step.subtitle} · {step.duration}
                       </p>
                     </div>
@@ -160,14 +161,14 @@ export default function ProcessPage() {
 
                   {/* Details */}
                   <div className={`md:py-8 ${index % 2 === 1 ? 'md:order-1' : ''}`}>
-                    <div className="bg-gallery-cream p-8 rounded-sm">
-                      <p className="text-gallery-charcoal mb-6">
+                    <div className="bg-neutral-100 p-8 rounded-sm">
+                      <p className="text-neutral-700 mb-6">
                         {step.description}
                       </p>
                       <ul className="space-y-3">
                         {step.details.map((detail, i) => (
-                          <li key={i} className="flex items-start gap-3 text-sm text-gallery-gray">
-                            <CheckCircle size={16} className="text-gallery-gold flex-shrink-0 mt-0.5" />
+                          <li key={i} className="flex items-start gap-3 text-sm text-neutral-500">
+                            <CheckCircle size={16} className="text-primary-sky flex-shrink-0 mt-0.5" />
                             <span>{detail}</span>
                           </li>
                         ))}
@@ -185,20 +186,20 @@ export default function ProcessPage() {
       </section>
 
       {/* Summary Timeline */}
-      <section className="py-16 bg-gallery-charcoal text-gallery-white overflow-hidden">
+      <section className="py-16 bg-primary-navy text-white overflow-hidden">
         <div className="max-w-7xl mx-auto px-6 md:px-12">
           <div className="flex items-center justify-between overflow-x-auto pb-4">
             {processSteps.map((step, index) => (
               <div key={step.step} className="flex items-center">
                 <div className="flex flex-col items-center min-w-[100px]">
-                  <div className="w-12 h-12 rounded-full border-2 border-gallery-gold flex items-center justify-center mb-2">
-                    <span className="font-serif text-gallery-gold">{step.step}</span>
+                  <div className="w-12 h-12 rounded-full border-2 border-primary-sky flex items-center justify-center mb-2">
+                    <span className="font-serif text-primary-sky">{step.step}</span>
                   </div>
-                  <span className="text-sm text-gallery-white">{step.title}</span>
-                  <span className="text-xs text-gallery-gray mt-1">{step.duration}</span>
+                  <span className="text-sm text-white">{step.title}</span>
+                  <span className="text-xs text-white/50 mt-1">{step.duration}</span>
                 </div>
                 {index < processSteps.length - 1 && (
-                  <div className="w-12 md:w-24 h-px bg-gallery-gold/50 mx-2" />
+                  <div className="w-12 md:w-24 h-px bg-primary-sky/50 mx-2" />
                 )}
               </div>
             ))}
@@ -207,13 +208,13 @@ export default function ProcessPage() {
       </section>
 
       {/* FAQ Section */}
-      <section className="section-padding bg-gallery-cream">
+      <section className="py-20 md:py-32 px-6 md:px-12 bg-neutral-100">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-16">
-            <p className="text-xs tracking-[0.3em] uppercase text-gallery-gold mb-4">
+            <p className="text-xs tracking-[0.3em] uppercase text-primary-navy mb-4">
               FAQ
             </p>
-            <h2 className="font-serif text-3xl md:text-4xl text-gallery-charcoal">
+            <h2 className="font-serif text-3xl md:text-4xl text-neutral-800">
               자주 묻는 질문
             </h2>
           </div>
@@ -222,13 +223,13 @@ export default function ProcessPage() {
             {faqs.map((faq, index) => (
               <div
                 key={index}
-                className="bg-gallery-white p-6 rounded-sm"
+                className="bg-white p-6 rounded-sm"
               >
-                <h3 className="font-medium text-gallery-charcoal flex items-start gap-3">
-                  <span className="text-gallery-gold flex-shrink-0">Q.</span>
+                <h3 className="font-medium text-neutral-800 flex items-start gap-3">
+                  <span className="text-primary-navy flex-shrink-0">Q.</span>
                   <span>{faq.question}</span>
                 </h3>
-                <p className="mt-4 text-gallery-gray pl-6">
+                <p className="mt-4 text-neutral-500 pl-6">
                   {faq.answer}
                 </p>
               </div>
@@ -238,15 +239,15 @@ export default function ProcessPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="section-padding bg-gallery-white">
+      <section className="py-20 md:py-32 px-6 md:px-12 bg-white">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="font-serif text-3xl md:text-4xl text-gallery-charcoal">
+          <h2 className="font-serif text-3xl md:text-4xl text-neutral-800">
             지금 바로 시작하세요
           </h2>
-          <p className="mt-4 text-gallery-gray">
+          <p className="mt-4 text-neutral-500">
             무료 상담을 통해 당신만의 공간 설계를 시작해보세요.
           </p>
-          <Link href="/contact" className="inline-block mt-8 btn-primary">
+          <Link href="/contact" className="inline-block mt-8 btn-dark">
             무료 상담 신청하기
           </Link>
         </div>

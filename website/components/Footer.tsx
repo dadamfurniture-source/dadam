@@ -17,40 +17,47 @@ const footerLinks = {
 
 export default function Footer() {
   return (
-    <footer className="bg-gallery-charcoal text-gallery-warm">
-      {/* Main Footer */}
-      <div className="max-w-7xl mx-auto px-6 md:px-12 py-16 md:py-24">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
+    <footer className="bg-neutral-900 text-white border-t border-neutral-800">
+      <div className="max-w-screen-xl mx-auto px-6 lg:px-12 py-16">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12">
           {/* Brand */}
           <div className="lg:col-span-2">
-            <Link href="/" className="inline-block">
-              <h3 className="font-serif text-3xl text-gallery-white">다담가구</h3>
-              <p className="text-xs tracking-[0.3em] text-gallery-gray uppercase mt-1">
-                DaDam Furniture
-              </p>
+            <Link href="/" className="flex items-center gap-3 mb-6">
+              <svg width="36" height="28" viewBox="0 0 40 28" fill="none">
+                <rect x="0" y="0" width="9" height="12" rx="1" fill="#A8D8EA"/>
+                <rect x="10" y="0" width="9" height="12" rx="1" fill="#A8D8EA"/>
+                <rect x="20" y="0" width="9" height="12" rx="1" fill="#A8D8EA"/>
+                <rect x="30" y="0" width="9" height="12" rx="1" fill="#A8D8EA"/>
+                <rect x="0" y="14" width="9" height="12" rx="1" fill="#1B3A5F"/>
+                <rect x="10" y="14" width="9" height="12" rx="1" fill="#1B3A5F"/>
+                <rect x="20" y="14" width="9" height="12" rx="1" fill="#1B3A5F"/>
+                <rect x="30" y="14" width="9" height="12" rx="1" fill="#1B3A5F"/>
+              </svg>
+              <div>
+                <span className="text-lg font-medium">다담가구</span>
+                <span className="block text-xs text-neutral-500">당신을 담은 가구</span>
+              </div>
             </Link>
-            <p className="mt-6 text-sm text-gallery-gray leading-relaxed max-w-md">
-              공간의 가치를 담다. 다담가구는 고객의 라이프스타일을 깊이 이해하고,
+            <p className="text-sm text-neutral-500 leading-relaxed max-w-md mb-6">
+              다담가구는 고객의 라이프스타일을 깊이 이해하고,
               설계부터 제작, 설치까지 맞춤형 가구 솔루션을 제공합니다.
             </p>
-            <div className="mt-8 space-y-2 text-sm text-gallery-gray">
-              <p>전화: 02-1234-5678</p>
-              <p>이메일: contact@dadam.co.kr</p>
-              <p>주소: 서울시 강남구 논현동 123-45</p>
+            <div className="space-y-1 text-sm text-neutral-500">
+              <p>Tel. 02-1234-5678</p>
+              <p>Email. contact@dadam.co.kr</p>
+              <p>서울시 강남구 논현동 123-45</p>
             </div>
           </div>
 
           {/* Services Links */}
           <div>
-            <h4 className="text-xs tracking-widest uppercase text-gallery-white mb-6">
-              서비스
-            </h4>
-            <ul className="space-y-3">
+            <h4 className="text-sm font-medium mb-4 tracking-wide">서비스</h4>
+            <ul className="space-y-2 text-sm text-neutral-500">
               {footerLinks.services.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-gallery-gray hover:text-gallery-white transition-colors"
+                    className="hover:text-white transition-colors"
                   >
                     {link.label}
                   </Link>
@@ -61,15 +68,13 @@ export default function Footer() {
 
           {/* Support Links */}
           <div>
-            <h4 className="text-xs tracking-widest uppercase text-gallery-white mb-6">
-              고객지원
-            </h4>
-            <ul className="space-y-3">
+            <h4 className="text-sm font-medium mb-4 tracking-wide">고객지원</h4>
+            <ul className="space-y-2 text-sm text-neutral-500">
               {footerLinks.support.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-gallery-gray hover:text-gallery-white transition-colors"
+                    className="hover:text-white transition-colors"
                   >
                     {link.label}
                   </Link>
@@ -80,20 +85,13 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* Bottom Bar */}
-      <div className="border-t border-gallery-gray/20">
-        <div className="max-w-7xl mx-auto px-6 md:px-12 py-6">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-xs text-gallery-gray">
-              © 2024 다담가구. All rights reserved.
-            </p>
-            <div className="flex items-center gap-6">
-              <span className="text-xs text-gallery-gray">
-                사업자등록번호: 123-45-67890
-              </span>
-              <span className="text-xs text-gallery-gray">
-                대표: 홍길동
-              </span>
+      <div className="border-t border-neutral-800">
+        <div className="max-w-screen-xl mx-auto px-6 lg:px-12 py-6">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-neutral-600">
+            <p>© 2024 다담가구. All rights reserved.</p>
+            <div className="flex gap-6">
+              <span>사업자등록번호: 123-45-67890</span>
+              <span>대표: 홍길동</span>
             </div>
           </div>
         </div>

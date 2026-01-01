@@ -5,11 +5,10 @@ import Link from 'next/link'
 import { Menu, X } from 'lucide-react'
 
 const navLinks = [
-  { href: '/portfolio', label: '포트폴리오', en: 'Portfolio' },
-  { href: '/partners', label: '인테리어 파트너', en: 'Partners' },
-  { href: '/materials', label: '자재 소개', en: 'Materials' },
-  { href: '/process', label: '서비스 안내', en: 'Process' },
-  { href: '/contact', label: '상담 문의', en: 'Contact' },
+  { href: '/portfolio', label: '포트폴리오' },
+  { href: '/partners', label: '인테리어 파트너' },
+  { href: '/materials', label: '자재 소개' },
+  { href: '/process', label: '서비스 안내' },
 ]
 
 export default function Navigation() {
@@ -18,7 +17,7 @@ export default function Navigation() {
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50)
+      setIsScrolled(window.scrollY > 100)
     }
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
@@ -29,22 +28,29 @@ export default function Navigation() {
       <nav
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
           isScrolled
-            ? 'bg-gallery-white/95 backdrop-blur-md shadow-sm py-4'
-            : 'bg-transparent py-6'
+            ? 'bg-white shadow-sm'
+            : 'bg-transparent'
         }`}
       >
-        <div className="max-w-7xl mx-auto px-6 md:px-12">
-          <div className="flex items-center justify-between">
+        <div className="max-w-screen-2xl mx-auto px-6 lg:px-12">
+          <div className="flex items-center justify-between h-20 lg:h-24">
             {/* Logo */}
-            <Link href="/" className="group">
-              <div className="flex flex-col">
-                <span className="font-serif text-2xl md:text-3xl text-gallery-charcoal tracking-tight">
-                  다담가구
-                </span>
-                <span className="text-[10px] tracking-[0.3em] text-gallery-gray uppercase">
-                  DaDam Furniture
-                </span>
-              </div>
+            <Link href="/" className="flex items-center gap-3 group">
+              <svg width="36" height="32" viewBox="0 0 40 28" fill="none" className="transition-elegant">
+                <rect x="0" y="0" width="9" height="12" rx="1" className="fill-primary-sky"/>
+                <rect x="10" y="0" width="9" height="12" rx="1" className="fill-primary-sky"/>
+                <rect x="20" y="0" width="9" height="12" rx="1" className="fill-primary-sky"/>
+                <rect x="30" y="0" width="9" height="12" rx="1" className="fill-primary-sky"/>
+                <rect x="0" y="14" width="9" height="12" rx="1" className="fill-primary-navy"/>
+                <rect x="10" y="14" width="9" height="12" rx="1" className="fill-primary-navy"/>
+                <rect x="20" y="14" width="9" height="12" rx="1" className="fill-primary-navy"/>
+                <rect x="30" y="14" width="9" height="12" rx="1" className="fill-primary-navy"/>
+              </svg>
+              <span className={`text-lg lg:text-xl font-medium tracking-tight transition-colors ${
+                isScrolled ? 'text-neutral-800' : 'text-white'
+              } group-hover:text-primary-sky`}>
+                다담가구
+              </span>
             </Link>
 
             {/* Desktop Navigation */}
@@ -53,30 +59,31 @@ export default function Navigation() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="group relative py-2"
+                  className={`text-sm underline-animation tracking-wide transition-colors ${
+                    isScrolled
+                      ? 'text-neutral-600 hover:text-primary-navy'
+                      : 'text-white/90 hover:text-white'
+                  }`}
                 >
-                  <span className="text-sm text-gallery-charcoal tracking-wide">
-                    {link.label}
-                  </span>
-                  <span className="absolute bottom-0 left-0 w-0 h-px bg-gallery-gold transition-all duration-300 group-hover:w-full" />
+                  {link.label}
                 </Link>
               ))}
+              <Link
+                href="/contact"
+                className={`ml-4 px-6 py-2.5 text-sm tracking-wide transition-all duration-300 ${
+                  isScrolled
+                    ? 'border border-primary-navy text-primary-navy hover:bg-primary-navy hover:text-white'
+                    : 'border border-white/50 text-white hover:bg-white hover:text-primary-navy'
+                }`}
+              >
+                상담 예약
+              </Link>
             </div>
-
-            {/* CTA Button - Desktop */}
-            <Link
-              href="/contact"
-              className="hidden lg:block px-6 py-3 border border-gallery-charcoal text-gallery-charcoal
-                         text-xs tracking-widest uppercase transition-all duration-300
-                         hover:bg-gallery-charcoal hover:text-gallery-white"
-            >
-              상담 예약
-            </Link>
 
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMobileMenuOpen(true)}
-              className="lg:hidden p-2 text-gallery-charcoal"
+              className={`lg:hidden p-2 ${isScrolled ? 'text-neutral-800' : 'text-white'}`}
               aria-label="메뉴 열기"
             >
               <Menu size={24} />
@@ -85,64 +92,54 @@ export default function Navigation() {
         </div>
       </nav>
 
-      {/* Mobile Menu Overlay */}
+      {/* Mobile Menu */}
       <div
-        className={`fixed inset-0 z-50 lg:hidden transition-opacity duration-500 ${
+        className={`fixed inset-0 z-50 lg:hidden transition-all duration-500 ${
           isMobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         }`}
       >
         <div
-          className="absolute inset-0 bg-gallery-black/20 backdrop-blur-sm"
+          className="absolute inset-0 bg-black/60 backdrop-blur-sm"
           onClick={() => setIsMobileMenuOpen(false)}
         />
 
         <div
-          className={`absolute right-0 top-0 h-full w-80 bg-gallery-white shadow-2xl transition-transform duration-500 ${
+          className={`absolute right-0 top-0 h-full w-full max-w-sm bg-primary-navy transform transition-transform duration-500 ${
             isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
           }`}
         >
-          <div className="p-6">
+          <div className="p-8 h-full flex flex-col">
             <button
               onClick={() => setIsMobileMenuOpen(false)}
-              className="absolute top-6 right-6 p-2 text-gallery-charcoal"
+              className="self-end p-2 text-white/70 hover:text-white"
               aria-label="메뉴 닫기"
             >
               <X size={24} />
             </button>
 
-            <div className="mt-16 space-y-1">
-              {navLinks.map((link, index) => (
+            <div className="flex-1 flex flex-col justify-center space-y-6">
+              {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="block py-4 border-b border-gallery-warm"
-                  style={{ animationDelay: `${index * 0.1}s` }}
+                  className="text-2xl text-white font-light tracking-wide"
                 >
-                  <span className="text-lg text-gallery-charcoal">{link.label}</span>
-                  <span className="block text-xs text-gallery-gray tracking-widest uppercase mt-1">
-                    {link.en}
-                  </span>
+                  {link.label}
                 </Link>
               ))}
+              <Link
+                href="/contact"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="text-2xl text-white font-light tracking-wide"
+              >
+                상담 문의
+              </Link>
             </div>
 
-            <Link
-              href="/contact"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="block w-full mt-8 py-4 bg-gallery-charcoal text-gallery-white text-center
-                         text-sm tracking-widest uppercase"
-            >
-              상담 예약하기
-            </Link>
-
-            <div className="mt-12 pt-8 border-t border-gallery-warm">
-              <p className="text-xs text-gallery-gray">
-                © 2024 다담가구
-              </p>
-              <p className="text-xs text-gallery-gray mt-1">
-                공간의 가치를 담다
-              </p>
+            <div className="text-white/50 text-sm">
+              <p>Tel. 02-1234-5678</p>
+              <p className="mt-1">contact@dadam.co.kr</p>
             </div>
           </div>
         </div>

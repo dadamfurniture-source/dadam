@@ -2,26 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Noto+Serif+KR:wght@400;500;600;700&display=swap');
-
-@font-face {
-  font-family: 'Pretendard';
-  src: url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css');
-}
-
-:root {
-  --gallery-white: #FAFAFA;
-  --gallery-cream: #F5F2ED;
-  --gallery-warm: #E8E4DD;
-  --gallery-gray: #9A9590;
-  --gallery-charcoal: #3D3A36;
-  --gallery-black: #1A1918;
-  --gallery-gold: #C4A962;
-  --gallery-accent: #8B7355;
-}
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Serif+KR:wght@400;500;600&display=swap');
 
 * {
   box-sizing: border-box;
+  font-family: 'Noto Sans KR', system-ui, sans-serif;
 }
 
 html {
@@ -29,136 +14,170 @@ html {
 }
 
 body {
-  font-family: 'Pretendard', system-ui, sans-serif;
-  background-color: var(--gallery-white);
-  color: var(--gallery-charcoal);
+  background-color: #FAFAFA;
+  color: #262626;
   line-height: 1.7;
-  letter-spacing: -0.01em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-h1, h2, h3, h4, h5, h6 {
-  font-family: 'Playfair Display', 'Noto Serif KR', serif;
-  font-weight: 500;
-  letter-spacing: -0.02em;
+/* Elegant transitions */
+.transition-elegant {
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Gallery-style image hover effect */
-.gallery-image {
-  transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1),
-              filter 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+/* Hero overlay gradient */
+.hero-overlay {
+  background: linear-gradient(to bottom,
+    rgba(0,0,0,0.3) 0%,
+    rgba(0,0,0,0.1) 50%,
+    rgba(0,0,0,0.4) 100%
+  );
 }
 
-.gallery-image:hover {
-  transform: scale(1.02);
+/* Gallery hover effect */
+.gallery-item {
+  position: relative;
+  overflow: hidden;
 }
 
-/* Elegant underline animation */
-.elegant-underline {
+.gallery-item img {
+  transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.gallery-item:hover img {
+  transform: scale(1.05);
+}
+
+.gallery-item .overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(27,58,95,0.9) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.gallery-item:hover .overlay {
+  opacity: 1;
+}
+
+.gallery-item .content {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 2rem;
+  transform: translateY(20px);
+  opacity: 0;
+  transition: all 0.5s ease;
+}
+
+.gallery-item:hover .content {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* Underline animation */
+.underline-animation {
   position: relative;
   display: inline-block;
 }
 
-.elegant-underline::after {
+.underline-animation::after {
   content: '';
   position: absolute;
   bottom: -2px;
   left: 0;
   width: 0;
   height: 1px;
-  background-color: var(--gallery-charcoal);
-  transition: width 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  background: currentColor;
+  transition: width 0.4s ease;
 }
 
-.elegant-underline:hover::after {
+.underline-animation:hover::after {
   width: 100%;
 }
 
-/* Scrollbar styling */
-::-webkit-scrollbar {
-  width: 8px;
+/* Section divider */
+.section-divider {
+  width: 60px;
+  height: 1px;
+  background: linear-gradient(90deg, #A8D8EA, #1B3A5F);
 }
 
-::-webkit-scrollbar-track {
-  background: var(--gallery-cream);
+/* Scroll indicator */
+.scroll-indicator {
+  animation: bounce 2s infinite;
 }
 
-::-webkit-scrollbar-thumb {
-  background: var(--gallery-gray);
-  border-radius: 4px;
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+  40% { transform: translateY(10px); }
+  60% { transform: translateY(5px); }
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: var(--gallery-charcoal);
+/* Process timeline */
+.process-line {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, #A8D8EA 0%, #1B3A5F 100%);
 }
+
+/* Card lift effect */
+.card-lift {
+  transition: all 0.4s ease;
+}
+
+.card-lift:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(27,58,95,0.15);
+}
+
+/* Input focus */
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: #1B3A5F;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #F5F5F5; }
+::-webkit-scrollbar-thumb { background: #A8D8EA; }
+::-webkit-scrollbar-thumb:hover { background: #1B3A5F; }
 
 /* Section spacing */
 .section-padding {
   @apply py-20 md:py-32 px-6 md:px-12 lg:px-20;
 }
 
-/* Gallery grid */
-.gallery-grid {
-  display: grid;
-  gap: 2rem;
-}
-
-@media (min-width: 768px) {
-  .gallery-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (min-width: 1024px) {
-  .gallery-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-/* Masonry-like effect */
-.masonry-item:nth-child(3n+2) {
-  transform: translateY(2rem);
-}
-
-/* Fade in animation on scroll */
-.fade-in-section {
-  opacity: 0;
-  transform: translateY(30px);
-  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
-}
-
-.fade-in-section.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
 /* Button styles */
 .btn-primary {
-  @apply inline-flex items-center justify-center px-8 py-4
-         bg-gallery-charcoal text-gallery-white text-sm tracking-widest uppercase
+  @apply inline-flex items-center justify-center px-10 py-4
+         bg-white text-primary-navy text-sm tracking-widest uppercase
          transition-all duration-300 ease-out
-         hover:bg-gallery-black;
+         hover:bg-primary-sky;
 }
 
 .btn-outline {
-  @apply inline-flex items-center justify-center px-8 py-4
-         border border-gallery-charcoal text-gallery-charcoal text-sm tracking-widest uppercase
+  @apply inline-flex items-center justify-center px-10 py-4
+         border border-white text-white text-sm tracking-widest uppercase
          transition-all duration-300 ease-out
-         hover:bg-gallery-charcoal hover:text-gallery-white;
+         hover:bg-white hover:text-primary-navy;
 }
 
-/* Flow line animation */
-.flow-line {
-  height: 2px;
-  background: linear-gradient(90deg, var(--gallery-gold) 0%, var(--gallery-accent) 100%);
-  transform-origin: left;
-  animation: flowLine 2s ease-out forwards;
+.btn-dark {
+  @apply inline-flex items-center justify-center px-10 py-4
+         bg-primary-navy text-white text-sm tracking-widest uppercase
+         transition-all duration-300 ease-out
+         hover:bg-primary-dark;
 }
 
-@keyframes flowLine {
-  from {
-    transform: scaleX(0);
-  }
-  to {
-    transform: scaleX(1);
-  }
+.btn-dark-outline {
+  @apply inline-flex items-center justify-center px-8 py-3
+         border border-primary-navy text-primary-navy text-sm tracking-wide
+         transition-all duration-300 ease-out
+         hover:bg-primary-navy hover:text-white;
 }

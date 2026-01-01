@@ -4,9 +4,9 @@ import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
 
 export const metadata: Metadata = {
-  title: '다담가구 | 설계 중심의 맞춤 가구',
-  description: '공간의 가치를 담다. 다담가구는 설계부터 제작, 설치까지 맞춤형 가구 솔루션을 제공합니다.',
-  keywords: '맞춤가구, 빌트인가구, 인테리어, 가구설계, 다담가구',
+  title: '다담가구 | 당신을 담은 가구',
+  description: '설계의 정밀함으로 완성하는 맞춤 가구, 다담가구가 당신의 공간에 가치를 더합니다.',
+  keywords: '맞춤가구, 빌트인가구, 인테리어, 가구설계, 다담가구, 주방가구, 드레스룸',
 }
 
 export default function RootLayout({
@@ -16,9 +16,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ko">
-      <body className="bg-gallery-white antialiased">
+      <body className="bg-neutral-50 antialiased">
         <Navigation />
-        <main className="min-h-screen">
+        <main>
           {children}
         </main>
         <Footer />
