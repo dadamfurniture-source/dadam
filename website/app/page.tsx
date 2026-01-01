@@ -13,7 +13,6 @@ import {
   CheckCircle2,
   Star
 } from 'lucide-react'
-import FurnitureBackground from '@/components/FurnitureBackground'
 
 // Featured portfolio items
 const featuredWorks = [
@@ -139,9 +138,27 @@ export default function HomePage() {
     <>
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        {/* Animated Furniture Background */}
-        <div className="absolute inset-0 bg-dadam-cream">
-          <FurnitureBackground />
+        {/* Elegant Static Background */}
+        <div className="absolute inset-0">
+          {/* Base gradient */}
+          <div className="absolute inset-0 bg-gradient-to-br from-dadam-cream via-dadam-white to-dadam-cream" />
+
+          {/* Subtle grid pattern */}
+          <div
+            className="absolute inset-0 opacity-30"
+            style={{
+              backgroundImage: `
+                linear-gradient(rgba(184, 149, 108, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(184, 149, 108, 0.03) 1px, transparent 1px)
+              `,
+              backgroundSize: '80px 80px'
+            }}
+          />
+
+          {/* Soft ambient gradients */}
+          <div className="absolute top-1/4 right-1/4 w-[600px] h-[600px] bg-dadam-ai-primary/5 rounded-full blur-[120px]" />
+          <div className="absolute bottom-1/3 left-1/4 w-[500px] h-[500px] bg-dadam-ai-secondary/5 rounded-full blur-[120px]" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-dadam-gold/3 rounded-full blur-[150px]" />
         </div>
 
         {/* Content */}
