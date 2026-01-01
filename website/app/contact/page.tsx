@@ -55,14 +55,14 @@ export default function ContactPage() {
       {/* Hero Section */}
       <section className="pt-32 pb-16 bg-neutral-100">
         <div className="max-w-7xl mx-auto px-6 md:px-12">
-          <p className="text-xs tracking-[0.3em] uppercase text-primary-navy mb-4">
+          <p className="text-sm tracking-[0.15em] uppercase text-primary-navy font-medium mb-4">
             Contact Us
           </p>
           <div className="section-divider mb-6"></div>
           <h1 className="font-serif text-5xl md:text-6xl text-neutral-800">
             상담 문의
           </h1>
-          <p className="mt-6 text-neutral-500 max-w-2xl">
+          <p className="mt-6 text-neutral-600 text-lg max-w-2xl leading-relaxed">
             다담가구와 함께 당신만의 특별한 공간을 설계해보세요.
             무료 상담을 통해 시작하실 수 있습니다.
           </p>
@@ -106,13 +106,13 @@ export default function ContactPage() {
                 <div className="w-12 h-12 mx-auto rounded-full bg-white flex items-center justify-center mb-4">
                   <item.icon size={20} className="text-primary-navy" />
                 </div>
-                <h3 className="font-medium text-neutral-800">
+                <h3 className="font-semibold text-neutral-800">
                   {item.title}
                 </h3>
-                <p className="text-neutral-700 mt-2">
+                <p className="text-neutral-700 mt-2 text-base">
                   {item.content}
                 </p>
-                <p className="text-xs text-neutral-400 mt-1">
+                <p className="text-sm text-neutral-500 mt-1">
                   {item.sub}
                 </p>
               </div>
@@ -337,14 +337,14 @@ export default function ContactPage() {
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div>
-              <p className="text-xs tracking-[0.3em] uppercase text-primary-navy mb-4">
+              <p className="text-sm tracking-[0.15em] uppercase text-primary-navy font-medium mb-4">
                 Showroom
               </p>
               <div className="section-divider mb-8"></div>
               <h2 className="font-serif text-3xl md:text-4xl text-neutral-800">
                 쇼룸 방문 안내
               </h2>
-              <p className="mt-6 text-neutral-500">
+              <p className="mt-6 text-neutral-600 text-lg leading-relaxed">
                 다담가구 쇼룸에서 실제 자재와 완성된 가구를 직접 확인하실 수 있습니다.
                 방문 상담은 사전 예약제로 운영됩니다.
               </p>
@@ -352,24 +352,24 @@ export default function ContactPage() {
                 <div className="flex items-start gap-4">
                   <MapPin size={20} className="text-primary-sky flex-shrink-0 mt-1" />
                   <div>
-                    <p className="font-medium text-neutral-800">주소</p>
-                    <p className="text-neutral-500">서울시 강남구 논현동 123-45 다담빌딩</p>
+                    <p className="font-semibold text-neutral-800">주소</p>
+                    <p className="text-neutral-600 text-base">서울시 강남구 논현동 123-45 다담빌딩</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
                   <Clock size={20} className="text-primary-sky flex-shrink-0 mt-1" />
                   <div>
-                    <p className="font-medium text-neutral-800">운영 시간</p>
-                    <p className="text-neutral-500">평일 10:00 - 19:00 (점심 12:00 - 13:00)</p>
-                    <p className="text-neutral-500">토요일 10:00 - 17:00 (예약제)</p>
-                    <p className="text-neutral-500">일요일/공휴일 휴무</p>
+                    <p className="font-semibold text-neutral-800">운영 시간</p>
+                    <p className="text-neutral-600 text-base">평일 10:00 - 19:00 (점심 12:00 - 13:00)</p>
+                    <p className="text-neutral-600 text-base">토요일 10:00 - 17:00 (예약제)</p>
+                    <p className="text-neutral-600 text-base">일요일/공휴일 휴무</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
                   <Phone size={20} className="text-primary-sky flex-shrink-0 mt-1" />
                   <div>
-                    <p className="font-medium text-neutral-800">예약 문의</p>
-                    <p className="text-neutral-500">02-1234-5678</p>
+                    <p className="font-semibold text-neutral-800">예약 문의</p>
+                    <p className="text-neutral-600 text-base">02-1234-5678</p>
                   </div>
                 </div>
               </div>

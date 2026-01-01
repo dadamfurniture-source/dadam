@@ -118,14 +118,14 @@ export default function PortfolioPage() {
       {/* Hero Section */}
       <section className="pt-32 pb-16 bg-neutral-100">
         <div className="max-w-7xl mx-auto px-6 md:px-12">
-          <p className="text-xs tracking-[0.3em] uppercase text-primary-navy mb-4">
+          <p className="text-sm tracking-[0.15em] uppercase text-primary-navy font-medium mb-4">
             Portfolio
           </p>
           <div className="section-divider mb-6"></div>
           <h1 className="font-serif text-5xl md:text-6xl text-neutral-800">
             포트폴리오
           </h1>
-          <p className="mt-6 text-neutral-500 max-w-2xl">
+          <p className="mt-6 text-neutral-600 text-lg max-w-2xl leading-relaxed">
             다담가구가 완성한 공간들을 만나보세요. 각각의 프로젝트는
             고객의 라이프스타일을 반영한 맞춤형 설계로 탄생했습니다.
           </p>
@@ -181,16 +181,16 @@ export default function PortfolioPage() {
 
                 {/* Info */}
                 <div className="mt-4">
-                  <p className="text-xs text-primary-navy tracking-wider uppercase">
+                  <p className="text-sm text-primary-navy tracking-wider uppercase font-medium">
                     {item.categoryLabel}
                   </p>
                   <h3 className="font-serif text-xl text-neutral-800 mt-1">
                     {item.title}
                   </h3>
-                  <p className="text-sm text-neutral-500 mt-2">
+                  <p className="text-base text-neutral-600 mt-2">
                     {item.description}
                   </p>
-                  <div className="flex gap-4 mt-3 text-xs text-neutral-400">
+                  <div className="flex gap-4 mt-3 text-sm text-neutral-500">
                     <span>{item.location}</span>
                     <span>•</span>
                     <span>{item.size}</span>
@@ -215,7 +215,7 @@ export default function PortfolioPage() {
           <h2 className="font-serif text-3xl md:text-4xl text-neutral-800">
             나만의 공간을 계획하고 계신가요?
           </h2>
-          <p className="mt-4 text-neutral-500">
+          <p className="mt-4 text-neutral-600 text-lg">
             다담가구와 함께 당신만의 특별한 공간을 완성해보세요.
           </p>
           <Link href="/contact" className="inline-block mt-8 btn-dark">

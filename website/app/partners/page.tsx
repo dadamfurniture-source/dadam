@@ -106,14 +106,14 @@ export default function PartnersPage() {
       {/* Hero Section */}
       <section className="pt-32 pb-16 bg-neutral-100">
         <div className="max-w-7xl mx-auto px-6 md:px-12">
-          <p className="text-xs tracking-[0.3em] uppercase text-primary-navy mb-4">
+          <p className="text-sm tracking-[0.15em] uppercase text-primary-navy font-medium mb-4">
             Interior Partners
           </p>
           <div className="section-divider mb-6"></div>
           <h1 className="font-serif text-5xl md:text-6xl text-neutral-800">
             인테리어 파트너
           </h1>
-          <p className="mt-6 text-neutral-500 max-w-2xl">
+          <p className="mt-6 text-neutral-600 text-lg max-w-2xl leading-relaxed">
             다담가구와 함께하는 검증된 인테리어 디자인 업체들입니다.
             전문가의 손길로 완성되는 특별한 공간을 경험하세요.
           </p>
@@ -170,7 +170,7 @@ export default function PartnersPage() {
 
                 {/* Content */}
                 <div className="p-6">
-                  <p className="text-sm text-neutral-600">
+                  <p className="text-base text-neutral-600 leading-relaxed">
                     {partner.description}
                   </p>
 
@@ -179,7 +179,7 @@ export default function PartnersPage() {
                     {partner.specialty.map((spec) => (
                       <span
                         key={spec}
-                        className="px-2 py-1 text-xs bg-white text-neutral-600 border border-neutral-200"
+                        className="px-3 py-1.5 text-sm bg-white text-neutral-600 border border-neutral-200"
                       >
                         {spec}
                       </span>
@@ -187,7 +187,7 @@ export default function PartnersPage() {
                   </div>
 
                   {/* Contact Info */}
-                  <div className="mt-6 pt-4 border-t border-neutral-200 space-y-2 text-sm text-neutral-500">
+                  <div className="mt-6 pt-4 border-t border-neutral-200 space-y-2 text-base text-neutral-600">
                     <div className="flex items-center gap-2">
                       <MapPin size={14} className="text-primary-navy" />
                       <span>{partner.address}</span>
@@ -219,7 +219,7 @@ export default function PartnersPage() {
           <h2 className="font-serif text-3xl md:text-4xl">
             인테리어 업체 파트너십
           </h2>
-          <p className="mt-4 text-white/70 max-w-2xl mx-auto">
+          <p className="mt-4 text-white/90 text-lg max-w-2xl mx-auto leading-relaxed">
             다담가구와 함께 성장할 인테리어 디자인 업체를 찾고 있습니다.
             검증된 파트너로 등록하여 더 많은 고객을 만나보세요.
           </p>
@@ -267,7 +267,7 @@ export default function PartnersPage() {
                 <h3 className="font-serif text-xl text-neutral-800 mb-3">
                   {benefit.title}
                 </h3>
-                <p className="text-sm text-neutral-500">
+                <p className="text-base text-neutral-600 leading-relaxed">
                   {benefit.description}
                 </p>
               </div>

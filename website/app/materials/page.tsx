@@ -68,14 +68,14 @@ export default function MaterialsPage() {
       {/* Hero Section */}
       <section className="pt-32 pb-16 bg-neutral-100">
         <div className="max-w-7xl mx-auto px-6 md:px-12">
-          <p className="text-xs tracking-[0.3em] uppercase text-primary-navy mb-4">
+          <p className="text-sm tracking-[0.15em] uppercase text-primary-navy font-medium mb-4">
             Materials & Quality
           </p>
           <div className="section-divider mb-6"></div>
           <h1 className="font-serif text-5xl md:text-6xl text-neutral-800">
             자재 소개
           </h1>
-          <p className="mt-6 text-neutral-500 max-w-2xl">
+          <p className="mt-6 text-neutral-600 text-lg max-w-2xl leading-relaxed">
             다담가구는 최상급 자재만을 사용합니다.
             10년, 20년이 지나도 변함없는 품질을 위해 자재 선택에 타협하지 않습니다.
           </p>
@@ -87,13 +87,13 @@ export default function MaterialsPage() {
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div>
-              <span className="text-xs tracking-[0.3em] uppercase text-primary-navy">Quality First</span>
+              <span className="text-sm tracking-[0.15em] uppercase text-primary-navy font-medium">Quality First</span>
               <div className="section-divider mt-4 mb-8"></div>
               <h2 className="font-serif text-3xl md:text-4xl text-neutral-800 leading-tight">
                 품질을 결정하는<br />
                 자재의 차이
               </h2>
-              <div className="mt-8 space-y-6 text-neutral-600">
+              <div className="mt-8 space-y-6 text-neutral-700 text-lg leading-loose">
                 <p>
                   가구의 품질은 눈에 보이지 않는 곳에서 결정됩니다.
                   다담가구는 겉으로 보이는 마감재뿐만 아니라,
@@ -118,7 +118,7 @@ export default function MaterialsPage() {
                   <h3 className="font-serif text-lg text-neutral-800">
                     {cert.title}
                   </h3>
-                  <p className="text-sm text-neutral-500 mt-2">
+                  <p className="text-base text-neutral-600 mt-2">
                     {cert.description}
                   </p>
                 </div>
@@ -147,13 +147,13 @@ export default function MaterialsPage() {
 
               {/* Content */}
               <div className={categoryIndex % 2 === 1 ? 'lg:order-1' : ''}>
-                <p className="text-xs tracking-[0.3em] uppercase text-primary-navy mb-4">
+                <p className="text-sm tracking-[0.15em] uppercase text-primary-navy font-medium mb-4">
                   {category.subtitle}
                 </p>
                 <h2 className="font-serif text-3xl md:text-4xl text-neutral-800">
                   {category.title}
                 </h2>
-                <p className="mt-6 text-neutral-500">
+                <p className="mt-6 text-neutral-600 text-lg leading-relaxed">
                   {category.description}
                 </p>
 
@@ -166,14 +166,14 @@ export default function MaterialsPage() {
                     >
                       <div className="flex justify-between items-start">
                         <div>
-                          <h4 className="font-medium text-neutral-800">
+                          <h4 className="font-semibold text-neutral-800">
                             {item.name}
                           </h4>
-                          <p className="text-sm text-neutral-500 mt-1">
+                          <p className="text-base text-neutral-600 mt-1">
                             {item.feature}
                           </p>
                         </div>
-                        <span className="text-xs text-primary-navy tracking-wider">
+                        <span className="text-sm text-primary-navy font-medium tracking-wide">
                           {item.origin}
                         </span>
                       </div>
@@ -202,7 +202,7 @@ export default function MaterialsPage() {
                 <p className="font-serif text-4xl text-primary-sky">
                   {item.number}
                 </p>
-                <p className="mt-2 text-white/70">
+                <p className="mt-2 text-white/90 text-base">
                   {item.label}
                 </p>
               </div>
