@@ -3,266 +3,394 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>다담가구 | 설계 중심의 맞춤 가구</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Noto+Serif+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" rel="stylesheet">
+  <title>다담가구 | 당신을 담은 가구</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
-            gallery: {
-              white: '#FAFAFA',
-              cream: '#F5F2ED',
-              warm: '#E8E4DD',
-              gray: '#9A9590',
-              charcoal: '#3D3A36',
-              black: '#1A1918',
-              gold: '#C4A962',
-              accent: '#8B7355',
+            primary: {
+              sky: '#A8D8EA',
+              light: '#C9E4ED',
+              navy: '#1B3A5F',
+              dark: '#0F2A47',
+            },
+            dadam: {
+              white: '#FFFFFF',
+              snow: '#F8FAFB',
+              light: '#E8F4F8',
+              gray: '#6B7B8A',
+              charcoal: '#3D3D3D',
+              black: '#1A1A1A',
             }
           },
           fontFamily: {
-            serif: ['Playfair Display', 'Noto Serif KR', 'serif'],
-            sans: ['Pretendard', 'system-ui', 'sans-serif'],
+            sans: ['Noto Sans KR', 'system-ui', 'sans-serif'],
           },
+          borderRadius: {
+            'xl': '1rem',
+            '2xl': '1.5rem',
+            '3xl': '2rem',
+          }
         }
       }
     }
   </script>
   <style>
-    body { font-family: 'Pretendard', system-ui, sans-serif; }
-    h1, h2, h3, h4, h5, h6 { font-family: 'Playfair Display', 'Noto Serif KR', serif; }
-    .elegant-underline { position: relative; display: inline-block; }
-    .elegant-underline::after { content: ''; position: absolute; bottom: -2px; left: 0; width: 0; height: 1px; background-color: #3D3A36; transition: width 0.4s ease; }
-    .elegant-underline:hover::after { width: 100%; }
-    .btn-primary { display: inline-flex; align-items: center; justify-content: center; padding: 1rem 2rem; background: #3D3A36; color: #FAFAFA; font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; transition: all 0.3s; }
-    .btn-primary:hover { background: #1A1918; }
-    .btn-outline { display: inline-flex; align-items: center; justify-content: center; padding: 1rem 2rem; border: 1px solid #3D3A36; color: #3D3A36; font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; transition: all 0.3s; }
-    .btn-outline:hover { background: #3D3A36; color: #FAFAFA; }
-    .nav-link { position: relative; padding: 0.5rem 0; }
-    .nav-link::after { content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 1px; background: #C4A962; transition: width 0.3s; }
-    .nav-link:hover::after { width: 100%; }
-    .gallery-card:hover .gallery-overlay { opacity: 1; }
-    .gallery-card:hover .gallery-image { transform: scale(1.05); }
-    .process-card:hover { background: #E8E4DD; }
+    * { font-family: 'Noto Sans KR', system-ui, sans-serif; }
     html { scroll-behavior: smooth; }
-    section { scroll-margin-top: 80px; }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #F8FAFB; }
+    ::-webkit-scrollbar-thumb { background: #A8D8EA; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #1B3A5F; }
+
+    /* Animations */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    .animate-fadeInUp { animation: fadeInUp 0.8s ease-out forwards; }
+    .animate-float { animation: float 3s ease-in-out infinite; }
+
+    /* Card hover effects */
+    .card-hover { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+    .card-hover:hover { transform: translateY(-8px); box-shadow: 0 25px 50px -12px rgba(27, 58, 95, 0.15); }
+
+    /* Image zoom effect */
+    .img-zoom { transition: transform 0.6s ease; }
+    .group:hover .img-zoom { transform: scale(1.08); }
+
+    /* Gradient text */
+    .gradient-text {
+      background: linear-gradient(135deg, #1B3A5F 0%, #A8D8EA 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Button styles */
+    .btn-primary {
+      background: linear-gradient(135deg, #1B3A5F 0%, #2A4A6F 100%);
+      transition: all 0.3s ease;
+    }
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #0F2A47 0%, #1B3A5F 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px -10px rgba(27, 58, 95, 0.5);
+    }
+    .btn-outline {
+      border: 2px solid #1B3A5F;
+      transition: all 0.3s ease;
+    }
+    .btn-outline:hover {
+      background: #1B3A5F;
+      color: white;
+    }
+
+    /* Nav link hover */
+    .nav-link { position: relative; }
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 50%;
+      width: 0;
+      height: 2px;
+      background: linear-gradient(90deg, #A8D8EA, #1B3A5F);
+      transition: all 0.3s ease;
+      transform: translateX(-50%);
+      border-radius: 2px;
+    }
+    .nav-link:hover::after { width: 100%; }
+
+    /* Process step connector */
+    .step-connector {
+      background: linear-gradient(90deg, #A8D8EA 0%, #1B3A5F 100%);
+    }
   </style>
 </head>
-<body class="bg-gallery-white antialiased">
+<body class="bg-dadam-white antialiased">
 
   <!-- Navigation -->
-  <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-500 bg-transparent py-6">
-    <div class="max-w-7xl mx-auto px-6 md:px-12">
-      <div class="flex items-center justify-between">
-        <a href="#home" class="group">
-          <div class="flex flex-col">
-            <span class="font-serif text-2xl md:text-3xl text-gallery-charcoal tracking-tight">다담가구</span>
-            <span class="text-[10px] tracking-[0.3em] text-gallery-gray uppercase">DaDam Furniture</span>
+  <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-500 bg-transparent">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8">
+      <div class="flex items-center justify-between h-20">
+        <!-- Logo -->
+        <a href="#home" class="flex items-center gap-3">
+          <!-- Logo SVG based on business card -->
+          <svg width="40" height="48" viewBox="0 0 40 48" fill="none">
+            <!-- Top light blue windows -->
+            <rect x="0" y="0" width="9" height="12" rx="1" fill="#A8D8EA"/>
+            <rect x="10" y="0" width="9" height="12" rx="1" fill="#A8D8EA"/>
+            <rect x="20" y="0" width="9" height="12" rx="1" fill="#A8D8EA"/>
+            <rect x="30" y="0" width="9" height="12" rx="1" fill="#A8D8EA"/>
+            <!-- Bottom navy windows -->
+            <rect x="0" y="14" width="9" height="12" rx="1" fill="#1B3A5F"/>
+            <rect x="10" y="14" width="9" height="12" rx="1" fill="#1B3A5F"/>
+            <rect x="20" y="14" width="9" height="12" rx="1" fill="#1B3A5F"/>
+            <rect x="30" y="14" width="9" height="12" rx="1" fill="#1B3A5F"/>
+          </svg>
+          <div>
+            <span class="text-xl font-bold text-dadam-charcoal">다담가구</span>
+            <span class="hidden sm:block text-xs text-dadam-gray">당신을 담은 가구</span>
           </div>
         </a>
-        <div class="hidden lg:flex items-center gap-10">
-          <a href="#portfolio" class="nav-link text-sm text-gallery-charcoal tracking-wide">포트폴리오</a>
-          <a href="#partners" class="nav-link text-sm text-gallery-charcoal tracking-wide">인테리어 파트너</a>
-          <a href="#materials" class="nav-link text-sm text-gallery-charcoal tracking-wide">자재 소개</a>
-          <a href="#process" class="nav-link text-sm text-gallery-charcoal tracking-wide">서비스 안내</a>
-          <a href="#contact" class="nav-link text-sm text-gallery-charcoal tracking-wide">상담 문의</a>
+
+        <!-- Desktop Navigation -->
+        <div class="hidden lg:flex items-center gap-8">
+          <a href="#portfolio" class="nav-link text-sm font-medium text-dadam-charcoal hover:text-primary-navy">포트폴리오</a>
+          <a href="#partners" class="nav-link text-sm font-medium text-dadam-charcoal hover:text-primary-navy">인테리어 파트너</a>
+          <a href="#materials" class="nav-link text-sm font-medium text-dadam-charcoal hover:text-primary-navy">자재 소개</a>
+          <a href="#process" class="nav-link text-sm font-medium text-dadam-charcoal hover:text-primary-navy">서비스 안내</a>
+          <a href="#contact" class="btn-primary px-6 py-2.5 text-sm font-medium text-white rounded-full">
+            상담 신청
+          </a>
         </div>
-        <a href="#contact" class="hidden lg:block px-6 py-3 border border-gallery-charcoal text-gallery-charcoal text-xs tracking-widest uppercase transition-all hover:bg-gallery-charcoal hover:text-gallery-white">
-          상담 예약
-        </a>
-        <button id="mobile-menu-btn" class="lg:hidden p-2 text-gallery-charcoal">
-          <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+
+        <!-- Mobile Menu Button -->
+        <button id="mobile-menu-btn" class="lg:hidden p-2 text-dadam-charcoal rounded-lg hover:bg-dadam-light">
+          <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
         </button>
       </div>
     </div>
   </nav>
 
   <!-- Mobile Menu -->
-  <div id="mobile-menu" class="fixed inset-0 z-50 lg:hidden opacity-0 pointer-events-none transition-opacity duration-500">
-    <div class="absolute inset-0 bg-gallery-black/20 backdrop-blur-sm" onclick="closeMobileMenu()"></div>
-    <div id="mobile-menu-panel" class="absolute right-0 top-0 h-full w-80 bg-gallery-white shadow-2xl transform translate-x-full transition-transform duration-500">
+  <div id="mobile-menu" class="fixed inset-0 z-50 lg:hidden opacity-0 pointer-events-none transition-all duration-300">
+    <div class="absolute inset-0 bg-primary-navy/20 backdrop-blur-sm" onclick="closeMobileMenu()"></div>
+    <div id="mobile-menu-panel" class="absolute right-0 top-0 h-full w-80 bg-white shadow-2xl transform translate-x-full transition-transform duration-300">
       <div class="p-6">
-        <button onclick="closeMobileMenu()" class="absolute top-6 right-6 p-2 text-gallery-charcoal">
+        <button onclick="closeMobileMenu()" class="absolute top-6 right-6 p-2 text-dadam-charcoal hover:bg-dadam-light rounded-lg">
           <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
         </button>
-        <div class="mt-16 space-y-1">
-          <a href="#portfolio" onclick="closeMobileMenu()" class="block py-4 border-b border-gallery-warm">
-            <span class="text-lg text-gallery-charcoal">포트폴리오</span>
-            <span class="block text-xs text-gallery-gray tracking-widest uppercase mt-1">Portfolio</span>
+        <div class="mt-16 space-y-2">
+          <a href="#portfolio" onclick="closeMobileMenu()" class="block py-4 px-4 text-dadam-charcoal hover:bg-primary-sky/20 rounded-xl transition-colors">
+            <span class="font-medium">포트폴리오</span>
           </a>
-          <a href="#partners" onclick="closeMobileMenu()" class="block py-4 border-b border-gallery-warm">
-            <span class="text-lg text-gallery-charcoal">인테리어 파트너</span>
-            <span class="block text-xs text-gallery-gray tracking-widest uppercase mt-1">Partners</span>
+          <a href="#partners" onclick="closeMobileMenu()" class="block py-4 px-4 text-dadam-charcoal hover:bg-primary-sky/20 rounded-xl transition-colors">
+            <span class="font-medium">인테리어 파트너</span>
           </a>
-          <a href="#materials" onclick="closeMobileMenu()" class="block py-4 border-b border-gallery-warm">
-            <span class="text-lg text-gallery-charcoal">자재 소개</span>
-            <span class="block text-xs text-gallery-gray tracking-widest uppercase mt-1">Materials</span>
+          <a href="#materials" onclick="closeMobileMenu()" class="block py-4 px-4 text-dadam-charcoal hover:bg-primary-sky/20 rounded-xl transition-colors">
+            <span class="font-medium">자재 소개</span>
           </a>
-          <a href="#process" onclick="closeMobileMenu()" class="block py-4 border-b border-gallery-warm">
-            <span class="text-lg text-gallery-charcoal">서비스 안내</span>
-            <span class="block text-xs text-gallery-gray tracking-widest uppercase mt-1">Process</span>
-          </a>
-          <a href="#contact" onclick="closeMobileMenu()" class="block py-4 border-b border-gallery-warm">
-            <span class="text-lg text-gallery-charcoal">상담 문의</span>
-            <span class="block text-xs text-gallery-gray tracking-widest uppercase mt-1">Contact</span>
+          <a href="#process" onclick="closeMobileMenu()" class="block py-4 px-4 text-dadam-charcoal hover:bg-primary-sky/20 rounded-xl transition-colors">
+            <span class="font-medium">서비스 안내</span>
           </a>
         </div>
-        <a href="#contact" onclick="closeMobileMenu()" class="block w-full mt-8 py-4 bg-gallery-charcoal text-gallery-white text-center text-sm tracking-widest uppercase">
-          상담 예약하기
+        <a href="#contact" onclick="closeMobileMenu()" class="block mt-8 py-4 btn-primary text-white text-center font-medium rounded-2xl">
+          상담 신청하기
         </a>
       </div>
     </div>
   </div>
 
   <!-- Hero Section -->
-  <section id="home" class="relative min-h-screen flex items-center justify-center overflow-hidden">
-    <div class="absolute inset-0 bg-gallery-cream">
-      <div class="absolute inset-0 bg-gradient-to-br from-gallery-cream via-gallery-warm/50 to-gallery-cream"></div>
-      <div class="absolute top-1/4 left-0 w-full h-px bg-gallery-warm/50"></div>
-      <div class="absolute top-3/4 left-0 w-full h-px bg-gallery-warm/50"></div>
-      <div class="absolute left-1/4 top-0 h-full w-px bg-gallery-warm/50"></div>
-      <div class="absolute right-1/4 top-0 h-full w-px bg-gallery-warm/50"></div>
-    </div>
-    <div class="relative z-10 max-w-7xl mx-auto px-6 md:px-12 py-32 text-center">
-      <p class="text-xs tracking-[0.4em] uppercase text-gallery-gray mb-6">Design-Centered Custom Furniture</p>
-      <h1 class="font-serif text-5xl md:text-7xl lg:text-8xl text-gallery-charcoal leading-tight">
-        공간의 가치를<br><span class="text-gallery-accent">담다</span>
-      </h1>
-      <p class="mt-8 text-lg md:text-xl text-gallery-gray max-w-2xl mx-auto leading-relaxed">
-        다담가구는 당신의 공간에 맞춤형 가치를 더합니다.<br class="hidden md:block">
-        설계부터 제작, 설치까지 완벽한 가구 솔루션을 경험하세요.
-      </p>
-      <div class="mt-12 flex flex-col sm:flex-row gap-4 justify-center">
-        <a href="#portfolio" class="btn-primary">포트폴리오 보기</a>
-        <a href="#contact" class="btn-outline">무료 상담 신청</a>
-      </div>
-      <div class="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2">
-        <span class="text-xs tracking-widest uppercase text-gallery-gray">Scroll</span>
-        <div class="w-px h-12 bg-gradient-to-b from-gallery-gray to-transparent"></div>
-      </div>
-    </div>
-  </section>
+  <section id="home" class="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-dadam-snow via-primary-light/30 to-dadam-white">
+    <!-- Background decorations -->
+    <div class="absolute top-20 right-0 w-96 h-96 bg-primary-sky/30 rounded-full blur-3xl"></div>
+    <div class="absolute bottom-20 left-0 w-80 h-80 bg-primary-navy/10 rounded-full blur-3xl"></div>
 
-  <!-- About Section -->
-  <section class="py-20 md:py-32 px-6 md:px-12 bg-gallery-white">
-    <div class="max-w-7xl mx-auto">
-      <div class="grid lg:grid-cols-2 gap-16 items-center">
-        <div>
-          <p class="text-xs tracking-[0.3em] uppercase text-gallery-gold mb-4">About DaDam</p>
-          <h2 class="font-serif text-4xl md:text-5xl text-gallery-charcoal leading-tight">
-            설계가 다르면<br>가구가 다릅니다
-          </h2>
-          <div class="mt-8 space-y-6 text-gallery-gray">
-            <p>다담가구는 단순한 가구 제작을 넘어, 공간과 사람을 연결하는 설계 중심의 맞춤 가구 전문 기업입니다.</p>
-            <p>모든 프로젝트는 고객의 라이프스타일에 대한 깊은 이해에서 시작됩니다. 밀리미터 단위의 정밀한 설계와 최고급 자재, 숙련된 장인의 손끝에서 탄생하는 다담가구만의 특별한 경험을 만나보세요.</p>
+    <div class="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 py-32">
+      <div class="grid lg:grid-cols-2 gap-12 items-center">
+        <!-- Text Content -->
+        <div class="animate-fadeInUp">
+          <div class="inline-flex items-center gap-2 px-4 py-2 bg-primary-sky/30 rounded-full mb-6">
+            <span class="w-2 h-2 bg-primary-navy rounded-full"></span>
+            <span class="text-sm font-medium text-primary-navy">설계 중심 맞춤 가구</span>
           </div>
-          <a href="#process" class="inline-flex items-center gap-2 mt-8 text-gallery-charcoal elegant-underline">
-            <span>서비스 과정 알아보기</span>
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12l5-5-5-5"/></svg>
-          </a>
-        </div>
-        <div class="relative">
-          <div class="aspect-[4/5] bg-gallery-warm rounded-sm overflow-hidden flex items-center justify-center">
-            <div class="text-center text-gallery-gray">
-              <p class="font-serif text-2xl">다담가구</p>
-              <p class="text-sm mt-2">설계 중심의 맞춤 가구</p>
+          <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-dadam-charcoal leading-tight mb-6">
+            당신을 담은<br>
+            <span class="gradient-text">가구</span>
+          </h1>
+          <p class="text-lg text-dadam-gray leading-relaxed mb-8 max-w-lg">
+            다담가구는 고객의 라이프스타일을 깊이 이해하고,
+            설계부터 제작, 설치까지 완벽한 맞춤 가구 솔루션을 제공합니다.
+          </p>
+          <div class="flex flex-col sm:flex-row gap-4">
+            <a href="#portfolio" class="btn-primary px-8 py-4 text-white font-medium rounded-2xl text-center">
+              포트폴리오 보기
+            </a>
+            <a href="#contact" class="btn-outline px-8 py-4 text-primary-navy font-medium rounded-2xl text-center">
+              무료 상담 신청
+            </a>
+          </div>
+
+          <!-- Stats -->
+          <div class="flex gap-8 mt-12 pt-8 border-t border-dadam-light">
+            <div>
+              <p class="text-3xl font-bold text-primary-navy">500+</p>
+              <p class="text-sm text-dadam-gray">완성 프로젝트</p>
+            </div>
+            <div>
+              <p class="text-3xl font-bold text-primary-navy">98%</p>
+              <p class="text-sm text-dadam-gray">고객 만족도</p>
+            </div>
+            <div>
+              <p class="text-3xl font-bold text-primary-navy">10년</p>
+              <p class="text-sm text-dadam-gray">품질 보증</p>
             </div>
           </div>
-          <div class="absolute -bottom-4 -right-4 w-full h-full border border-gallery-gold/30 rounded-sm -z-10"></div>
+        </div>
+
+        <!-- Hero Image -->
+        <div class="relative animate-fadeInUp" style="animation-delay: 0.2s;">
+          <div class="relative rounded-3xl overflow-hidden shadow-2xl">
+            <img
+              src="https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=800&q=80"
+              alt="모던 인테리어 거실"
+              class="w-full aspect-[4/5] object-cover"
+            >
+            <div class="absolute inset-0 bg-gradient-to-t from-primary-navy/40 to-transparent"></div>
+          </div>
+          <!-- Floating card -->
+          <div class="absolute -bottom-6 -left-6 bg-white p-4 rounded-2xl shadow-xl animate-float">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 bg-primary-sky rounded-xl flex items-center justify-center">
+                <svg width="24" height="24" fill="none" stroke="#1B3A5F" stroke-width="2">
+                  <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+                  <path d="M22 4L12 14.01l-3-3"/>
+                </svg>
+              </div>
+              <div>
+                <p class="font-bold text-dadam-charcoal">검증된 품질</p>
+                <p class="text-sm text-dadam-gray">10년 A/S 보증</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </section>
 
   <!-- Portfolio Section -->
-  <section id="portfolio" class="py-20 md:py-32 px-6 md:px-12 bg-gallery-cream">
-    <div class="max-w-7xl mx-auto">
-      <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-16">
-        <div>
-          <p class="text-xs tracking-[0.3em] uppercase text-gallery-gold mb-4">Portfolio</p>
-          <h2 class="font-serif text-4xl md:text-5xl text-gallery-charcoal">대표 작품</h2>
-        </div>
+  <section id="portfolio" class="py-24 bg-dadam-white">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8">
+      <!-- Section Header -->
+      <div class="text-center mb-16">
+        <span class="inline-block px-4 py-1.5 bg-primary-sky/30 text-primary-navy text-sm font-medium rounded-full mb-4">
+          Portfolio
+        </span>
+        <h2 class="text-3xl md:text-4xl font-bold text-dadam-charcoal mb-4">
+          대표 작품
+        </h2>
+        <p class="text-dadam-gray max-w-2xl mx-auto">
+          다담가구가 완성한 공간들입니다. 각 프로젝트는 고객의 라이프스타일을 반영한 맞춤 설계로 탄생했습니다.
+        </p>
       </div>
-      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-        <div class="gallery-card group relative overflow-hidden cursor-pointer">
-          <div class="aspect-[4/5] bg-[#D4C5B5] overflow-hidden">
-            <div class="gallery-image w-full h-full flex items-center justify-center text-gallery-charcoal/50 transition-transform duration-700">
-              <div class="text-center p-8">
-                <p class="font-serif text-xl">청담동 펜트하우스</p>
-                <p class="text-sm mt-2">주방 & 드레스룸</p>
-              </div>
+
+      <!-- Portfolio Grid -->
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Item 1 -->
+        <div class="group card-hover bg-white rounded-3xl overflow-hidden shadow-lg">
+          <div class="relative overflow-hidden aspect-[4/5]">
+            <img
+              src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&q=80"
+              alt="모던 주방 인테리어"
+              class="w-full h-full object-cover img-zoom"
+            >
+            <div class="absolute inset-0 bg-gradient-to-t from-primary-navy/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div class="absolute bottom-0 left-0 right-0 p-6 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+              <span class="inline-block px-3 py-1 bg-primary-sky text-primary-navy text-xs font-medium rounded-full mb-2">주방</span>
+              <h3 class="text-xl font-bold text-white">청담동 펜트하우스</h3>
+              <p class="text-white/80 text-sm mt-1">화이트 톤 아일랜드 키친</p>
             </div>
-          </div>
-          <div class="gallery-overlay absolute inset-0 bg-gallery-black/40 opacity-0 transition-opacity duration-500 flex items-center justify-center">
-            <span class="text-gallery-white text-sm tracking-widest uppercase">View Project</span>
           </div>
         </div>
-        <div class="gallery-card group relative overflow-hidden cursor-pointer">
-          <div class="aspect-[4/5] bg-[#B8C4C8] overflow-hidden">
-            <div class="gallery-image w-full h-full flex items-center justify-center text-gallery-charcoal/50 transition-transform duration-700">
-              <div class="text-center p-8">
-                <p class="font-serif text-xl">한남동 타운하우스</p>
-                <p class="text-sm mt-2">서재 & 수납장</p>
-              </div>
+
+        <!-- Item 2 -->
+        <div class="group card-hover bg-white rounded-3xl overflow-hidden shadow-lg">
+          <div class="relative overflow-hidden aspect-[4/5]">
+            <img
+              src="https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?w=600&q=80"
+              alt="드레스룸"
+              class="w-full h-full object-cover img-zoom"
+            >
+            <div class="absolute inset-0 bg-gradient-to-t from-primary-navy/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div class="absolute bottom-0 left-0 right-0 p-6 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+              <span class="inline-block px-3 py-1 bg-primary-sky text-primary-navy text-xs font-medium rounded-full mb-2">드레스룸</span>
+              <h3 class="text-xl font-bold text-white">판교 타운하우스</h3>
+              <p class="text-white/80 text-sm mt-1">워크인 드레스룸 시스템</p>
             </div>
-          </div>
-          <div class="gallery-overlay absolute inset-0 bg-gallery-black/40 opacity-0 transition-opacity duration-500 flex items-center justify-center">
-            <span class="text-gallery-white text-sm tracking-widest uppercase">View Project</span>
           </div>
         </div>
-        <div class="gallery-card group relative overflow-hidden cursor-pointer">
-          <div class="aspect-[4/5] bg-[#C8C0B8] overflow-hidden">
-            <div class="gallery-image w-full h-full flex items-center justify-center text-gallery-charcoal/50 transition-transform duration-700">
-              <div class="text-center p-8">
-                <p class="font-serif text-xl">성수동 복층 오피스텔</p>
-                <p class="text-sm mt-2">거실장 & 침실</p>
-              </div>
+
+        <!-- Item 3 -->
+        <div class="group card-hover bg-white rounded-3xl overflow-hidden shadow-lg">
+          <div class="relative overflow-hidden aspect-[4/5]">
+            <img
+              src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&q=80"
+              alt="거실장"
+              class="w-full h-full object-cover img-zoom"
+            >
+            <div class="absolute inset-0 bg-gradient-to-t from-primary-navy/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div class="absolute bottom-0 left-0 right-0 p-6 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+              <span class="inline-block px-3 py-1 bg-primary-sky text-primary-navy text-xs font-medium rounded-full mb-2">거실</span>
+              <h3 class="text-xl font-bold text-white">한남동 복층</h3>
+              <p class="text-white/80 text-sm mt-1">월넛 벽면 수납장</p>
             </div>
-          </div>
-          <div class="gallery-overlay absolute inset-0 bg-gallery-black/40 opacity-0 transition-opacity duration-500 flex items-center justify-center">
-            <span class="text-gallery-white text-sm tracking-widest uppercase">View Project</span>
           </div>
         </div>
-        <div class="gallery-card group relative overflow-hidden cursor-pointer">
-          <div class="aspect-[4/5] bg-[#BCC4C0] overflow-hidden">
-            <div class="gallery-image w-full h-full flex items-center justify-center text-gallery-charcoal/50 transition-transform duration-700">
-              <div class="text-center p-8">
-                <p class="font-serif text-xl">분당 단독주택</p>
-                <p class="text-sm mt-2">전체 빌트인</p>
-              </div>
+
+        <!-- Item 4 -->
+        <div class="group card-hover bg-white rounded-3xl overflow-hidden shadow-lg">
+          <div class="relative overflow-hidden aspect-[4/5]">
+            <img
+              src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=600&q=80"
+              alt="서재"
+              class="w-full h-full object-cover img-zoom"
+            >
+            <div class="absolute inset-0 bg-gradient-to-t from-primary-navy/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div class="absolute bottom-0 left-0 right-0 p-6 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+              <span class="inline-block px-3 py-1 bg-primary-sky text-primary-navy text-xs font-medium rounded-full mb-2">서재</span>
+              <h3 class="text-xl font-bold text-white">분당 단독주택</h3>
+              <p class="text-white/80 text-sm mt-1">빌트인 서재 시스템</p>
             </div>
-          </div>
-          <div class="gallery-overlay absolute inset-0 bg-gallery-black/40 opacity-0 transition-opacity duration-500 flex items-center justify-center">
-            <span class="text-gallery-white text-sm tracking-widest uppercase">View Project</span>
           </div>
         </div>
-        <div class="gallery-card group relative overflow-hidden cursor-pointer">
-          <div class="aspect-[4/5] bg-[#D0C8C0] overflow-hidden">
-            <div class="gallery-image w-full h-full flex items-center justify-center text-gallery-charcoal/50 transition-transform duration-700">
-              <div class="text-center p-8">
-                <p class="font-serif text-xl">판교 아파트</p>
-                <p class="text-sm mt-2">워크인 드레스룸</p>
-              </div>
+
+        <!-- Item 5 -->
+        <div class="group card-hover bg-white rounded-3xl overflow-hidden shadow-lg">
+          <div class="relative overflow-hidden aspect-[4/5]">
+            <img
+              src="https://images.unsplash.com/photo-1617325247661-675ab4b64ae2?w=600&q=80"
+              alt="침실"
+              class="w-full h-full object-cover img-zoom"
+            >
+            <div class="absolute inset-0 bg-gradient-to-t from-primary-navy/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div class="absolute bottom-0 left-0 right-0 p-6 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+              <span class="inline-block px-3 py-1 bg-primary-sky text-primary-navy text-xs font-medium rounded-full mb-2">침실</span>
+              <h3 class="text-xl font-bold text-white">용산 아파트</h3>
+              <p class="text-white/80 text-sm mt-1">헤드보드 & 수납 시스템</p>
             </div>
-          </div>
-          <div class="gallery-overlay absolute inset-0 bg-gallery-black/40 opacity-0 transition-opacity duration-500 flex items-center justify-center">
-            <span class="text-gallery-white text-sm tracking-widest uppercase">View Project</span>
           </div>
         </div>
-        <div class="gallery-card group relative overflow-hidden cursor-pointer">
-          <div class="aspect-[4/5] bg-[#C4C8CC] overflow-hidden">
-            <div class="gallery-image w-full h-full flex items-center justify-center text-gallery-charcoal/50 transition-transform duration-700">
-              <div class="text-center p-8">
-                <p class="font-serif text-xl">용산 오피스텔</p>
-                <p class="text-sm mt-2">침실 수납 시스템</p>
-              </div>
+
+        <!-- Item 6 -->
+        <div class="group card-hover bg-white rounded-3xl overflow-hidden shadow-lg">
+          <div class="relative overflow-hidden aspect-[4/5]">
+            <img
+              src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600&q=80"
+              alt="전체 빌트인"
+              class="w-full h-full object-cover img-zoom"
+            >
+            <div class="absolute inset-0 bg-gradient-to-t from-primary-navy/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div class="absolute bottom-0 left-0 right-0 p-6 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+              <span class="inline-block px-3 py-1 bg-primary-sky text-primary-navy text-xs font-medium rounded-full mb-2">빌트인</span>
+              <h3 class="text-xl font-bold text-white">성수 펜트하우스</h3>
+              <p class="text-white/80 text-sm mt-1">전체 빌트인 시스템</p>
             </div>
-          </div>
-          <div class="gallery-overlay absolute inset-0 bg-gallery-black/40 opacity-0 transition-opacity duration-500 flex items-center justify-center">
-            <span class="text-gallery-white text-sm tracking-widest uppercase">View Project</span>
           </div>
         </div>
       </div>
@@ -270,92 +398,153 @@
   </section>
 
   <!-- Process Section -->
-  <section id="process" class="py-20 md:py-32 px-6 md:px-12 bg-gallery-white">
-    <div class="max-w-7xl mx-auto">
+  <section id="process" class="py-24 bg-gradient-to-b from-dadam-snow to-dadam-white">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8">
       <div class="text-center mb-16">
-        <p class="text-xs tracking-[0.3em] uppercase text-gallery-gold mb-4">Our Process</p>
-        <h2 class="font-serif text-4xl md:text-5xl text-gallery-charcoal">서비스 진행 과정</h2>
-        <p class="mt-6 text-gallery-gray max-w-2xl mx-auto">
-          다담가구는 상담부터 A/S까지 모든 과정을 직접 관리하여 최상의 결과물을 약속합니다.
+        <span class="inline-block px-4 py-1.5 bg-primary-sky/30 text-primary-navy text-sm font-medium rounded-full mb-4">
+          Service Process
+        </span>
+        <h2 class="text-3xl md:text-4xl font-bold text-dadam-charcoal mb-4">
+          서비스 진행 과정
+        </h2>
+        <p class="text-dadam-gray max-w-2xl mx-auto">
+          상담부터 A/S까지, 모든 과정을 직접 관리하여 최상의 결과물을 약속합니다.
         </p>
       </div>
+
+      <!-- Process Steps -->
       <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-        <div class="process-card group relative p-8 bg-gallery-cream rounded-sm transition-all duration-300">
-          <span class="absolute top-4 right-4 font-serif text-5xl text-gallery-warm group-hover:text-gallery-white/50 transition-colors">01</span>
-          <div class="w-12 h-12 flex items-center justify-center rounded-full bg-gallery-white mb-6">
-            <svg width="24" height="24" fill="none" stroke="#3D3A36" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2v10z"/></svg>
+        <!-- Step 1 -->
+        <div class="relative">
+          <div class="card-hover bg-white p-8 rounded-3xl shadow-lg text-center">
+            <div class="w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-primary-sky to-primary-light rounded-2xl flex items-center justify-center">
+              <svg width="28" height="28" fill="none" stroke="#1B3A5F" stroke-width="2">
+                <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2v10z"/>
+              </svg>
+            </div>
+            <span class="text-5xl font-bold text-primary-sky/50">01</span>
+            <h3 class="text-xl font-bold text-dadam-charcoal mt-2 mb-3">상담</h3>
+            <p class="text-sm text-dadam-gray leading-relaxed">
+              고객님의 라이프스타일과 공간을 깊이 이해합니다
+            </p>
           </div>
-          <h3 class="font-serif text-2xl text-gallery-charcoal mb-3">상담</h3>
-          <p class="text-sm text-gallery-gray leading-relaxed">고객의 라이프스타일과 공간을 깊이 이해합니다</p>
+          <div class="hidden lg:block absolute top-1/2 -right-4 w-8 h-0.5 step-connector"></div>
         </div>
-        <div class="process-card group relative p-8 bg-gallery-cream rounded-sm transition-all duration-300">
-          <span class="absolute top-4 right-4 font-serif text-5xl text-gallery-warm group-hover:text-gallery-white/50 transition-colors">02</span>
-          <div class="w-12 h-12 flex items-center justify-center rounded-full bg-gallery-white mb-6">
-            <svg width="24" height="24" fill="none" stroke="#3D3A36" stroke-width="2"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/></svg>
+
+        <!-- Step 2 -->
+        <div class="relative">
+          <div class="card-hover bg-white p-8 rounded-3xl shadow-lg text-center">
+            <div class="w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-primary-sky to-primary-light rounded-2xl flex items-center justify-center">
+              <svg width="28" height="28" fill="none" stroke="#1B3A5F" stroke-width="2">
+                <path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/>
+              </svg>
+            </div>
+            <span class="text-5xl font-bold text-primary-sky/50">02</span>
+            <h3 class="text-xl font-bold text-dadam-charcoal mt-2 mb-3">설계</h3>
+            <p class="text-sm text-dadam-gray leading-relaxed">
+              밀리미터 단위의 정밀한 맞춤 설계를 진행합니다
+            </p>
           </div>
-          <h3 class="font-serif text-2xl text-gallery-charcoal mb-3">설계</h3>
-          <p class="text-sm text-gallery-gray leading-relaxed">밀리미터 단위의 정밀한 맞춤 설계를 진행합니다</p>
+          <div class="hidden lg:block absolute top-1/2 -right-4 w-8 h-0.5 step-connector"></div>
         </div>
-        <div class="process-card group relative p-8 bg-gallery-cream rounded-sm transition-all duration-300">
-          <span class="absolute top-4 right-4 font-serif text-5xl text-gallery-warm group-hover:text-gallery-white/50 transition-colors">03</span>
-          <div class="w-12 h-12 flex items-center justify-center rounded-full bg-gallery-white mb-6">
-            <svg width="24" height="24" fill="none" stroke="#3D3A36" stroke-width="2"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+
+        <!-- Step 3 -->
+        <div class="relative">
+          <div class="card-hover bg-white p-8 rounded-3xl shadow-lg text-center">
+            <div class="w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-primary-sky to-primary-light rounded-2xl flex items-center justify-center">
+              <svg width="28" height="28" fill="none" stroke="#1B3A5F" stroke-width="2">
+                <path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/>
+              </svg>
+            </div>
+            <span class="text-5xl font-bold text-primary-sky/50">03</span>
+            <h3 class="text-xl font-bold text-dadam-charcoal mt-2 mb-3">제작</h3>
+            <p class="text-sm text-dadam-gray leading-relaxed">
+              숙련된 장인이 직접 정성껏 제작합니다
+            </p>
           </div>
-          <h3 class="font-serif text-2xl text-gallery-charcoal mb-3">제작</h3>
-          <p class="text-sm text-gallery-gray leading-relaxed">숙련된 장인이 직접 정성껏 제작합니다</p>
+          <div class="hidden lg:block absolute top-1/2 -right-4 w-8 h-0.5 step-connector"></div>
         </div>
-        <div class="process-card group relative p-8 bg-gallery-cream rounded-sm transition-all duration-300">
-          <span class="absolute top-4 right-4 font-serif text-5xl text-gallery-warm group-hover:text-gallery-white/50 transition-colors">04</span>
-          <div class="w-12 h-12 flex items-center justify-center rounded-full bg-gallery-white mb-6">
-            <svg width="24" height="24" fill="none" stroke="#3D3A36" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+
+        <!-- Step 4 -->
+        <div>
+          <div class="card-hover bg-white p-8 rounded-3xl shadow-lg text-center">
+            <div class="w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-primary-navy to-primary-dark rounded-2xl flex items-center justify-center">
+              <svg width="28" height="28" fill="none" stroke="#A8D8EA" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+            </div>
+            <span class="text-5xl font-bold text-primary-navy/30">04</span>
+            <h3 class="text-xl font-bold text-dadam-charcoal mt-2 mb-3">설치 & A/S</h3>
+            <p class="text-sm text-dadam-gray leading-relaxed">
+              완벽한 설치와 10년 품질 보증을 약속합니다
+            </p>
           </div>
-          <h3 class="font-serif text-2xl text-gallery-charcoal mb-3">설치 & A/S</h3>
-          <p class="text-sm text-gallery-gray leading-relaxed">완벽한 설치와 지속적인 사후 관리를 약속합니다</p>
         </div>
       </div>
     </div>
   </section>
 
   <!-- Materials Section -->
-  <section id="materials" class="py-20 md:py-32 px-6 md:px-12 bg-gallery-charcoal text-gallery-white">
-    <div class="max-w-7xl mx-auto">
+  <section id="materials" class="py-24 bg-primary-navy text-white overflow-hidden">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8">
       <div class="grid lg:grid-cols-2 gap-16 items-center">
-        <div class="order-2 lg:order-1">
-          <div class="grid grid-cols-2 gap-4">
-            <div class="aspect-square bg-gallery-gray/20 rounded-sm flex items-center justify-center">
-              <span class="text-gallery-gray">원목</span>
-            </div>
-            <div class="aspect-square bg-gallery-gray/20 rounded-sm flex items-center justify-center mt-8">
-              <span class="text-gallery-gray">하드웨어</span>
-            </div>
-            <div class="aspect-square bg-gallery-gray/20 rounded-sm flex items-center justify-center">
-              <span class="text-gallery-gray">마감재</span>
-            </div>
-            <div class="aspect-square bg-gallery-gray/20 rounded-sm flex items-center justify-center mt-8">
-              <span class="text-gallery-gray">부자재</span>
-            </div>
-          </div>
-        </div>
-        <div class="order-1 lg:order-2">
-          <p class="text-xs tracking-[0.3em] uppercase text-gallery-gold mb-4">Materials</p>
-          <h2 class="font-serif text-4xl md:text-5xl leading-tight">품질을 결정하는<br>자재의 차이</h2>
-          <p class="mt-8 text-gallery-gray leading-relaxed">
+        <!-- Content -->
+        <div>
+          <span class="inline-block px-4 py-1.5 bg-primary-sky/20 text-primary-sky text-sm font-medium rounded-full mb-4">
+            Materials
+          </span>
+          <h2 class="text-3xl md:text-4xl font-bold mb-6">
+            품질을 결정하는<br>자재의 차이
+          </h2>
+          <p class="text-white/70 leading-relaxed mb-8">
             다담가구는 최상급 원목, 프리미엄 하드웨어, 친환경 마감재만을 사용합니다.
             10년, 20년이 지나도 변함없는 품질을 위해 자재 선택에 타협하지 않습니다.
           </p>
-          <div class="mt-8 grid grid-cols-3 gap-8 text-center">
+
+          <!-- Material list -->
+          <div class="grid grid-cols-2 gap-4 mb-8">
+            <div class="bg-white/10 backdrop-blur p-4 rounded-2xl">
+              <h4 class="font-bold text-primary-sky mb-1">원목</h4>
+              <p class="text-sm text-white/60">북미산 월넛, 유럽산 오크</p>
+            </div>
+            <div class="bg-white/10 backdrop-blur p-4 rounded-2xl">
+              <h4 class="font-bold text-primary-sky mb-1">하드웨어</h4>
+              <p class="text-sm text-white/60">Blum, Hettich, Hafele</p>
+            </div>
+            <div class="bg-white/10 backdrop-blur p-4 rounded-2xl">
+              <h4 class="font-bold text-primary-sky mb-1">마감재</h4>
+              <p class="text-sm text-white/60">E0 등급 친환경 자재</p>
+            </div>
+            <div class="bg-white/10 backdrop-blur p-4 rounded-2xl">
+              <h4 class="font-bold text-primary-sky mb-1">부자재</h4>
+              <p class="text-sm text-white/60">LED 조명, 수납 솔루션</p>
+            </div>
+          </div>
+
+          <!-- Stats -->
+          <div class="flex gap-8">
             <div>
-              <p class="font-serif text-3xl text-gallery-gold">10년</p>
-              <p class="mt-2 text-sm text-gallery-gray">품질 보증</p>
+              <p class="text-3xl font-bold text-primary-sky">10년</p>
+              <p class="text-sm text-white/60">품질 보증</p>
             </div>
             <div>
-              <p class="font-serif text-3xl text-gallery-gold">100%</p>
-              <p class="mt-2 text-sm text-gallery-gray">친환경 자재</p>
+              <p class="text-3xl font-bold text-primary-sky">100%</p>
+              <p class="text-sm text-white/60">친환경 자재</p>
             </div>
             <div>
-              <p class="font-serif text-3xl text-gallery-gold">E0</p>
-              <p class="mt-2 text-sm text-gallery-gray">등급 인증</p>
+              <p class="text-3xl font-bold text-primary-sky">E0</p>
+              <p class="text-sm text-white/60">등급 인증</p>
             </div>
+          </div>
+        </div>
+
+        <!-- Images -->
+        <div class="relative">
+          <div class="grid grid-cols-2 gap-4">
+            <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80" alt="원목" class="rounded-2xl aspect-square object-cover">
+            <img src="https://images.unsplash.com/photo-1597072689227-8882273e8f6a?w=400&q=80" alt="주방" class="rounded-2xl aspect-square object-cover mt-8">
+            <img src="https://images.unsplash.com/photo-1631679706909-1844bbd07221?w=400&q=80" alt="마감재" class="rounded-2xl aspect-square object-cover">
+            <img src="https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=400&q=80" alt="가구" class="rounded-2xl aspect-square object-cover mt-8">
           </div>
         </div>
       </div>
@@ -363,202 +552,295 @@
   </section>
 
   <!-- Partners Section -->
-  <section id="partners" class="py-20 md:py-32 px-6 md:px-12 bg-gallery-cream">
-    <div class="max-w-7xl mx-auto text-center">
-      <p class="text-xs tracking-[0.3em] uppercase text-gallery-gold mb-4">Interior Partners</p>
-      <h2 class="font-serif text-4xl md:text-5xl text-gallery-charcoal">인테리어 파트너</h2>
-      <p class="mt-6 text-gallery-gray max-w-2xl mx-auto">
-        다담가구와 함께하는 검증된 인테리어 디자인 업체들을 만나보세요.<br class="hidden md:block">
-        전문가의 손길로 완성되는 특별한 공간을 경험하실 수 있습니다.
-      </p>
-      <div class="mt-12 grid grid-cols-2 md:grid-cols-4 gap-6">
-        <div class="aspect-[3/2] bg-gallery-white rounded-sm flex flex-col items-center justify-center border border-gallery-warm hover:border-gallery-gold transition-colors p-4">
-          <span class="font-serif text-lg text-gallery-charcoal">스튜디오 루미</span>
-          <span class="text-xs text-gallery-gray mt-1">모던 · 미니멀</span>
+  <section id="partners" class="py-24 bg-dadam-snow">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <span class="inline-block px-4 py-1.5 bg-primary-sky/30 text-primary-navy text-sm font-medium rounded-full mb-4">
+          Interior Partners
+        </span>
+        <h2 class="text-3xl md:text-4xl font-bold text-dadam-charcoal mb-4">
+          인테리어 파트너
+        </h2>
+        <p class="text-dadam-gray max-w-2xl mx-auto">
+          다담가구와 함께하는 검증된 인테리어 디자인 업체들을 만나보세요.
+        </p>
+      </div>
+
+      <!-- Partners Grid -->
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="card-hover bg-white p-6 rounded-2xl text-center">
+          <div class="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-primary-sky/50 to-primary-light rounded-2xl flex items-center justify-center">
+            <span class="text-2xl font-bold text-primary-navy">L</span>
+          </div>
+          <h3 class="font-bold text-dadam-charcoal mb-1">스튜디오 루미</h3>
+          <p class="text-sm text-dadam-gray mb-3">모던 · 미니멀</p>
+          <div class="flex items-center justify-center gap-1 text-sm text-primary-navy">
+            <svg width="16" height="16" fill="#FFD700" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <span>4.9</span>
+          </div>
         </div>
-        <div class="aspect-[3/2] bg-gallery-white rounded-sm flex flex-col items-center justify-center border border-gallery-warm hover:border-gallery-gold transition-colors p-4">
-          <span class="font-serif text-lg text-gallery-charcoal">디자인 오피스 온</span>
-          <span class="text-xs text-gallery-gray mt-1">럭셔리 · 클래식</span>
+
+        <div class="card-hover bg-white p-6 rounded-2xl text-center">
+          <div class="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-primary-sky/50 to-primary-light rounded-2xl flex items-center justify-center">
+            <span class="text-2xl font-bold text-primary-navy">O</span>
+          </div>
+          <h3 class="font-bold text-dadam-charcoal mb-1">디자인 오피스 온</h3>
+          <p class="text-sm text-dadam-gray mb-3">럭셔리 · 클래식</p>
+          <div class="flex items-center justify-center gap-1 text-sm text-primary-navy">
+            <svg width="16" height="16" fill="#FFD700" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <span>4.8</span>
+          </div>
         </div>
-        <div class="aspect-[3/2] bg-gallery-white rounded-sm flex flex-col items-center justify-center border border-gallery-warm hover:border-gallery-gold transition-colors p-4">
-          <span class="font-serif text-lg text-gallery-charcoal">홈앤리빙 디자인</span>
-          <span class="text-xs text-gallery-gray mt-1">가족형 · 실용적</span>
+
+        <div class="card-hover bg-white p-6 rounded-2xl text-center">
+          <div class="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-primary-sky/50 to-primary-light rounded-2xl flex items-center justify-center">
+            <span class="text-2xl font-bold text-primary-navy">H</span>
+          </div>
+          <h3 class="font-bold text-dadam-charcoal mb-1">홈앤리빙 디자인</h3>
+          <p class="text-sm text-dadam-gray mb-3">가족형 · 실용적</p>
+          <div class="flex items-center justify-center gap-1 text-sm text-primary-navy">
+            <svg width="16" height="16" fill="#FFD700" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <span>4.7</span>
+          </div>
         </div>
-        <div class="aspect-[3/2] bg-gallery-white rounded-sm flex flex-col items-center justify-center border border-gallery-warm hover:border-gallery-gold transition-colors p-4">
-          <span class="font-serif text-lg text-gallery-charcoal">아뜰리에 모노</span>
-          <span class="text-xs text-gallery-gray mt-1">빈티지 · 인더스트리얼</span>
+
+        <div class="card-hover bg-white p-6 rounded-2xl text-center">
+          <div class="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-primary-sky/50 to-primary-light rounded-2xl flex items-center justify-center">
+            <span class="text-2xl font-bold text-primary-navy">M</span>
+          </div>
+          <h3 class="font-bold text-dadam-charcoal mb-1">아뜰리에 모노</h3>
+          <p class="text-sm text-dadam-gray mb-3">빈티지 · 인더스트리얼</p>
+          <div class="flex items-center justify-center gap-1 text-sm text-primary-navy">
+            <svg width="16" height="16" fill="#FFD700" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <span>4.9</span>
+          </div>
         </div>
       </div>
-      <p class="mt-8 text-sm text-gallery-gray">
-        인테리어 업체 파트너십에 관심이 있으신가요? <a href="#contact" class="text-gallery-charcoal underline">파트너 등록 문의</a>
-      </p>
+
+      <!-- Partner CTA -->
+      <div class="mt-12 text-center">
+        <p class="text-dadam-gray mb-4">인테리어 업체 파트너십에 관심이 있으신가요?</p>
+        <a href="#contact" class="btn-outline px-6 py-3 rounded-full inline-block">
+          파트너 등록 문의
+        </a>
+      </div>
     </div>
   </section>
 
   <!-- Contact Section -->
-  <section id="contact" class="py-20 md:py-32 px-6 md:px-12 bg-gallery-white">
-    <div class="max-w-4xl mx-auto">
-      <div class="text-center mb-12">
-        <p class="text-xs tracking-[0.3em] uppercase text-gallery-gold mb-4">Contact Us</p>
-        <h2 class="font-serif text-4xl md:text-5xl text-gallery-charcoal">상담 문의</h2>
-        <p class="mt-6 text-gallery-gray">
-          다담가구와 함께 당신만의 특별한 공간을 설계해보세요.
-        </p>
-      </div>
+  <section id="contact" class="py-24 bg-dadam-white">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8">
+      <div class="grid lg:grid-cols-2 gap-16">
+        <!-- Contact Info -->
+        <div>
+          <span class="inline-block px-4 py-1.5 bg-primary-sky/30 text-primary-navy text-sm font-medium rounded-full mb-4">
+            Contact Us
+          </span>
+          <h2 class="text-3xl md:text-4xl font-bold text-dadam-charcoal mb-6">
+            상담 문의
+          </h2>
+          <p class="text-dadam-gray mb-8">
+            다담가구와 함께 당신만의 특별한 공간을 설계해보세요.
+            무료 상담을 통해 시작하실 수 있습니다.
+          </p>
 
-      <!-- Contact Info -->
-      <div class="grid md:grid-cols-4 gap-6 mb-12">
-        <div class="p-6 bg-gallery-cream rounded-sm text-center">
-          <div class="w-12 h-12 mx-auto rounded-full bg-gallery-white flex items-center justify-center mb-4">
-            <svg width="20" height="20" fill="none" stroke="#3D3A36" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>
-          </div>
-          <h3 class="font-medium text-gallery-charcoal">전화</h3>
-          <p class="text-gallery-charcoal mt-2">02-1234-5678</p>
-          <p class="text-xs text-gallery-gray mt-1">평일 09:00 - 18:00</p>
-        </div>
-        <div class="p-6 bg-gallery-cream rounded-sm text-center">
-          <div class="w-12 h-12 mx-auto rounded-full bg-gallery-white flex items-center justify-center mb-4">
-            <svg width="20" height="20" fill="none" stroke="#3D3A36" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2v10z"/></svg>
-          </div>
-          <h3 class="font-medium text-gallery-charcoal">카카오톡</h3>
-          <p class="text-gallery-charcoal mt-2">@다담가구</p>
-          <p class="text-xs text-gallery-gray mt-1">실시간 상담</p>
-        </div>
-        <div class="p-6 bg-gallery-cream rounded-sm text-center">
-          <div class="w-12 h-12 mx-auto rounded-full bg-gallery-white flex items-center justify-center mb-4">
-            <svg width="20" height="20" fill="none" stroke="#3D3A36" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="M22 6l-10 7L2 6"/></svg>
-          </div>
-          <h3 class="font-medium text-gallery-charcoal">이메일</h3>
-          <p class="text-gallery-charcoal mt-2">contact@dadam.co.kr</p>
-          <p class="text-xs text-gallery-gray mt-1">24시간 접수</p>
-        </div>
-        <div class="p-6 bg-gallery-cream rounded-sm text-center">
-          <div class="w-12 h-12 mx-auto rounded-full bg-gallery-white flex items-center justify-center mb-4">
-            <svg width="20" height="20" fill="none" stroke="#3D3A36" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-          </div>
-          <h3 class="font-medium text-gallery-charcoal">쇼룸</h3>
-          <p class="text-gallery-charcoal mt-2">서울 강남구</p>
-          <p class="text-xs text-gallery-gray mt-1">방문 예약제</p>
-        </div>
-      </div>
+          <!-- Contact Cards -->
+          <div class="grid sm:grid-cols-2 gap-4 mb-8">
+            <div class="bg-dadam-snow p-5 rounded-2xl">
+              <div class="w-10 h-10 bg-primary-sky/30 rounded-xl flex items-center justify-center mb-3">
+                <svg width="20" height="20" fill="none" stroke="#1B3A5F" stroke-width="2">
+                  <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
+                </svg>
+              </div>
+              <h4 class="font-bold text-dadam-charcoal mb-1">전화</h4>
+              <p class="text-primary-navy font-medium">02-1234-5678</p>
+              <p class="text-xs text-dadam-gray">평일 09:00 - 18:00</p>
+            </div>
 
-      <!-- Contact Form -->
-      <div class="bg-gallery-cream p-8 md:p-12 rounded-sm">
-        <h3 class="font-serif text-2xl text-gallery-charcoal text-center mb-8">상담 신청서</h3>
-        <form class="space-y-6">
-          <div class="grid md:grid-cols-2 gap-6">
+            <div class="bg-dadam-snow p-5 rounded-2xl">
+              <div class="w-10 h-10 bg-primary-sky/30 rounded-xl flex items-center justify-center mb-3">
+                <svg width="20" height="20" fill="none" stroke="#1B3A5F" stroke-width="2">
+                  <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2v10z"/>
+                </svg>
+              </div>
+              <h4 class="font-bold text-dadam-charcoal mb-1">카카오톡</h4>
+              <p class="text-primary-navy font-medium">@다담가구</p>
+              <p class="text-xs text-dadam-gray">실시간 상담 가능</p>
+            </div>
+
+            <div class="bg-dadam-snow p-5 rounded-2xl">
+              <div class="w-10 h-10 bg-primary-sky/30 rounded-xl flex items-center justify-center mb-3">
+                <svg width="20" height="20" fill="none" stroke="#1B3A5F" stroke-width="2">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="M22 6l-10 7L2 6"/>
+                </svg>
+              </div>
+              <h4 class="font-bold text-dadam-charcoal mb-1">이메일</h4>
+              <p class="text-primary-navy font-medium">contact@dadam.co.kr</p>
+              <p class="text-xs text-dadam-gray">24시간 접수</p>
+            </div>
+
+            <div class="bg-dadam-snow p-5 rounded-2xl">
+              <div class="w-10 h-10 bg-primary-sky/30 rounded-xl flex items-center justify-center mb-3">
+                <svg width="20" height="20" fill="none" stroke="#1B3A5F" stroke-width="2">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/>
+                </svg>
+              </div>
+              <h4 class="font-bold text-dadam-charcoal mb-1">쇼룸</h4>
+              <p class="text-primary-navy font-medium">서울 강남구</p>
+              <p class="text-xs text-dadam-gray">방문 예약제</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contact Form -->
+        <div class="bg-dadam-snow p-8 rounded-3xl">
+          <h3 class="text-xl font-bold text-dadam-charcoal mb-6">상담 신청서</h3>
+          <form class="space-y-5">
+            <div class="grid sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-dadam-charcoal mb-2">이름 *</label>
+                <input type="text" required class="w-full px-4 py-3 bg-white border border-dadam-light rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-sky" placeholder="홍길동">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-dadam-charcoal mb-2">연락처 *</label>
+                <input type="tel" required class="w-full px-4 py-3 bg-white border border-dadam-light rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-sky" placeholder="010-1234-5678">
+              </div>
+            </div>
+
             <div>
-              <label class="block text-sm font-medium text-gallery-charcoal mb-2">이름 *</label>
-              <input type="text" required class="w-full px-4 py-3 border border-gallery-warm rounded-sm focus:outline-none focus:border-gallery-charcoal" placeholder="홍길동">
+              <label class="block text-sm font-medium text-dadam-charcoal mb-2">이메일</label>
+              <input type="email" class="w-full px-4 py-3 bg-white border border-dadam-light rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-sky" placeholder="email@example.com">
             </div>
+
             <div>
-              <label class="block text-sm font-medium text-gallery-charcoal mb-2">연락처 *</label>
-              <input type="tel" required class="w-full px-4 py-3 border border-gallery-warm rounded-sm focus:outline-none focus:border-gallery-charcoal" placeholder="010-1234-5678">
+              <label class="block text-sm font-medium text-dadam-charcoal mb-3">관심 품목</label>
+              <div class="flex flex-wrap gap-2">
+                <label class="cursor-pointer">
+                  <input type="checkbox" class="peer hidden">
+                  <span class="px-4 py-2 text-sm bg-white border border-dadam-light rounded-full peer-checked:bg-primary-navy peer-checked:text-white peer-checked:border-primary-navy transition-all">주방</span>
+                </label>
+                <label class="cursor-pointer">
+                  <input type="checkbox" class="peer hidden">
+                  <span class="px-4 py-2 text-sm bg-white border border-dadam-light rounded-full peer-checked:bg-primary-navy peer-checked:text-white peer-checked:border-primary-navy transition-all">드레스룸</span>
+                </label>
+                <label class="cursor-pointer">
+                  <input type="checkbox" class="peer hidden">
+                  <span class="px-4 py-2 text-sm bg-white border border-dadam-light rounded-full peer-checked:bg-primary-navy peer-checked:text-white peer-checked:border-primary-navy transition-all">거실장</span>
+                </label>
+                <label class="cursor-pointer">
+                  <input type="checkbox" class="peer hidden">
+                  <span class="px-4 py-2 text-sm bg-white border border-dadam-light rounded-full peer-checked:bg-primary-navy peer-checked:text-white peer-checked:border-primary-navy transition-all">서재</span>
+                </label>
+                <label class="cursor-pointer">
+                  <input type="checkbox" class="peer hidden">
+                  <span class="px-4 py-2 text-sm bg-white border border-dadam-light rounded-full peer-checked:bg-primary-navy peer-checked:text-white peer-checked:border-primary-navy transition-all">침실</span>
+                </label>
+              </div>
             </div>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gallery-charcoal mb-2">이메일</label>
-            <input type="email" class="w-full px-4 py-3 border border-gallery-warm rounded-sm focus:outline-none focus:border-gallery-charcoal" placeholder="email@example.com">
-          </div>
-          <div class="grid md:grid-cols-2 gap-6">
+
             <div>
-              <label class="block text-sm font-medium text-gallery-charcoal mb-2">주소</label>
-              <input type="text" class="w-full px-4 py-3 border border-gallery-warm rounded-sm focus:outline-none focus:border-gallery-charcoal" placeholder="서울시 강남구...">
+              <label class="block text-sm font-medium text-dadam-charcoal mb-2">상담 내용</label>
+              <textarea rows="4" class="w-full px-4 py-3 bg-white border border-dadam-light rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-sky resize-none" placeholder="문의하실 내용을 자유롭게 작성해주세요."></textarea>
             </div>
-            <div>
-              <label class="block text-sm font-medium text-gallery-charcoal mb-2">평형</label>
-              <input type="text" class="w-full px-4 py-3 border border-gallery-warm rounded-sm focus:outline-none focus:border-gallery-charcoal" placeholder="32평">
+
+            <div class="flex items-start gap-3">
+              <input type="checkbox" id="privacy" required class="mt-1 w-4 h-4 text-primary-navy rounded">
+              <label for="privacy" class="text-sm text-dadam-gray">
+                [필수] 개인정보 수집 및 이용에 동의합니다.
+              </label>
             </div>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gallery-charcoal mb-3">관심 품목</label>
-            <div class="flex flex-wrap gap-2">
-              <label class="cursor-pointer"><input type="checkbox" class="peer hidden"><span class="px-4 py-2 text-sm bg-gallery-white text-gallery-charcoal peer-checked:bg-gallery-charcoal peer-checked:text-gallery-white transition-all">주방</span></label>
-              <label class="cursor-pointer"><input type="checkbox" class="peer hidden"><span class="px-4 py-2 text-sm bg-gallery-white text-gallery-charcoal peer-checked:bg-gallery-charcoal peer-checked:text-gallery-white transition-all">드레스룸</span></label>
-              <label class="cursor-pointer"><input type="checkbox" class="peer hidden"><span class="px-4 py-2 text-sm bg-gallery-white text-gallery-charcoal peer-checked:bg-gallery-charcoal peer-checked:text-gallery-white transition-all">거실장</span></label>
-              <label class="cursor-pointer"><input type="checkbox" class="peer hidden"><span class="px-4 py-2 text-sm bg-gallery-white text-gallery-charcoal peer-checked:bg-gallery-charcoal peer-checked:text-gallery-white transition-all">서재</span></label>
-              <label class="cursor-pointer"><input type="checkbox" class="peer hidden"><span class="px-4 py-2 text-sm bg-gallery-white text-gallery-charcoal peer-checked:bg-gallery-charcoal peer-checked:text-gallery-white transition-all">침실</span></label>
-              <label class="cursor-pointer"><input type="checkbox" class="peer hidden"><span class="px-4 py-2 text-sm bg-gallery-white text-gallery-charcoal peer-checked:bg-gallery-charcoal peer-checked:text-gallery-white transition-all">빌트인 전체</span></label>
-            </div>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gallery-charcoal mb-2">상담 내용</label>
-            <textarea rows="4" class="w-full px-4 py-3 border border-gallery-warm rounded-sm focus:outline-none focus:border-gallery-charcoal resize-none" placeholder="문의하실 내용을 자유롭게 작성해주세요."></textarea>
-          </div>
-          <div class="flex items-start gap-3">
-            <input type="checkbox" id="privacy" required class="mt-1">
-            <label for="privacy" class="text-sm text-gallery-gray">
-              [필수] 개인정보 수집 및 이용에 동의합니다.
-            </label>
-          </div>
-          <button type="submit" class="w-full py-4 bg-gallery-charcoal text-gallery-white text-sm tracking-widest uppercase hover:bg-gallery-black transition-all flex items-center justify-center gap-2">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
-            상담 신청하기
-          </button>
-        </form>
+
+            <button type="submit" class="w-full btn-primary py-4 text-white font-medium rounded-2xl flex items-center justify-center gap-2">
+              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/>
+              </svg>
+              상담 신청하기
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   </section>
 
   <!-- CTA Section -->
-  <section class="py-20 md:py-32 px-6 md:px-12 bg-gallery-cream">
-    <div class="max-w-4xl mx-auto text-center">
-      <h2 class="font-serif text-4xl md:text-5xl text-gallery-charcoal">
+  <section class="py-24 bg-gradient-to-r from-primary-navy to-primary-dark text-white">
+    <div class="max-w-4xl mx-auto px-6 lg:px-8 text-center">
+      <h2 class="text-3xl md:text-4xl font-bold mb-6">
         당신만의 공간을<br>설계해 드립니다
       </h2>
-      <p class="mt-6 text-gallery-gray">
+      <p class="text-white/70 mb-8 max-w-2xl mx-auto">
         지금 바로 무료 상담을 신청하시고, 다담가구만의 특별한 경험을 시작하세요.
       </p>
-      <a href="#contact" class="inline-block mt-10 btn-primary">무료 상담 신청하기</a>
+      <a href="#contact" class="inline-flex items-center gap-2 px-8 py-4 bg-white text-primary-navy font-medium rounded-2xl hover:bg-primary-sky transition-colors">
+        무료 상담 신청하기
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
     </div>
   </section>
 
   <!-- Footer -->
-  <footer class="bg-gallery-charcoal text-gallery-warm">
-    <div class="max-w-7xl mx-auto px-6 md:px-12 py-16 md:py-24">
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
+  <footer class="bg-dadam-charcoal text-white">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8 py-16">
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-12">
+        <!-- Brand -->
         <div class="lg:col-span-2">
-          <a href="#home" class="inline-block">
-            <h3 class="font-serif text-3xl text-gallery-white">다담가구</h3>
-            <p class="text-xs tracking-[0.3em] text-gallery-gray uppercase mt-1">DaDam Furniture</p>
-          </a>
-          <p class="mt-6 text-sm text-gallery-gray leading-relaxed max-w-md">
-            공간의 가치를 담다. 다담가구는 고객의 라이프스타일을 깊이 이해하고,
+          <div class="flex items-center gap-3 mb-6">
+            <svg width="40" height="48" viewBox="0 0 40 48" fill="none">
+              <rect x="0" y="0" width="9" height="12" rx="1" fill="#A8D8EA"/>
+              <rect x="10" y="0" width="9" height="12" rx="1" fill="#A8D8EA"/>
+              <rect x="20" y="0" width="9" height="12" rx="1" fill="#A8D8EA"/>
+              <rect x="30" y="0" width="9" height="12" rx="1" fill="#A8D8EA"/>
+              <rect x="0" y="14" width="9" height="12" rx="1" fill="#1B3A5F"/>
+              <rect x="10" y="14" width="9" height="12" rx="1" fill="#1B3A5F"/>
+              <rect x="20" y="14" width="9" height="12" rx="1" fill="#1B3A5F"/>
+              <rect x="30" y="14" width="9" height="12" rx="1" fill="#1B3A5F"/>
+            </svg>
+            <div>
+              <span class="text-xl font-bold">다담가구</span>
+              <span class="block text-sm text-white/60">당신을 담은 가구</span>
+            </div>
+          </div>
+          <p class="text-white/60 text-sm leading-relaxed max-w-md mb-6">
+            다담가구는 고객의 라이프스타일을 깊이 이해하고,
             설계부터 제작, 설치까지 맞춤형 가구 솔루션을 제공합니다.
           </p>
-          <div class="mt-8 space-y-2 text-sm text-gallery-gray">
+          <div class="space-y-2 text-sm text-white/60">
             <p>전화: 02-1234-5678</p>
             <p>이메일: contact@dadam.co.kr</p>
             <p>주소: 서울시 강남구 논현동 123-45</p>
           </div>
         </div>
+
+        <!-- Links -->
         <div>
-          <h4 class="text-xs tracking-widest uppercase text-gallery-white mb-6">서비스</h4>
-          <ul class="space-y-3">
-            <li><a href="#portfolio" class="text-sm text-gallery-gray hover:text-gallery-white transition-colors">포트폴리오</a></li>
-            <li><a href="#partners" class="text-sm text-gallery-gray hover:text-gallery-white transition-colors">인테리어 파트너</a></li>
-            <li><a href="#materials" class="text-sm text-gallery-gray hover:text-gallery-white transition-colors">자재 소개</a></li>
-            <li><a href="#process" class="text-sm text-gallery-gray hover:text-gallery-white transition-colors">서비스 안내</a></li>
+          <h4 class="font-bold mb-4">서비스</h4>
+          <ul class="space-y-3 text-sm text-white/60">
+            <li><a href="#portfolio" class="hover:text-primary-sky transition-colors">포트폴리오</a></li>
+            <li><a href="#partners" class="hover:text-primary-sky transition-colors">인테리어 파트너</a></li>
+            <li><a href="#materials" class="hover:text-primary-sky transition-colors">자재 소개</a></li>
+            <li><a href="#process" class="hover:text-primary-sky transition-colors">서비스 안내</a></li>
           </ul>
         </div>
+
         <div>
-          <h4 class="text-xs tracking-widest uppercase text-gallery-white mb-6">고객지원</h4>
-          <ul class="space-y-3">
-            <li><a href="#contact" class="text-sm text-gallery-gray hover:text-gallery-white transition-colors">상담 문의</a></li>
-            <li><a href="#" class="text-sm text-gallery-gray hover:text-gallery-white transition-colors">자주 묻는 질문</a></li>
-            <li><a href="#" class="text-sm text-gallery-gray hover:text-gallery-white transition-colors">이용 약관</a></li>
-            <li><a href="#" class="text-sm text-gallery-gray hover:text-gallery-white transition-colors">개인정보처리방침</a></li>
+          <h4 class="font-bold mb-4">고객지원</h4>
+          <ul class="space-y-3 text-sm text-white/60">
+            <li><a href="#contact" class="hover:text-primary-sky transition-colors">상담 문의</a></li>
+            <li><a href="#" class="hover:text-primary-sky transition-colors">자주 묻는 질문</a></li>
+            <li><a href="#" class="hover:text-primary-sky transition-colors">이용 약관</a></li>
+            <li><a href="#" class="hover:text-primary-sky transition-colors">개인정보처리방침</a></li>
           </ul>
         </div>
       </div>
     </div>
-    <div class="border-t border-gallery-gray/20">
-      <div class="max-w-7xl mx-auto px-6 md:px-12 py-6">
-        <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-          <p class="text-xs text-gallery-gray">© 2024 다담가구. All rights reserved.</p>
-          <div class="flex items-center gap-6">
-            <span class="text-xs text-gallery-gray">사업자등록번호: 123-45-67890</span>
-            <span class="text-xs text-gallery-gray">대표: 홍길동</span>
+
+    <div class="border-t border-white/10">
+      <div class="max-w-7xl mx-auto px-6 lg:px-8 py-6">
+        <div class="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-white/40">
+          <p>© 2024 다담가구. All rights reserved.</p>
+          <div class="flex gap-6">
+            <span>사업자등록번호: 123-45-67890</span>
+            <span>대표: 홍길동</span>
           </div>
         </div>
       </div>
@@ -567,14 +849,14 @@
 
   <script>
     // Navbar scroll effect
-    window.addEventListener('scroll', function() {
-      const navbar = document.getElementById('navbar');
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
       if (window.scrollY > 50) {
-        navbar.classList.add('bg-gallery-white/95', 'backdrop-blur-md', 'shadow-sm', 'py-4');
-        navbar.classList.remove('bg-transparent', 'py-6');
+        navbar.classList.add('bg-white/95', 'backdrop-blur-md', 'shadow-lg');
+        navbar.classList.remove('bg-transparent');
       } else {
-        navbar.classList.remove('bg-gallery-white/95', 'backdrop-blur-md', 'shadow-sm', 'py-4');
-        navbar.classList.add('bg-transparent', 'py-6');
+        navbar.classList.remove('bg-white/95', 'backdrop-blur-md', 'shadow-lg');
+        navbar.classList.add('bg-transparent');
       }
     });
 
@@ -583,7 +865,7 @@
     const mobileMenu = document.getElementById('mobile-menu');
     const mobileMenuPanel = document.getElementById('mobile-menu-panel');
 
-    mobileMenuBtn.addEventListener('click', function() {
+    mobileMenuBtn.addEventListener('click', () => {
       mobileMenu.classList.remove('opacity-0', 'pointer-events-none');
       mobileMenu.classList.add('opacity-100', 'pointer-events-auto');
       mobileMenuPanel.classList.remove('translate-x-full');
@@ -598,9 +880,20 @@
     }
 
     // Form submission
-    document.querySelector('form').addEventListener('submit', function(e) {
+    document.querySelector('form').addEventListener('submit', (e) => {
       e.preventDefault();
       alert('상담 신청이 완료되었습니다. 곧 연락드리겠습니다.');
+    });
+
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
     });
   </script>
 </body>
