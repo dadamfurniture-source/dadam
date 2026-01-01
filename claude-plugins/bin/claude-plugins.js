@@ -299,6 +299,110 @@ function info(identifier) {
   console.log('');
 }
 
+function enable(identifier, options = {}) {
+  const global = options.global || false;
+  const registry = loadRegistry(global);
+
+  if (!registry.plugins[identifier]) {
+    // Try other scope
+    const otherRegistry = loadRegistry(!global);
+    if (otherRegistry.plugins[identifier]) {
+      otherRegistry.plugins[identifier].enabled = true;
+      saveRegistry(otherRegistry, !global);
+      console.log(c('green', `\n✓ Enabled ${identifier}\n`));
+      return;
+    }
+    console.error(c('red', `\nPlugin not found: ${identifier}\n`));
+    process.exit(1);
+  }
+
+  registry.plugins[identifier].enabled = true;
+  saveRegistry(registry, global);
+  console.log(c('green', `\n✓ Enabled ${identifier}\n`));
+}
+
+function disable(identifier, options = {}) {
+  const global = options.global || false;
+  const registry = loadRegistry(global);
+
+  if (!registry.plugins[identifier]) {
+    const otherRegistry = loadRegistry(!global);
+    if (otherRegistry.plugins[identifier]) {
+      otherRegistry.plugins[identifier].enabled = false;
+      saveRegistry(otherRegistry, !global);
+      console.log(c('yellow', `\n✓ Disabled ${identifier}\n`));
+      return;
+    }
+    console.error(c('red', `\nPlugin not found: ${identifier}\n`));
+    process.exit(1);
+  }
+
+  registry.plugins[identifier].enabled = false;
+  saveRegistry(registry, global);
+  console.log(c('yellow', `\n✓ Disabled ${identifier}\n`));
+}
+
+function init() {
+  console.log(`\n${c('cyan', '●')} Initializing plugin directory...\n`);
+
+  ensurePluginsDir(false);
+
+  // Create example plugin template
+  const exampleDir = path.join(process.cwd(), 'my-plugin');
+  if (!fs.existsSync(exampleDir)) {
+    fs.mkdirSync(exampleDir, { recursive: true });
+
+    const manifest = {
+      id: 'my-plugin',
+      name: 'My Plugin',
+      version: '1.0.0',
+      description: 'A custom Claude plugin',
+      author: 'Your Name',
+      license: 'MIT',
+      tools: [
+        {
+          name: 'my_tool',
+          description: 'Description of what this tool does',
+          input_schema: {
+            type: 'object',
+            properties: {
+              param1: { type: 'string', description: 'First parameter' }
+            },
+            required: ['param1']
+          }
+        }
+      ],
+      entryPoint: 'main.py'
+    };
+
+    fs.writeFileSync(path.join(exampleDir, 'plugin.json'), JSON.stringify(manifest, null, 2));
+    fs.writeFileSync(path.join(exampleDir, 'main.py'), `"""
+My Plugin - Custom Claude AI Plugin
+"""
+from typing import Dict, Any
+
+def execute_tool(tool_name: str, tool_input: Dict) -> Any:
+    """Execute a tool from this plugin"""
+    if tool_name == 'my_tool':
+        param1 = tool_input.get('param1', '')
+        return {'result': f'Processed: {param1}'}
+
+    raise NotImplementedError(f"Tool {tool_name} not implemented")
+`);
+
+    console.log(c('green', '✓ Created example plugin template at ./my-plugin/'));
+    console.log('');
+    console.log(c('dim', 'To install your plugin:'));
+    console.log(c('cyan', '  claude-plugins install ./my-plugin'));
+  } else {
+    console.log(c('yellow', 'Plugin template already exists at ./my-plugin/'));
+  }
+
+  console.log('');
+  console.log(c('green', '✓ Plugin directory initialized'));
+  console.log(c('dim', `  Location: ${getPluginsDir(false)}\n`));
+}
+
 function showHelp() {
   console.log(`
 ${c('bold', 'claude-plugins')} - CLI for managing Claude AI plugins
@@ -311,6 +415,9 @@ ${c('bold', 'COMMANDS')}
   list, ls                  List installed plugins
   remove, rm <identifier>   Remove a plugin
   info <identifier>         Show plugin details
+  enable <identifier>       Enable a plugin
+  disable <identifier>      Disable a plugin
+  init                      Initialize plugin directory with template
 
 ${c('bold', 'OPTIONS')}
   -g, --global              Use global scope
@@ -326,10 +433,12 @@ ${c('bold', 'PLUGIN IDENTIFIERS')}
   owner/repo                GitHub shorthand
 
 ${c('bold', 'EXAMPLES')}
+  claude-plugins init
   claude-plugins install claude-furniture-optimizer
   claude-plugins install github:dadam/my-plugin
   claude-plugins install ./my-local-plugin
   claude-plugins list --all
+  claude-plugins disable my-plugin
   claude-plugins remove my-plugin
 `);
 }
@@ -376,6 +485,26 @@ switch (command) {
       process.exit(1);
     }
     info(positionalArgs[1]);
+    break;
+
+  case 'enable':
+    if (!positionalArgs[1]) {
+      console.error(c('red', 'Error: Plugin identifier required'));
+      process.exit(1);
+    }
+    enable(positionalArgs[1], options);
+    break;
+
+  case 'disable':
+    if (!positionalArgs[1]) {
+      console.error(c('red', 'Error: Plugin identifier required'));
+      process.exit(1);
+    }
+    disable(positionalArgs[1], options);
+    break;
+
+  case 'init':
+    init();
     break;
 
   case '-h':
