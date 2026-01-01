@@ -2,14 +2,16 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Menu, X, Sparkles } from 'lucide-react'
+import { Menu, X, Search, User, ChevronDown } from 'lucide-react'
 
 const navLinks = [
-  { href: '/ai-design', label: 'AI 설계 상담', en: 'AI Design', highlight: true },
-  { href: '/portfolio', label: '포트폴리오', en: 'Portfolio' },
-  { href: '/quote', label: '견적 시스템', en: 'Quote' },
-  { href: '/service', label: '서비스 & A/S', en: 'Service' },
-  { href: '/about', label: '회사 소개', en: 'About' },
+  { href: '/about', label: 'About us' },
+  { href: '/portfolio', label: 'Collection' },
+  { href: '/products', label: 'Products' },
+  { href: '/ai-design', label: 'AI Design' },
+  { href: '/stories', label: 'Stories' },
+  { href: '/showroom', label: 'Showroom' },
+  { href: '/service', label: 'Service' },
 ]
 
 export default function Navigation() {
@@ -29,73 +31,59 @@ export default function Navigation() {
       <nav
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
           isScrolled
-            ? 'bg-dadam-white/95 backdrop-blur-md shadow-sm py-4'
-            : 'bg-transparent py-6'
+            ? 'bg-white/95 backdrop-blur-md shadow-sm'
+            : 'bg-transparent'
         }`}
       >
-        <div className="max-w-7xl mx-auto px-6 md:px-12">
-          <div className="flex items-center justify-between">
+        <div className="max-w-[1800px] mx-auto px-6 lg:px-12">
+          <div className="flex items-center justify-between h-20">
             {/* Logo */}
-            <Link href="/" className="group flex items-center gap-3">
-              <div className="relative">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-dadam-ai-primary to-dadam-ai-secondary flex items-center justify-center">
-                  <Sparkles className="w-5 h-5 text-white" />
-                </div>
-                <div className="absolute -inset-1 rounded-xl bg-gradient-to-br from-dadam-ai-primary to-dadam-ai-secondary opacity-30 blur group-hover:opacity-50 transition-opacity" />
-              </div>
-              <div className="flex flex-col">
-                <span className="font-serif text-2xl md:text-3xl text-dadam-charcoal tracking-tight">
-                  다담가구
-                </span>
-                <span className="text-[10px] tracking-[0.2em] text-dadam-gray uppercase">
-                  AI Design Furniture
-                </span>
-              </div>
+            <Link href="/" className="flex items-center gap-2">
+              <svg
+                className={`w-8 h-8 transition-colors ${isScrolled ? 'text-dadam-charcoal' : 'text-white'}`}
+                viewBox="0 0 40 40"
+                fill="currentColor"
+              >
+                <path d="M20 4L4 12v16l16 8 16-8V12L20 4zm0 4l12 6-12 6-12-6 12-6zm-12 10l12 6 12-6v8l-12 6-12-6v-8z"/>
+              </svg>
+              <span className={`font-serif text-2xl tracking-tight transition-colors ${isScrolled ? 'text-dadam-charcoal' : 'text-white'}`}>
+                다담
+              </span>
             </Link>
 
-            {/* Desktop Navigation */}
+            {/* Desktop Navigation - Center */}
             <div className="hidden lg:flex items-center gap-8">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`group relative py-2 ${
-                    link.highlight
-                      ? 'px-4 py-2 rounded-full bg-gradient-to-r from-dadam-ai-primary to-dadam-ai-secondary text-white text-sm font-medium hover:shadow-lg hover:shadow-dadam-ai-primary/30 transition-all'
-                      : ''
+                  className={`text-sm tracking-wide transition-colors hover:opacity-70 ${
+                    isScrolled ? 'text-dadam-charcoal' : 'text-white'
                   }`}
                 >
-                  {link.highlight ? (
-                    <span className="flex items-center gap-2">
-                      <Sparkles className="w-4 h-4" />
-                      {link.label}
-                    </span>
-                  ) : (
-                    <>
-                      <span className="text-sm text-dadam-charcoal tracking-wide">
-                        {link.label}
-                      </span>
-                      <span className="absolute bottom-0 left-0 w-0 h-px bg-gradient-to-r from-dadam-ai-primary to-dadam-ai-secondary transition-all duration-300 group-hover:w-full" />
-                    </>
-                  )}
+                  {link.label}
                 </Link>
               ))}
             </div>
 
-            {/* CTA Button - Desktop */}
-            <Link
-              href="/quote"
-              className="hidden lg:block px-6 py-3 border border-dadam-charcoal text-dadam-charcoal
-                         text-xs tracking-widest uppercase transition-all duration-300
-                         hover:bg-dadam-charcoal hover:text-white rounded-lg"
-            >
-              무료 견적
-            </Link>
+            {/* Right Icons */}
+            <div className="hidden lg:flex items-center gap-6">
+              <button className={`transition-colors hover:opacity-70 ${isScrolled ? 'text-dadam-charcoal' : 'text-white'}`}>
+                <User size={20} />
+              </button>
+              <button className={`transition-colors hover:opacity-70 ${isScrolled ? 'text-dadam-charcoal' : 'text-white'}`}>
+                <Search size={20} />
+              </button>
+              <button className={`flex items-center gap-1 text-sm transition-colors hover:opacity-70 ${isScrolled ? 'text-dadam-charcoal' : 'text-white'}`}>
+                KR
+                <ChevronDown size={14} />
+              </button>
+            </div>
 
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMobileMenuOpen(true)}
-              className="lg:hidden p-2 text-dadam-charcoal"
+              className={`lg:hidden p-2 transition-colors ${isScrolled ? 'text-dadam-charcoal' : 'text-white'}`}
               aria-label="메뉴 열기"
             >
               <Menu size={24} />
@@ -111,69 +99,61 @@ export default function Navigation() {
         }`}
       >
         <div
-          className="absolute inset-0 bg-dadam-black/30 backdrop-blur-sm"
+          className="absolute inset-0 bg-black/50 backdrop-blur-sm"
           onClick={() => setIsMobileMenuOpen(false)}
         />
 
         <div
-          className={`absolute right-0 top-0 h-full w-80 bg-dadam-white shadow-2xl transition-transform duration-500 ${
+          className={`absolute right-0 top-0 h-full w-full max-w-md bg-dadam-charcoal transition-transform duration-500 ${
             isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
           }`}
         >
-          <div className="p-6">
-            <button
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="absolute top-6 right-6 p-2 text-dadam-charcoal"
-              aria-label="메뉴 닫기"
-            >
-              <X size={24} />
-            </button>
-
-            {/* AI Badge */}
-            <div className="mt-12 mb-8">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-dadam-ai-primary/10 to-dadam-ai-secondary/10 border border-dadam-ai-primary/20">
-                <Sparkles className="w-4 h-4 text-dadam-ai-primary" />
-                <span className="text-sm font-medium gradient-text">AI 설계 시스템</span>
-              </div>
+          <div className="p-8">
+            <div className="flex items-center justify-between mb-12">
+              <span className="font-serif text-2xl text-white">다담</span>
+              <button
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="p-2 text-white"
+                aria-label="메뉴 닫기"
+              >
+                <X size={24} />
+              </button>
             </div>
 
-            <div className="space-y-1">
-              {navLinks.map((link, index) => (
+            <div className="space-y-6">
+              {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className={`block py-4 border-b border-dadam-warm ${
-                    link.highlight ? 'bg-gradient-to-r from-dadam-ai-primary/5 to-dadam-ai-secondary/5 -mx-2 px-2 rounded-lg border-none mb-2' : ''
-                  }`}
-                  style={{ animationDelay: `${index * 0.1}s` }}
+                  className="block text-2xl text-white hover:text-dadam-gold transition-colors"
                 >
-                  <span className={`text-lg ${link.highlight ? 'gradient-text font-medium' : 'text-dadam-charcoal'}`}>
-                    {link.highlight && <Sparkles className="w-4 h-4 inline mr-2" />}
-                    {link.label}
-                  </span>
-                  <span className="block text-xs text-dadam-gray tracking-widest uppercase mt-1">
-                    {link.en}
-                  </span>
+                  {link.label}
                 </Link>
               ))}
             </div>
 
-            <Link
-              href="/quote"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="block w-full mt-8 py-4 bg-gradient-to-r from-dadam-ai-primary to-dadam-ai-secondary text-white text-center
-                         text-sm tracking-widest uppercase rounded-xl"
-            >
-              무료 견적 받기
-            </Link>
+            <div className="mt-16 pt-8 border-t border-white/20">
+              <div className="flex items-center gap-6 text-white/70">
+                <button className="hover:text-white transition-colors">
+                  <User size={20} />
+                </button>
+                <button className="hover:text-white transition-colors">
+                  <Search size={20} />
+                </button>
+                <button className="flex items-center gap-1 text-sm hover:text-white transition-colors">
+                  KR
+                  <ChevronDown size={14} />
+                </button>
+              </div>
+            </div>
 
-            <div className="mt-12 pt-8 border-t border-dadam-warm">
-              <p className="text-xs text-dadam-gray">
+            <div className="absolute bottom-8 left-8 right-8">
+              <p className="text-sm text-white/50">
                 © 2024 다담가구
               </p>
-              <p className="text-xs text-dadam-gray mt-1">
-                AI가 설계하는 프리미엄 맞춤 가구
+              <p className="text-xs text-white/30 mt-1">
+                Premium Custom Furniture
               </p>
             </div>
           </div>
