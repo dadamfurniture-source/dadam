@@ -13,6 +13,7 @@ import {
   CheckCircle2,
   Star
 } from 'lucide-react'
+import FurnitureBackground from '@/components/FurnitureBackground'
 
 // Featured portfolio items
 const featuredWorks = [
@@ -138,13 +139,9 @@ export default function HomePage() {
     <>
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        {/* Background */}
+        {/* Animated Furniture Background */}
         <div className="absolute inset-0 bg-dadam-cream">
-          <div className="absolute inset-0 grid-pattern" />
-          <div className="absolute inset-0 bg-gradient-to-br from-dadam-cream via-transparent to-dadam-ai-primary/5" />
-          {/* Floating AI elements */}
-          <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-dadam-ai-primary/10 rounded-full blur-3xl animate-float" />
-          <div className="absolute bottom-1/4 left-1/4 w-64 h-64 bg-dadam-ai-secondary/10 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }} />
+          <FurnitureBackground />
         </div>
 
         {/* Content */}
