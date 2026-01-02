@@ -361,6 +361,8 @@ const DEFAULT_SPECS = {
 const FRIDGE_RULES = {
   MAX_UPPER_H: 400,    // 상부장 최대 높이
   PEDESTAL_H: 60,      // 좌대 높이
+  LEG_H: 60,           // 다리발 높이
+  LOWER_BODY_H: 810,   // 하부장 모듈 높이 (다리 제외)
   MODULE_D: 550,       // 모듈 기본 깊이
   INSTALL_D: 700,      // 설치 필요 깊이
   TOP_GAP: 15,         // 냉장고 상단 간격 (고정)
@@ -371,11 +373,17 @@ const FRIDGE_RULES = {
   DEFAULT_GAPS: {
     LG_BUILTIN: { side: 4, between: 8 },
     LG_FREESTANDING: { side: 50, between: 0 },
-    SS_BESPOKE: { side: 12, between: 7 },
+    SS_BESPOKE: { side: 12, between: 10 },
     SS_INFINITE: { side: 5, between: 10 },
     SS_FREESTANDING: { side: 50, between: 0 }
   }
 };
+
+// ★ 냉장고장 다리 타입
+const FRIDGE_LEG_TYPES = [
+  { id: 'pedestal', name: '좌대', defaultH: 60 },
+  { id: 'leg', name: '다리발', defaultH: 60 }
+];
 
 // ★ 냉장고 모델 데이터 (여유공간 정보 포함)
 // ★ 냉장고 모델 데이터 (개별 도어 정보 포함)
@@ -422,23 +430,23 @@ const FRIDGE_DATA = {
     name: '삼성',
     categories: {
       'Bespoke 냉장고': [
-        { id: 'ss_bespoke_1d', name: '1도어 키친핏', w: 595, h: 1853, d: 688, type: 'builtin', line: 'bespoke', sideGap: 12, betweenGap: 7, units: [{name:'1도어', w:595}] },
-        { id: 'ss_bespoke_2d', name: '2도어 키친핏', w: 595, h: 1853, d: 688, type: 'builtin', line: 'bespoke', sideGap: 12, betweenGap: 7, units: [{name:'2도어', w:595}] },
-        { id: 'ss_bespoke_4d', name: '4도어 키친핏', w: 912, h: 1853, d: 688, type: 'builtin', line: 'bespoke', sideGap: 12, betweenGap: 7, units: [{name:'4도어', w:912}] }
+        { id: 'ss_bespoke_1d', name: '1도어 키친핏', w: 595, h: 1853, d: 688, type: 'builtin', line: 'bespoke', sideGap: 12, betweenGap: 10, units: [{name:'1도어', w:595}] },
+        { id: 'ss_bespoke_2d', name: '2도어 키친핏', w: 595, h: 1853, d: 688, type: 'builtin', line: 'bespoke', sideGap: 12, betweenGap: 10, units: [{name:'2도어', w:595}] },
+        { id: 'ss_bespoke_4d', name: '4도어 키친핏', w: 912, h: 1853, d: 688, type: 'builtin', line: 'bespoke', sideGap: 12, betweenGap: 10, units: [{name:'4도어', w:912}] }
       ],
       'Bespoke 김치플러스': [
-        { id: 'ss_kimchi_1d', name: '1도어 키친핏', w: 595, h: 1853, d: 688, type: 'builtin', line: 'bespoke', sideGap: 12, betweenGap: 7, units: [{name:'김치1도어', w:595}] },
-        { id: 'ss_kimchi_3d', name: '3도어 키친핏', w: 695, h: 1853, d: 688, type: 'builtin', line: 'bespoke', sideGap: 12, betweenGap: 7, units: [{name:'김치3도어', w:695}] },
-        { id: 'ss_kimchi_4d', name: '4도어 키친핏', w: 912, h: 1853, d: 688, type: 'builtin', line: 'bespoke', sideGap: 12, betweenGap: 7, units: [{name:'김치4도어', w:912}] }
+        { id: 'ss_kimchi_1d', name: '1도어 키친핏', w: 595, h: 1853, d: 688, type: 'builtin', line: 'bespoke', sideGap: 12, betweenGap: 10, units: [{name:'김치1도어', w:595}] },
+        { id: 'ss_kimchi_3d', name: '3도어 키친핏', w: 695, h: 1853, d: 688, type: 'builtin', line: 'bespoke', sideGap: 12, betweenGap: 10, units: [{name:'김치3도어', w:695}] },
+        { id: 'ss_kimchi_4d', name: '4도어 키친핏', w: 912, h: 1853, d: 688, type: 'builtin', line: 'bespoke', sideGap: 12, betweenGap: 10, units: [{name:'김치4도어', w:912}] }
       ],
       'Bespoke 키친핏 세트': [
-        { id: 'ss_kf_2d1d', name: '2도어+1도어', w: 1197, h: 1853, d: 688, type: 'builtin', line: 'bespoke', sideGap: 12, betweenGap: 7, units: [{name:'2도어', w:595}, {name:'1도어', w:595}] },
-        { id: 'ss_kf_4d1d', name: '4도어+1도어', w: 1514, h: 1853, d: 688, type: 'builtin', line: 'bespoke', sideGap: 12, betweenGap: 7, units: [{name:'4도어', w:912}, {name:'1도어', w:595}] },
-        { id: 'ss_kf_4d3d', name: '4도어+3도어', w: 1614, h: 1853, d: 688, type: 'builtin', line: 'bespoke', sideGap: 12, betweenGap: 7, units: [{name:'4도어', w:912}, {name:'3도어', w:695}] },
-        { id: 'ss_kf_4d3d1d', name: '4도어+3도어+1도어', w: 2216, h: 1853, d: 688, type: 'builtin', line: 'bespoke', sideGap: 12, betweenGap: 7, units: [{name:'4도어', w:912}, {name:'3도어', w:695}, {name:'1도어', w:595}] },
-        { id: 'ss_kf_1d3', name: '1도어×3', w: 1799, h: 1853, d: 688, type: 'builtin', line: 'bespoke', sideGap: 12, betweenGap: 7, units: [{name:'1도어', w:595}, {name:'1도어', w:595}, {name:'1도어', w:595}] },
-        { id: 'ss_kf_1d4', name: '1도어×4', w: 2401, h: 1853, d: 688, type: 'builtin', line: 'bespoke', sideGap: 12, betweenGap: 7, units: [{name:'1도어', w:595}, {name:'1도어', w:595}, {name:'1도어', w:595}, {name:'1도어', w:595}] },
-        { id: 'ss_kf_max', name: 'Max 4도어+4도어', w: 1831, h: 1853, d: 688, type: 'builtin', line: 'bespoke', sideGap: 12, betweenGap: 7, units: [{name:'4도어', w:912}, {name:'4도어', w:912}] }
+        { id: 'ss_kf_2d1d', name: '2도어+1도어', w: 1200, h: 1853, d: 688, type: 'builtin', line: 'bespoke', sideGap: 12, betweenGap: 10, units: [{name:'2도어', w:595}, {name:'1도어', w:595}] },
+        { id: 'ss_kf_4d1d', name: '4도어+1도어', w: 1517, h: 1853, d: 688, type: 'builtin', line: 'bespoke', sideGap: 12, betweenGap: 10, units: [{name:'4도어', w:912}, {name:'1도어', w:595}] },
+        { id: 'ss_kf_4d3d', name: '4도어+3도어', w: 1617, h: 1853, d: 688, type: 'builtin', line: 'bespoke', sideGap: 12, betweenGap: 10, units: [{name:'4도어', w:912}, {name:'3도어', w:695}] },
+        { id: 'ss_kf_4d3d1d', name: '4도어+3도어+1도어', w: 2222, h: 1853, d: 688, type: 'builtin', line: 'bespoke', sideGap: 12, betweenGap: 10, units: [{name:'4도어', w:912}, {name:'3도어', w:695}, {name:'1도어', w:595}] },
+        { id: 'ss_kf_1d3', name: '1도어×3', w: 1805, h: 1853, d: 688, type: 'builtin', line: 'bespoke', sideGap: 12, betweenGap: 10, units: [{name:'1도어', w:595}, {name:'1도어', w:595}, {name:'1도어', w:595}] },
+        { id: 'ss_kf_1d4', name: '1도어×4', w: 2410, h: 1853, d: 688, type: 'builtin', line: 'bespoke', sideGap: 12, betweenGap: 10, units: [{name:'1도어', w:595}, {name:'1도어', w:595}, {name:'1도어', w:595}, {name:'1도어', w:595}] },
+        { id: 'ss_kf_max', name: 'Max 4도어+4도어', w: 1834, h: 1853, d: 688, type: 'builtin', line: 'bespoke', sideGap: 12, betweenGap: 10, units: [{name:'4도어', w:912}, {name:'4도어', w:912}] }
       ],
       'Bespoke 프리스탠딩': [
         { id: 'ss_bespoke_4d_free', name: '4도어 프리스탠딩', w: 912, h: 1853, d: 738, type: 'freestanding', line: 'freestanding', sideGap: 50, betweenGap: 0, units: [{name:'4도어FS', w:912}] },
@@ -490,11 +498,12 @@ const DOOR_DIVISION_TYPES = [
   { id: 'all', name: '전체' }
 ];
 
-// ★ 마감 타입 (휠라로 변경, 몰딩 기본)
+// ★ 마감 타입 (몰딩, 휠라, EP, 없음)
 const FINISH_TYPES = [
-  { id: 'molding', name: '몰딩', defaultW: 60, editable: true },
-  { id: 'filler', name: '휠라', defaultW: 60, editable: true },
-  { id: 'ep', name: 'EP', defaultW: 20, editable: false }
+  { id: 'Molding', name: '몰딩', defaultW: 60, editable: true },
+  { id: 'Filler', name: '휠라', defaultW: 60, editable: true },
+  { id: 'EP', name: 'EP', defaultW: 20, editable: false },
+  { id: 'None', name: '없음', defaultW: 0, editable: false }
 ];
 
 // ★ 도어 색상 매핑
@@ -1966,10 +1975,10 @@ function renderWorkspaceContent(item) {
   // 마감 설정
   let cornerHtml = '';
   if (item.specs.layoutShape === 'L') {
-    cornerHtml = `<div class="spec-row"><div class="spec-field"><label>코너 마감</label><select onchange="updateSpecNoRender(${item.uniqueId}, 'finishCorner1Type', this.value)"><option value="Filler" ${item.specs.finishCorner1Type==='Filler'?'selected':''}>휠라</option><option value="Molding" ${item.specs.finishCorner1Type==='Molding'?'selected':''}>몰딩</option></select></div><div class="spec-field"><label>길이(mm)</label><input type="number" value="${item.specs.finishCorner1Width}" onblur="updateSpecValue(${item.uniqueId}, 'finishCorner1Width', this.value)"></div></div>`;
+    cornerHtml = `<div class="spec-row"><div class="spec-field"><label>코너 마감</label><select onchange="updateSpecNoRender(${item.uniqueId}, 'finishCorner1Type', this.value)"><option value="Molding" ${item.specs.finishCorner1Type==='Molding'?'selected':''}>몰딩</option><option value="Filler" ${item.specs.finishCorner1Type==='Filler'?'selected':''}>휠라</option></select></div><div class="spec-field"><label>길이(mm)</label><input type="number" value="${item.specs.finishCorner1Width}" onblur="updateSpecValue(${item.uniqueId}, 'finishCorner1Width', this.value)"></div></div>`;
   } else if (item.specs.layoutShape === 'U') {
-    cornerHtml = `<div class="spec-row"><div class="spec-field"><label>코너1 마감</label><select onchange="updateSpecNoRender(${item.uniqueId}, 'finishCorner1Type', this.value)"><option value="Filler" ${item.specs.finishCorner1Type==='Filler'?'selected':''}>휠라</option><option value="Molding" ${item.specs.finishCorner1Type==='Molding'?'selected':''}>몰딩</option></select></div><div class="spec-field"><label>길이(mm)</label><input type="number" value="${item.specs.finishCorner1Width}" onblur="updateSpecValue(${item.uniqueId}, 'finishCorner1Width', this.value)"></div></div>
-    <div class="spec-row"><div class="spec-field"><label>코너2 마감</label><select onchange="updateSpecNoRender(${item.uniqueId}, 'finishCorner2Type', this.value)"><option value="Filler" ${item.specs.finishCorner2Type==='Filler'?'selected':''}>휠라</option><option value="Molding" ${item.specs.finishCorner2Type==='Molding'?'selected':''}>몰딩</option></select></div><div class="spec-field"><label>길이(mm)</label><input type="number" value="${item.specs.finishCorner2Width}" onblur="updateSpecValue(${item.uniqueId}, 'finishCorner2Width', this.value)"></div></div>`;
+    cornerHtml = `<div class="spec-row"><div class="spec-field"><label>코너1 마감</label><select onchange="updateSpecNoRender(${item.uniqueId}, 'finishCorner1Type', this.value)"><option value="Molding" ${item.specs.finishCorner1Type==='Molding'?'selected':''}>몰딩</option><option value="Filler" ${item.specs.finishCorner1Type==='Filler'?'selected':''}>휠라</option></select></div><div class="spec-field"><label>길이(mm)</label><input type="number" value="${item.specs.finishCorner1Width}" onblur="updateSpecValue(${item.uniqueId}, 'finishCorner1Width', this.value)"></div></div>
+    <div class="spec-row"><div class="spec-field"><label>코너2 마감</label><select onchange="updateSpecNoRender(${item.uniqueId}, 'finishCorner2Type', this.value)"><option value="Molding" ${item.specs.finishCorner2Type==='Molding'?'selected':''}>몰딩</option><option value="Filler" ${item.specs.finishCorner2Type==='Filler'?'selected':''}>휠라</option></select></div><div class="spec-field"><label>길이(mm)</label><input type="number" value="${item.specs.finishCorner2Width}" onblur="updateSpecValue(${item.uniqueId}, 'finishCorner2Width', this.value)"></div></div>`;
   }
 
   const shapes = { 'I': 'ㅡ자형 (1개)', 'L': 'ㄱ자형 (2개)', 'U': 'ㄷ자형 (3개)' };
@@ -2057,11 +2066,11 @@ function renderWorkspaceContent(item) {
           <div class="spec-field"><label>상몰딩 높이</label><input type="number" value="${item.specs.moldingH}" onblur="updateSpecValue(${item.uniqueId}, 'moldingH', this.value)"></div>
         </div>
         <div class="spec-row">
-          <div class="spec-field"><label>좌측 마감</label><select onchange="updateFinishType(${item.uniqueId}, 'Left', this.value)"><option value="Filler" ${item.specs.finishLeftType==='Filler'?'selected':''}>휠라 (60)</option><option value="Molding" ${item.specs.finishLeftType==='Molding'?'selected':''}>몰딩 (60)</option><option value="EP" ${item.specs.finishLeftType==='EP'?'selected':''}>EP (20)</option><option value="None" ${item.specs.finishLeftType==='None'?'selected':''}>없음</option></select></div>
+          <div class="spec-field"><label>좌측 마감</label><select onchange="updateFinishType(${item.uniqueId}, 'Left', this.value)"><option value="Molding" ${item.specs.finishLeftType==='Molding'?'selected':''}>몰딩 (60)</option><option value="Filler" ${item.specs.finishLeftType==='Filler'?'selected':''}>휠라 (60)</option><option value="EP" ${item.specs.finishLeftType==='EP'?'selected':''}>EP (20)</option><option value="None" ${item.specs.finishLeftType==='None'?'selected':''}>없음</option></select></div>
           <div class="spec-field"><label>길이(mm)</label><input type="number" value="${item.specs.finishLeftWidth}" onblur="updateSpecValue(${item.uniqueId}, 'finishLeftWidth', this.value)"></div>
         </div>
         <div class="spec-row">
-          <div class="spec-field"><label>우측 마감</label><select onchange="updateFinishType(${item.uniqueId}, 'Right', this.value)"><option value="Filler" ${item.specs.finishRightType==='Filler'?'selected':''}>휠라 (60)</option><option value="Molding" ${item.specs.finishRightType==='Molding'?'selected':''}>몰딩 (60)</option><option value="EP" ${item.specs.finishRightType==='EP'?'selected':''}>EP (20)</option><option value="None" ${item.specs.finishRightType==='None'?'selected':''}>없음</option></select></div>
+          <div class="spec-field"><label>우측 마감</label><select onchange="updateFinishType(${item.uniqueId}, 'Right', this.value)"><option value="Molding" ${item.specs.finishRightType==='Molding'?'selected':''}>몰딩 (60)</option><option value="Filler" ${item.specs.finishRightType==='Filler'?'selected':''}>휠라 (60)</option><option value="EP" ${item.specs.finishRightType==='EP'?'selected':''}>EP (20)</option><option value="None" ${item.specs.finishRightType==='None'?'selected':''}>없음</option></select></div>
           <div class="spec-field"><label>길이(mm)</label><input type="number" value="${item.specs.finishRightWidth}" onblur="updateSpecValue(${item.uniqueId}, 'finishRightWidth', this.value)"></div>
         </div>
         ${cornerHtml ? `<div class="spec-group-title">Corner Settings (코너)</div>${cornerHtml}` : ''}
@@ -2454,7 +2463,7 @@ function renderWardrobeWorkspace(item) {
     const moldingH = parseFloat(item.specs.wardrobeMoldingH) || 15;
     const totalH = parseFloat(item.h) || 0;
     const effectiveH = totalH - pedestalH - moldingH;
-    const halfH = Math.round(effectiveH / 2);
+    const halfH = Math.floor(effectiveH / 2);
 
     // 카운터 박스 스타일 (압축형)
     const cBoxStyle = 'display:flex;flex-direction:column;align-items:center;padding:4px 6px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:4px;';
@@ -2598,11 +2607,11 @@ function renderWardrobeWorkspace(item) {
           <div class="spec-field"><label>상몰딩 높이(mm)</label><input type="number" value="${item.specs.wardrobeMoldingH || 15}" onblur="updateWardrobeSpec(${item.uniqueId}, 'wardrobeMoldingH', this.value)"></div>
         </div>
         <div class="spec-row">
-          <div class="spec-field"><label>좌측 마감</label><select onchange="updateWardrobeFinishType(${item.uniqueId}, 'Left', this.value)"><option value="Filler" ${item.specs.finishLeftType==='Filler'?'selected':''}>휠라</option><option value="Molding" ${item.specs.finishLeftType==='Molding'?'selected':''}>몰딩</option><option value="EP" ${item.specs.finishLeftType==='EP'?'selected':''}>EP</option><option value="None" ${item.specs.finishLeftType==='None'?'selected':''}>없음</option></select></div>
+          <div class="spec-field"><label>좌측 마감</label><select onchange="updateWardrobeFinishType(${item.uniqueId}, 'Left', this.value)"><option value="Molding" ${item.specs.finishLeftType==='Molding'?'selected':''}>몰딩</option><option value="Filler" ${item.specs.finishLeftType==='Filler'?'selected':''}>휠라</option><option value="EP" ${item.specs.finishLeftType==='EP'?'selected':''}>EP</option><option value="None" ${item.specs.finishLeftType==='None'?'selected':''}>없음</option></select></div>
           <div class="spec-field"><label>길이(mm)</label><input type="number" value="${item.specs.finishLeftWidth}" ${item.specs.finishLeftType==='EP'?'disabled':''} onblur="updateWardrobeSpec(${item.uniqueId}, 'finishLeftWidth', this.value)"></div>
         </div>
         <div class="spec-row">
-          <div class="spec-field"><label>우측 마감</label><select onchange="updateWardrobeFinishType(${item.uniqueId}, 'Right', this.value)"><option value="Filler" ${item.specs.finishRightType==='Filler'?'selected':''}>휠라</option><option value="Molding" ${item.specs.finishRightType==='Molding'?'selected':''}>몰딩</option><option value="EP" ${item.specs.finishRightType==='EP'?'selected':''}>EP</option><option value="None" ${item.specs.finishRightType==='None'?'selected':''}>없음</option></select></div>
+          <div class="spec-field"><label>우측 마감</label><select onchange="updateWardrobeFinishType(${item.uniqueId}, 'Right', this.value)"><option value="Molding" ${item.specs.finishRightType==='Molding'?'selected':''}>몰딩</option><option value="Filler" ${item.specs.finishRightType==='Filler'?'selected':''}>휠라</option><option value="EP" ${item.specs.finishRightType==='EP'?'selected':''}>EP</option><option value="None" ${item.specs.finishRightType==='None'?'selected':''}>없음</option></select></div>
           <div class="spec-field"><label>길이(mm)</label><input type="number" value="${item.specs.finishRightWidth}" ${item.specs.finishRightType==='EP'?'disabled':''} onblur="updateWardrobeSpec(${item.uniqueId}, 'finishRightWidth', this.value)"></div>
         </div>
       </div>
@@ -2658,7 +2667,7 @@ function addWardrobeModule(itemUniqueId) {
   const moldingH = parseFloat(item.specs.wardrobeMoldingH) || 15;
   const totalH = parseFloat(item.h) || 0;
   const effectiveH = totalH - pedestalH - moldingH;
-  const halfH = Math.round(effectiveH / 2);
+  const halfH = Math.floor(effectiveH / 2);
   
   item.modules.push({
     id: Date.now(),
@@ -2751,7 +2760,7 @@ function setWardrobeModuleType(itemUniqueId, modId, type) {
     const moldingH = parseFloat(item.specs.wardrobeMoldingH) || 15;
     const totalH = parseFloat(item.h) || 0;
     const effectiveH = totalH - pedestalH - moldingH;
-    const halfH = Math.round(effectiveH / 2);
+    const halfH = Math.floor(effectiveH / 2);
     
     // ★ 타입별 기본값 설정
     if (type === 'short') {
@@ -2893,7 +2902,7 @@ function renderWardrobeSectionPopup(item, mod, section) {
   const moldingH = parseFloat(item.specs.wardrobeMoldingH) || 15;
   const totalH = parseFloat(item.h) || 0;
   const effectiveH = totalH - pedestalH - moldingH;
-  const halfH = Math.round(effectiveH / 2);
+  const halfH = Math.floor(effectiveH / 2);
   let sectionH;
   if (isFullType) {
     sectionH = mod.h || effectiveH;
@@ -3249,7 +3258,7 @@ function runWardrobeAutoCalc(itemUniqueId) {
   const pedestalH = parseFloat(item.specs.wardrobePedestal) || 60;
   const moldingH = parseFloat(item.specs.wardrobeMoldingH) || 15;
   const effectiveH = H - pedestalH - moldingH;
-  const halfH = Math.round(effectiveH / 2);  // 상부장/하부장 각각
+  const halfH = Math.floor(effectiveH / 2);  // 상부장/하부장 각각 (내림)
   
   const fL = item.specs.finishLeftType !== 'None' ? (parseFloat(item.specs.finishLeftWidth) || 0) : 0;
   const fR = item.specs.finishRightType !== 'None' ? (parseFloat(item.specs.finishRightWidth) || 0) : 0;
@@ -3748,8 +3757,8 @@ function renderFridgeWorkspace(item) {
   
   // 중간장/하부장 높이 계산 (모듈 영역 = H - 상몰딩 - 상부장 - 좌대)
   const moduleBodyH = H - MOLDING_H - upperDoorH - PEDESTAL_H;
-  const middleH = item.specs.fridgeMiddleH !== undefined ? parseFloat(item.specs.fridgeMiddleH) : Math.round(moduleBodyH * 0.55);
-  const lowerH = item.specs.fridgeLowerH !== undefined ? parseFloat(item.specs.fridgeLowerH) : Math.round(moduleBodyH - middleH);
+  const middleH = item.specs.fridgeMiddleH !== undefined ? parseFloat(item.specs.fridgeMiddleH) : Math.floor(moduleBodyH * 0.55);
+  const lowerH = item.specs.fridgeLowerH !== undefined ? parseFloat(item.specs.fridgeLowerH) : Math.floor(moduleBodyH - middleH);
   
   // 사용 너비 계산
   let totalUsedW = 0;
@@ -4157,19 +4166,22 @@ function renderFridgeWorkspace(item) {
         <div class="spec-group-title">설정</div>
         <div class="spec-row">
           <div class="spec-field"><label>상몰딩</label><input type="number" value="${MOLDING_H}" onchange="updateFridgeSpecWithRecalc(${item.uniqueId}, 'fridgeMoldingH', this.value)"></div>
-          <div class="spec-field"><label>좌대</label><input type="number" value="${PEDESTAL_H}" onchange="updateFridgeSpecWithRecalc(${item.uniqueId}, 'fridgePedestal', this.value)"></div>
           <div class="spec-field"><label>깊이</label><input type="number" value="${MODULE_D}" onchange="updateFridgeSpec(${item.uniqueId}, 'fridgeModuleD', this.value)"></div>
+        </div>
+        <div class="spec-row">
+          <div class="spec-field"><label>하부 다리</label><select onchange="updateFridgeLegType(${item.uniqueId}, this.value)">${FRIDGE_LEG_TYPES.map(t => `<option value="${t.id}" ${(item.specs.fridgeLegType || 'pedestal') === t.id ? 'selected' : ''}>${t.name}</option>`).join('')}</select></div>
+          <div class="spec-field"><label>높이</label><input type="number" value="${PEDESTAL_H}" onchange="updateFridgeSpecWithRecalc(${item.uniqueId}, 'fridgePedestal', this.value)"></div>
         </div>
         <div class="spec-group-title">마감 설정</div>
         <div class="spec-row">
-          <div class="spec-field"><label>좌측</label><select onchange="updateFridgeFinish(${item.uniqueId}, 'Left', this.value)">${FINISH_TYPES.map(t => `<option value="${t.id}" ${item.specs.finishLeftType === t.id ? 'selected' : ''}>${t.name}</option>`).join('')}<option value="none" ${item.specs.finishLeftType === 'none' ? 'selected' : ''}>없음</option></select></div>
+          <div class="spec-field"><label>좌측</label><select onchange="updateFridgeFinish(${item.uniqueId}, 'Left', this.value)">${FINISH_TYPES.map(t => `<option value="${t.id}" ${item.specs.finishLeftType === t.id ? 'selected' : ''}>${t.name}</option>`).join('')}</select></div>
           <div class="spec-field"><label>길이</label><input type="number" value="${leftWidthVal}" onchange="updateFridgeSpec(${item.uniqueId}, 'finishLeftWidth', this.value)" ${leftDisabled}></div>
         </div>
         <div class="spec-row">
-          <div class="spec-field"><label>우측</label><select onchange="updateFridgeFinish(${item.uniqueId}, 'Right', this.value)">${FINISH_TYPES.map(t => `<option value="${t.id}" ${item.specs.finishRightType === t.id ? 'selected' : ''}>${t.name}</option>`).join('')}<option value="none" ${item.specs.finishRightType === 'none' ? 'selected' : ''}>없음</option></select></div>
+          <div class="spec-field"><label>우측</label><select onchange="updateFridgeFinish(${item.uniqueId}, 'Right', this.value)">${FINISH_TYPES.map(t => `<option value="${t.id}" ${item.specs.finishRightType === t.id ? 'selected' : ''}>${t.name}</option>`).join('')}</select></div>
           <div class="spec-field"><label>길이</label><input type="number" value="${rightWidthVal}" onchange="updateFridgeSpec(${item.uniqueId}, 'finishRightWidth', this.value)" ${rightDisabled}></div>
         </div>
-        <div style="font-size:9px;color:#888;margin-top:4px;">※ EP: 20mm 고정</div>
+        <div style="font-size:9px;color:#888;margin-top:4px;">※ EP: 20mm 고정, 기본값 (몰딩=60, 휠라=60)</div>
       </div>
       <div class="module-panel">
         <div class="front-view-section" style="margin-bottom:12px;">
@@ -4265,8 +4277,8 @@ function recalcFridgeHeights(item) {
     
     // 모듈 본체 영역 = 전체 - 상몰딩 - 상부장 - 좌대
     const moduleBodyH = H - MOLDING_H - calcUpperH - PEDESTAL_H;
-    item.specs.fridgeMiddleH = Math.round(moduleBodyH * 0.55);
-    item.specs.fridgeLowerH = Math.round(moduleBodyH - item.specs.fridgeMiddleH);
+    item.specs.fridgeMiddleH = Math.floor(moduleBodyH * 0.55);
+    item.specs.fridgeLowerH = Math.floor(moduleBodyH - item.specs.fridgeMiddleH);
   }
 }
 
@@ -4396,18 +4408,18 @@ function updateFridgeHeightWithRecalc(itemUniqueId, field, value) {
   if (field === 'fridgeUpperH') {
     item.specs.fridgeUpperH = newVal;
     const moduleBodyH = H - MOLDING_H - newVal - PEDESTAL_H;
-    item.specs.fridgeMiddleH = Math.round(moduleBodyH * 0.55);
-    item.specs.fridgeLowerH = Math.round(moduleBodyH - item.specs.fridgeMiddleH);
+    item.specs.fridgeMiddleH = Math.floor(moduleBodyH * 0.55);
+    item.specs.fridgeLowerH = Math.floor(moduleBodyH - item.specs.fridgeMiddleH);
   } else if (field === 'fridgeMiddleH') {
     item.specs.fridgeMiddleH = newVal;
     const upperH = parseFloat(item.specs.fridgeUpperH) || 0;
     const moduleBodyH = H - MOLDING_H - upperH - PEDESTAL_H;
-    item.specs.fridgeLowerH = Math.round(moduleBodyH - newVal);
+    item.specs.fridgeLowerH = Math.floor(moduleBodyH - newVal);
   } else if (field === 'fridgeLowerH') {
     item.specs.fridgeLowerH = newVal;
     const upperH = parseFloat(item.specs.fridgeUpperH) || 0;
     const moduleBodyH = H - MOLDING_H - upperH - PEDESTAL_H;
-    item.specs.fridgeMiddleH = Math.round(moduleBodyH - newVal);
+    item.specs.fridgeMiddleH = Math.floor(moduleBodyH - newVal);
   }
   
   renderWorkspaceContent(item);
@@ -4417,8 +4429,19 @@ function updateFridgeFinish(itemUniqueId, side, value) {
   const item = selectedItems.find(i => i.uniqueId === itemUniqueId);
   if (!item) return;
   item.specs[`finish${side}Type`] = value;
-  if (value === 'ep') item.specs[`finish${side}Width`] = 20;
-  else if (value !== 'none') item.specs[`finish${side}Width`] = item.specs[`finish${side}Width`] || 60;
+  // 마감재 기본값: 몰딩=60, 휠라=60, EP=20, 없음=0
+  const finishType = FINISH_TYPES.find(t => t.id === value);
+  if (finishType) item.specs[`finish${side}Width`] = finishType.defaultW;
+  renderWorkspaceContent(item);
+}
+
+function updateFridgeLegType(itemUniqueId, value) {
+  const item = selectedItems.find(i => i.uniqueId === itemUniqueId);
+  if (!item) return;
+  item.specs.fridgeLegType = value;
+  const legType = FRIDGE_LEG_TYPES.find(t => t.id === value);
+  if (legType) item.specs.fridgePedestal = legType.defaultH;
+  recalcFridgeHeights(item);
   renderWorkspaceContent(item);
 }
 
@@ -4492,8 +4515,8 @@ function renderELPopup(item, mod) {
   const PEDESTAL_H = parseFloat(item.specs.fridgePedestal) || 60;
   const upperDoorH = parseFloat(item.specs.fridgeUpperH) || 300;
   const moduleBodyH = H - MOLDING_H - upperDoorH - PEDESTAL_H;
-  const middleH = parseFloat(item.specs.fridgeMiddleH) || Math.round(moduleBodyH * 0.55);
-  const lowerH = parseFloat(item.specs.fridgeLowerH) || Math.round(moduleBodyH * 0.45);
+  const middleH = parseFloat(item.specs.fridgeMiddleH) || Math.floor(moduleBodyH * 0.55);
+  const lowerH = parseFloat(item.specs.fridgeLowerH) || Math.floor(moduleBodyH * 0.45);
   const modW = mod.w;
 
   // 하부장 높이 (870mm = 하부장 + 좌대)
@@ -4774,7 +4797,7 @@ function addELSubModule(type) {
   const PEDESTAL_H = parseFloat(item.specs.fridgePedestal) || 60;
   const upperDoorH = parseFloat(item.specs.fridgeUpperH) || 300;
   const moduleBodyH = H - MOLDING_H - upperDoorH - PEDESTAL_H;
-  const middleH = parseFloat(item.specs.fridgeMiddleH) || Math.round(moduleBodyH * 0.55);
+  const middleH = parseFloat(item.specs.fridgeMiddleH) || Math.floor(moduleBodyH * 0.55);
 
   const usedH = mod.elModules.reduce((sum, m) => sum + m.h, 0);
   const remainingH = middleH - usedH;
@@ -4867,7 +4890,7 @@ function autoCalculateELModules() {
   const PEDESTAL_H = parseFloat(item.specs.fridgePedestal) || 60;
   const upperDoorH = parseFloat(item.specs.fridgeUpperH) || 300;
   const moduleBodyH = H - MOLDING_H - upperDoorH - PEDESTAL_H;
-  const middleH = parseFloat(item.specs.fridgeMiddleH) || Math.round(moduleBodyH * 0.55);
+  const middleH = parseFloat(item.specs.fridgeMiddleH) || Math.floor(moduleBodyH * 0.55);
 
   // 고정된 모듈과 고정되지 않은 모듈 분리
   const fixedModules = mod.elModules.filter(m => m.isFixed);
