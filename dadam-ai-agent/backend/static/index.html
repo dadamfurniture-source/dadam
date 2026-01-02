@@ -1813,7 +1813,9 @@ function renderWorkspaceContent(item) {
   // 각 영역 높이 (스케일 적용)
   const moldingH_s = moldingH * scale;
   const upperH_s = upperH * scale;
-  const lowerH_s = lowerH * scale;
+  // lowerH는 총 높이(본체+다리발)이므로 본체 높이 분리
+  const lowerBodyH = lowerH - legH;
+  const lowerBodyH_s = lowerBodyH * scale;
   const legH_s = legH * scale;
 
   let sinkModuleSvg = '';
@@ -1860,7 +1862,7 @@ function renderWorkspaceContent(item) {
 
   // 중간 공간 (상판 영역)
   const middleY = upperY + upperH_s;
-  const middleH_s = drawH - moldingH_s - upperH_s - lowerH_s - legH_s;
+  const middleH_s = drawH - moldingH_s - upperH_s - lowerBodyH_s - legH_s;
   if (middleH_s > 0) {
     sinkModuleSvg += `<rect x="${offsetX}" y="${middleY}" width="${drawW}" height="${middleH_s}" fill="#fafafa" stroke="#e5e7eb" stroke-width="1" stroke-dasharray="4"/>`;
   }
@@ -1872,8 +1874,8 @@ function renderWorkspaceContent(item) {
   lowerModules.forEach((mod, idx) => {
     const modW = parseFloat(mod.w) * scale;
     const isTall = mod.type === 'tall';
-    // 키큰장은 상부장~하부장, 일반 하부장은 하부장+다리발
-    const modH_s = isTall ? (upperH_s + middleH_s + lowerH_s) : (lowerH_s + legH_s);
+    // 키큰장은 상부장~하부장, 일반 하부장은 본체+다리발
+    const modH_s = isTall ? (upperH_s + middleH_s + lowerBodyH_s) : (lowerBodyH_s + legH_s);
     const modY = isTall ? upperY : lowerY;
 
     const icons = { sink: '🚰', cook: '🔥', tall: '↕️', storage: '🗄️' };
@@ -1885,12 +1887,12 @@ function renderWorkspaceContent(item) {
     else if (isTall) { fillColor = '#dcfce7'; strokeColor = '#10b981'; }
     else if (mod.isDrawer) { fillColor = '#fef3c7'; strokeColor = '#f59e0b'; }
 
-    // 모듈 본체 (다리발 포함 높이)
+    // 모듈 본체 (본체+다리발 높이)
     sinkModuleSvg += `<rect x="${lowerStartX}" y="${modY}" width="${modW}" height="${modH_s}" fill="${fillColor}" stroke="${strokeColor}" stroke-width="2" rx="2"/>`;
 
     // 다리발 구분선 (키큰장 제외)
     if (!isTall) {
-      const legLineY = lowerY + lowerH_s;
+      const legLineY = lowerY + lowerBodyH_s;
       sinkModuleSvg += `<line x1="${lowerStartX}" y1="${legLineY}" x2="${lowerStartX + modW}" y2="${legLineY}" stroke="${strokeColor}" stroke-width="1" stroke-dasharray="3"/>`;
       sinkModuleSvg += `<text x="${lowerStartX + modW/2}" y="${legLineY + legH_s/2 + 3}" text-anchor="middle" font-size="7" fill="#888">${legH}</text>`;
     }
@@ -1901,20 +1903,20 @@ function renderWorkspaceContent(item) {
       const dW = modW / doorCount;
       for (let d = 0; d < doorCount; d++) {
         const dX = lowerStartX + d * dW + doorGap/2;
-        sinkModuleSvg += `<rect x="${dX}" y="${modY + doorGap/2}" width="${dW - doorGap}" height="${lowerH_s - doorGap}" fill="${doorColorL}" stroke="#333" stroke-width="1" rx="2"/>`;
+        sinkModuleSvg += `<rect x="${dX}" y="${modY + doorGap/2}" width="${dW - doorGap}" height="${lowerBodyH_s - doorGap}" fill="${doorColorL}" stroke="#333" stroke-width="1" rx="2"/>`;
       }
     }
 
     // 아이콘 & 텍스트 (도어 표시시 일반 하부장 아이콘 숨김, 키큰장은 항상 표시)
     if (!showDoors || isTall) {
-      sinkModuleSvg += `<text x="${lowerStartX + modW/2}" y="${modY + (isTall ? modH_s : lowerH_s)/2 - 8}" text-anchor="middle" font-size="12" fill="${strokeColor}" font-weight="bold">${icon}</text>
-        <text x="${lowerStartX + modW/2}" y="${modY + (isTall ? modH_s : lowerH_s)/2 + 8}" text-anchor="middle" font-size="9" fill="#666">${mod.w}${isTall ? ' (TL)' : ''}</text>`;
+      sinkModuleSvg += `<text x="${lowerStartX + modW/2}" y="${modY + (isTall ? modH_s : lowerBodyH_s)/2 - 8}" text-anchor="middle" font-size="12" fill="${strokeColor}" font-weight="bold">${icon}</text>
+        <text x="${lowerStartX + modW/2}" y="${modY + (isTall ? modH_s : lowerBodyH_s)/2 + 8}" text-anchor="middle" font-size="9" fill="#666">${mod.w}${isTall ? ' (TL)' : ''}</text>`;
     }
     lowerStartX += modW;
   });
 
   // 다리발 (전체 영역 - 마감 포함)
-  const legY = lowerY + lowerH_s;
+  const legY = lowerY + lowerBodyH_s;
   // 마감 영역 아래에도 다리발 표시
   if (finishL > 0) {
     sinkModuleSvg += `<rect x="${offsetX}" y="${legY}" width="${finishL * scale}" height="${legH_s}" fill="#d1d5db" stroke="#9ca3af" stroke-width="1"/>`;
@@ -1925,13 +1927,13 @@ function renderWorkspaceContent(item) {
 
   // 좌측 마감
   if (finishL > 0) {
-    sinkModuleSvg += `<rect x="${offsetX}" y="${upperY}" width="${finishL * scale}" height="${upperH_s + middleH_s + lowerH_s}" fill="#e0e0e0" stroke="#999" stroke-width="1"/>
-      <text x="${offsetX + finishL * scale / 2}" y="${upperY + (upperH_s + middleH_s + lowerH_s)/2}" text-anchor="middle" font-size="8" fill="#666" transform="rotate(-90 ${offsetX + finishL * scale / 2} ${upperY + (upperH_s + middleH_s + lowerH_s)/2})">${finishL}</text>`;
+    sinkModuleSvg += `<rect x="${offsetX}" y="${upperY}" width="${finishL * scale}" height="${upperH_s + middleH_s + lowerBodyH_s}" fill="#e0e0e0" stroke="#999" stroke-width="1"/>
+      <text x="${offsetX + finishL * scale / 2}" y="${upperY + (upperH_s + middleH_s + lowerBodyH_s)/2}" text-anchor="middle" font-size="8" fill="#666" transform="rotate(-90 ${offsetX + finishL * scale / 2} ${upperY + (upperH_s + middleH_s + lowerBodyH_s)/2})">${finishL}</text>`;
   }
   // 우측 마감
   if (finishR > 0) {
-    sinkModuleSvg += `<rect x="${offsetX + drawW - finishR * scale}" y="${upperY}" width="${finishR * scale}" height="${upperH_s + middleH_s + lowerH_s}" fill="#e0e0e0" stroke="#999" stroke-width="1"/>
-      <text x="${offsetX + drawW - finishR * scale / 2}" y="${upperY + (upperH_s + middleH_s + lowerH_s)/2}" text-anchor="middle" font-size="8" fill="#666" transform="rotate(-90 ${offsetX + drawW - finishR * scale / 2} ${upperY + (upperH_s + middleH_s + lowerH_s)/2})">${finishR}</text>`;
+    sinkModuleSvg += `<rect x="${offsetX + drawW - finishR * scale}" y="${upperY}" width="${finishR * scale}" height="${upperH_s + middleH_s + lowerBodyH_s}" fill="#e0e0e0" stroke="#999" stroke-width="1"/>
+      <text x="${offsetX + drawW - finishR * scale / 2}" y="${upperY + (upperH_s + middleH_s + lowerBodyH_s)/2}" text-anchor="middle" font-size="8" fill="#666" transform="rotate(-90 ${offsetX + drawW - finishR * scale / 2} ${upperY + (upperH_s + middleH_s + lowerBodyH_s)/2})">${finishR}</text>`;
   }
 
   // ★ 걸레받이 (도어 표시시에만, 하부장에 설치)
@@ -2024,7 +2026,7 @@ function renderWorkspaceContent(item) {
         </div>
         <div class="spec-row">
           <div class="spec-field"><label>다리발 높이</label>
-            <select id="legHeight-${item.uniqueId}" onchange="updateSpec(${item.uniqueId}, 'sinkLegHeight', this.value)">
+            <select id="legHeight-${item.uniqueId}" onchange="updateSinkLegHeight(${item.uniqueId}, this.value)">
               <option value="120" ${item.specs.sinkLegHeight==120?'selected':''}>120mm</option>
               <option value="150" ${item.specs.sinkLegHeight==150?'selected':''}>150mm</option>
             </select>
@@ -3521,6 +3523,36 @@ function updateTopSize(itemUniqueId, index, value) {
 function updateSpec(itemUniqueId, field, value) {
   const item = selectedItems.find(i => i.uniqueId === itemUniqueId);
   if (item) { item.specs[field] = value; renderWorkspaceContent(item); }
+}
+
+// ★ 싱크대 다리발 높이 변경 시 하부장 모듈 높이 연동
+function updateSinkLegHeight(itemUniqueId, newLegHeight) {
+  const item = selectedItems.find(i => i.uniqueId === itemUniqueId);
+  if (!item) return;
+
+  const oldLegH = parseFloat(item.specs.sinkLegHeight) || 150;
+  const newLegH = parseFloat(newLegHeight) || 150;
+  const totalLowerH = parseFloat(item.specs.lowerH) || 870;
+
+  // 새로운 하부장 본체 높이 = 총 높이 - 새 다리발 높이
+  const newLowerBodyH = totalLowerH - newLegH;
+
+  // 다리발 높이 업데이트
+  item.specs.sinkLegHeight = newLegH;
+
+  // 하부장 모듈 높이 업데이트 (키큰장 제외)
+  item.modules.forEach(mod => {
+    if (mod.pos === 'lower' && mod.type !== 'tall') {
+      mod.h = newLowerBodyH;
+    }
+  });
+
+  // 스크롤 위치 저장 후 렌더링
+  const specPanel = document.querySelector('.spec-panel');
+  const scrollTop = specPanel ? specPanel.scrollTop : 0;
+  renderWorkspaceContent(item);
+  const newSpecPanel = document.querySelector('.spec-panel');
+  if (newSpecPanel) newSpecPanel.scrollTop = scrollTop;
 }
 
 function updateSpecNoRender(itemUniqueId, field, value) {
