@@ -1,0 +1,30 @@
+<svg width="297mm" height="210mm" viewBox="0 0 297 210" xmlns="http://www.w3.org/2000/svg">
+      <style>
+        .title { font: bold 5px sans-serif; }
+        .dim { font: 2.5px sans-serif; fill: #333; }
+      </style>
+    <text x="148.5" y="10" text-anchor="middle" class="title">설치 배치도 (전체)</text><rect x="25" y="85" width="28.57142857142857" height="100" fill="#f5f5dc" stroke="#333" stroke-width="0.3"/><path d="M 25 85
+                       L 31.804285714285715 81.07142857142857
+                       L 60.37571428571428 81.07142857142857
+                       L 53.57142857142857 85
+                       Z" fill="#e8e8e8" stroke="#333" stroke-width="0.3"/><path d="M 53.57142857142857 85
+                        L 60.37571428571428 81.07142857142857
+                        L 60.37571428571428 181.07142857142858
+                        L 53.57142857142857 185
+                        Z" fill="#d0d0d0" stroke="#333" stroke-width="0.3"/><text x="39.285714285714285" y="135" text-anchor="middle" class="dim">키큰장</text><text x="39.285714285714285" y="190" text-anchor="middle" class="dim">600</text><rect x="58.57142857142857" y="96.76190476190477" width="43.42857142857142" height="88.23809523809523" fill="#f5f5dc" stroke="#333" stroke-width="0.3"/><path d="M 58.57142857142857 96.76190476190477
+                       L 67.08297142857143 91.84761904761906
+                       L 110.51154285714286 91.84761904761906
+                       L 102 96.76190476190477
+                       Z" fill="#e8e8e8" stroke="#333" stroke-width="0.3"/><path d="M 102 96.76190476190477
+                        L 110.51154285714286 91.84761904761906
+                        L 110.51154285714286 180.0857142857143
+                        L 102 185
+                        Z" fill="#d0d0d0" stroke="#333" stroke-width="0.3"/><text x="80.28571428571428" y="140.88095238095238" text-anchor="middle" class="dim">냉장고</text><text x="80.28571428571428" y="190" text-anchor="middle" class="dim">912</text><rect x="107" y="118.33333333333334" width="28.57142857142857" height="66.66666666666666" fill="#f5f5dc" stroke="#333" stroke-width="0.3"/><path d="M 107 118.33333333333334
+                       L 113.80428571428571 114.40476190476191
+                       L 142.37571428571428 114.40476190476191
+                       L 135.57142857142856 118.33333333333334
+                       Z" fill="#e8e8e8" stroke="#333" stroke-width="0.3"/><path d="M 135.57142857142856 118.33333333333334
+                        L 142.37571428571428 114.40476190476191
+                        L 142.37571428571428 181.07142857142858
+                        L 135.57142857142856 185
+                        Z" fill="#d0d0d0" stroke="#333" stroke-width="0.3"/><text x="121.28571428571428" y="151.66666666666669" text-anchor="middle" class="dim">홈카페장</text><text x="121.28571428571428" y="190" text-anchor="middle" class="dim">600</text><line x1="25" y1="195" x2="135.57142857142856" y2="195" stroke="#333" stroke-width="0.2"/><text x="80.28571428571428" y="200" text-anchor="middle" class="dim">총 2112mm</text></svg>
